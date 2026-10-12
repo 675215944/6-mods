@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="sw">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#080808">
+    <title>Market | 6+MODS</title>
+    <link rel="stylesheet" href="contact.css">
+    <style>
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            background: #080808;
+            color: white;
+            font-family: Arial, sans-serif;
+            padding-bottom: 85px;
+        }
+
+        header {
+            background: #111;
+            border-bottom: 1px solid #493914;
+            padding: 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            color: #ffd700;
+            font-size: 22px;
+            font-weight: 900;
+        }
+
+        .back-btn, .gold-btn {
+            background: linear-gradient(135deg, #fff0a0, #ffd700, #b8860b);
+            color: #171100;
+            border: none;
+            border-radius: 25px;
+            padding: 12px 16px;
+            font-weight: 800;
+            cursor: pointer;
+        }
+
+        main {
+            max-width: 1000px;
+            margin: auto;
+            padding: 18px;
+        }
+
+        .hero {
+            background: linear-gradient(135deg, #35270b, #151515);
+            border: 1px solid #765a20;
+            border-radius: 20px;
+            padding: 27px 20px;
+            text-align: center;
+            margin-bottom: 24px;
+        }
+
+        .hero h1 { color: #ffd700; }
+
+        .hero p {
+            color: #c8c2b4;
+            line-height: 1.6;
+        }
+
+        .search {
+            width: 100%;
+            padding: 15px;
+            background: #171717;
+            border: 1px solid #493914;
+            border-radius: 12px;
+            color: white;
+            font-size: 16px;
+        }
+
+        .categories {
+            display: flex;
+            gap: 10px;
+            overflow-x: auto;
+            padding: 18px 0;
+        }
+
+        .category {
+            padding: 11px 16px;
+            background: #171717;
+            color: white;
+            border: 1px solid #493914;
+            border-radius: 25px;
+            white-space: nowrap;
+            cursor: pointer;
+        }
+
+        .category.active {
+            background: #ffd700;
+            color: #111;
+            font-weight: bold;
+        }
+
+        .products {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+            gap: 16px;
+        }
+
+        .product {
+            background: #151515;
+            border: 1px solid #493914;
+            border-radius: 17px;
+            padding: 20px;
+        }
+
+        .product-icon {
+            font-size: 45px;
+            text-align: center;
+        }
+
+        .product h3 { color: #ffd700; }
+
+        .product p {
+            color: #aaa;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        .price {
+            font-size: 20px;
+            font-weight: 900;
+            color: #fff;
+            margin: 15px 0;
+        }
+
+        .buy-btn {
+            width: 100%;
+            padding: 13px;
+            background: linear-gradient(135deg, #fff0a0, #ffd700, #b8860b);
+            border: none;
+            border-radius: 25px;
+            color: #171100;
+            font-weight: 900;
+            cursor: pointer;
+        }
+
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: #111;
+            border-top: 1px solid #493914;
+            display: flex;
+            padding: 11px 5px;
+        }
+
+        .bottom-nav a {
+            flex: 1;
+            color: #aaa;
+            text-decoration: none;
+            text-align: center;
+            font-size: 11px;
+        }
+
+        .bottom-nav span {
+            display: block;
+            font-size: 23px;
+            margin-bottom: 4px;
+        }
+
+        .bottom-nav .active { color: #ffd700; }
+
+        #loading {
+            padding: 60px 15px;
+            text-align: center;
+            color: #ffd700;
+        }
+
+        #content { display: none; }
+
+        #error {
+            color: #ff8989;
+            text-align: center;
+            padding: 15px;
+        }
+
+        .empty {
+            color: #aaa;
+            text-align: center;
+            padding: 30px;
+        }
+      /* CLEAN PREMIUM LOADING */
+
+.app-loader {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 22px;
+    background: #080808;
+}
+
+.loader-logo {
+    font-size: 28px;
+    font-weight: 900;
+    letter-spacing: 2px;
+    color: #ffd700;
+}
+
+.loader-spinner {
+    width: 34px;
+    height: 34px;
+    border: 3px solid #30270f;
+    border-top-color: #ffd700;
+    border-radius: 50%;
+    animation: loaderSpin 0.65s linear infinite;
+}
+
+@keyframes loaderSpin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .loader-spinner {
+        animation: none;
+        border-color: #ffd700;
+    }
+}
+    </style>
+</head>
+
+<body>
+
+<div id="loading" class="app-loader">
+    <div class="loader-logo">6+MODS ✦</div>
+    <div class="loader-spinner"></div>
+</div>
+
+<div id="content">
+
+    <header>
+        <div class="logo">6+MODS ✦</div>
+        <button id="backBtn" class="back-btn">✦ DASHBOARD ↗</button>
+    </header>
+
+    <main>
+        <section class="hero">
+            <div style="font-size:45px">🛒</div>
+            <h1>6+MODS MARKET</h1>
+            <p>Bidhaa na huduma bora sehemu moja.</p>
+        </section>
+
+        <input
+            type="search"
+            id="searchInput"
+            class="search"
+            placeholder="🔍 Tafuta bidhaa au huduma..."
+        >
+
+        <div class="categories">
+            <button class="category active" data-category="All">Zote</button>
+            <button class="category" data-category="Digital">Digital</button>
+            <button class="category" data-category="Services">Huduma</button>
+            <button class="category" data-category="Other">Nyingine</button>
+        </div>
+
+        <div id="productsGrid" class="products"></div>
+
+        <p id="emptyMessage" class="empty" hidden>
+            Hakuna bidhaa iliyopatikana.
+        </p>
+    </main>
+
+    <nav class="bottom-nav">
+        <a href="user.html"><span>🏠</span>Home</a>
+        <a href="tips.html"><span>⚽</span>Tips</a>
+        <a href="market.html" class="active"><span>🛒</span>Market</a>
+        <a href="profile.html"><span>👤</span>Account</a>
+    </nav>
+
+</div>
+
+<script type="module" src="market.js"></script>
+<script src="contact.js"></script>
+</body>
+</html>
