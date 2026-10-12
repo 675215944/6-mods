@@ -1,0 +1,909 @@
+<!DOCTYPE html>
+<html lang="sw">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#080b14">
+
+    <title>Premium | 6+MODS</title>
+
+    <style>
+        :root {
+            --bg: #080b14;
+            --surface: #10182a;
+            --surface-light: #16213a;
+            --blue: #244b91;
+            --blue-light: #3978e8;
+            --gold: #f5c451;
+            --gold-light: #ffe5a0;
+            --text: #ffffff;
+            --muted: #9ba9c3;
+            --border: rgba(120, 157, 220, 0.18);
+            --green: #39d98a;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            background:
+                radial-gradient(
+                    ellipse at 50% -10%,
+                    rgba(48, 102, 194, 0.23),
+                    transparent 48%
+                ),
+                var(--bg);
+            color: var(--text);
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
+        button {
+            font: inherit;
+        }
+
+        button:focus-visible {
+            outline: 2px solid var(--gold-light);
+            outline-offset: 4px;
+        }
+
+        /* LOADING */
+
+        .app-loader {
+            position: fixed;
+            inset: 0;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+            background: var(--bg);
+        }
+
+        .loader-logo {
+            color: var(--gold);
+            font-size: 28px;
+            font-weight: 900;
+            letter-spacing: 2px;
+        }
+
+        .loader-spinner {
+            width: 36px;
+            height: 36px;
+            border: 3px solid #1d2b46;
+            border-top-color: var(--gold);
+            border-radius: 50%;
+            animation: spin .7s linear infinite;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* HEADER */
+
+        header {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            padding: 14px 5%;
+            background: rgba(8, 11, 20, 0.94);
+            border-bottom: 1px solid var(--border);
+            backdrop-filter: blur(16px);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 9px;
+            color: #fff;
+            font-size: 20px;
+            font-weight: 900;
+            white-space: nowrap;
+        }
+
+        .logo-mark {
+            display: grid;
+            place-items: center;
+            width: 36px;
+            height: 36px;
+            border: 1px solid rgba(245, 196, 81, 0.4);
+            border-radius: 12px;
+            background: linear-gradient(145deg, #263e67, #10182a);
+            color: var(--gold);
+        }
+
+        .back-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 7px;
+            padding: 11px 14px;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            background: #111b30;
+            color: #dce7ff;
+            font-size: 11px;
+            font-weight: 800;
+            cursor: pointer;
+            transition: .2s;
+        }
+
+        .back-btn:hover {
+            border-color: var(--gold);
+            color: var(--gold);
+            transform: translateY(-1px);
+        }
+
+        /* MAIN */
+
+        main {
+            width: min(100% - 30px, 1050px);
+            margin: 0 auto;
+            padding: 30px 0 45px;
+        }
+
+        /* HERO */
+
+        .hero {
+            position: relative;
+            overflow: hidden;
+            padding: 38px 20px;
+            margin-bottom: 32px;
+            text-align: center;
+            border: 1px solid rgba(99, 145, 222, 0.3);
+            border-radius: 25px;
+            background:
+                radial-gradient(
+                    circle at 50% 0%,
+                    rgba(56, 112, 213, 0.27),
+                    transparent 65%
+                ),
+                linear-gradient(145deg, #152747, #0d1425 75%);
+            box-shadow: 0 15px 45px rgba(0, 0, 0, 0.22);
+        }
+
+        .hero::before,
+        .hero::after {
+            position: absolute;
+            content: "";
+            width: 160px;
+            height: 160px;
+            border: 1px solid rgba(245, 196, 81, 0.08);
+            border-radius: 50%;
+            pointer-events: none;
+        }
+
+        .hero::before {
+            top: -100px;
+            left: -65px;
+        }
+
+        .hero::after {
+            right: -65px;
+            bottom: -110px;
+        }
+
+        .hero-crown {
+            display: inline-grid;
+            place-items: center;
+            width: 76px;
+            height: 76px;
+            margin-bottom: 12px;
+            border: 1px solid rgba(245, 196, 81, 0.35);
+            border-radius: 24px;
+            background: linear-gradient(145deg, #263f68, #111a2d);
+            font-size: 38px;
+            box-shadow: 0 0 35px rgba(56, 112, 213, 0.12);
+        }
+
+        .eyebrow {
+            color: var(--gold);
+            font-size: 11px;
+            font-weight: 900;
+            letter-spacing: 3px;
+        }
+
+        .hero h1 {
+            margin: 15px 0 12px;
+            font-size: clamp(28px, 5vw, 43px);
+            font-weight: 900;
+            letter-spacing: .5px;
+        }
+
+        .hero h1 span {
+            color: var(--gold);
+        }
+
+        .hero p {
+            max-width: 520px;
+            margin: 0 auto;
+            color: #b7c5df;
+            font-size: 14px;
+            line-height: 1.9;
+        }
+
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            margin-top: 20px;
+            padding: 9px 14px;
+            border: 1px solid rgba(245, 196, 81, 0.24);
+            border-radius: 30px;
+            background: rgba(245, 196, 81, 0.07);
+            color: var(--gold-light);
+            font-size: 11px;
+            font-weight: 800;
+        }
+
+        /* SECTION HEADING */
+
+        .section-heading {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: end;
+            justify-content: space-between;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .section-heading h2 {
+            margin: 0;
+            font-size: 22px;
+        }
+
+        .section-heading p {
+            margin: 7px 0 0;
+            color: var(--muted);
+            font-size: 12px;
+            line-height: 1.7;
+        }
+
+        .secure-label {
+            padding: 8px 11px;
+            border: 1px solid rgba(57, 217, 138, .18);
+            border-radius: 10px;
+            background: rgba(57, 217, 138, .06);
+            color: var(--green);
+            font-size: 10px;
+            font-weight: 800;
+        }
+
+        /* PLANS */
+
+        .plans {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            align-items: stretch;
+            gap: 17px;
+        }
+
+        .plan {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            min-width: 0;
+            padding: 25px 21px 21px;
+            overflow: hidden;
+            border: 1px solid var(--border);
+            border-radius: 21px;
+            background: linear-gradient(155deg, #15213a, #0e1525);
+            transition: transform .25s, border-color .25s, box-shadow .25s;
+        }
+
+        .plan:hover {
+            transform: translateY(-5px);
+            border-color: rgba(245, 196, 81, .55);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, .25);
+        }
+
+        .plan.featured {
+            border: 1px solid rgba(245, 196, 81, .8);
+            background:
+                radial-gradient(
+                    circle at 50% 0%,
+                    rgba(245, 196, 81, .11),
+                    transparent 58%
+                ),
+                linear-gradient(155deg, #1c2b48, #101728);
+            box-shadow: 0 0 28px rgba(245, 196, 81, .05);
+        }
+
+        .popular-badge {
+            position: absolute;
+            top: 0;
+            right: 0;
+            padding: 8px 11px;
+            border-radius: 0 19px 0 12px;
+            background: linear-gradient(135deg, var(--gold-light), var(--gold));
+            color: #171100;
+            font-size: 9px;
+            font-weight: 900;
+            letter-spacing: .5px;
+        }
+
+        .plan-icon {
+            display: grid;
+            place-items: center;
+            width: 55px;
+            height: 55px;
+            margin-bottom: 17px;
+            border: 1px solid rgba(120, 157, 220, .22);
+            border-radius: 17px;
+            background: #1b2b48;
+            font-size: 27px;
+        }
+
+        .plan h2 {
+            margin: 0;
+            color: #fff;
+            font-size: 19px;
+            font-weight: 900;
+            letter-spacing: .5px;
+        }
+
+        .plan.featured h2 {
+            color: var(--gold);
+        }
+
+        .plan-description {
+            min-height: 40px;
+            margin-top: 9px;
+            color: var(--muted);
+            font-size: 12px;
+            line-height: 1.7;
+        }
+
+        .price {
+            margin: 20px 0 5px;
+            color: var(--gold);
+            font-size: clamp(24px, 3vw, 31px);
+            font-weight: 900;
+            letter-spacing: -.5px;
+            overflow-wrap: anywhere;
+        }
+
+        .price-caption {
+            color: #98a8c5;
+            font-size: 11px;
+        }
+
+        .duration {
+            display: inline-flex;
+            align-items: center;
+            align-self: flex-start;
+            gap: 6px;
+            margin-top: 16px;
+            padding: 8px 11px;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            background: #111c31;
+            color: #dce6fa;
+            font-size: 11px;
+            font-weight: 700;
+        }
+
+        .features {
+            display: grid;
+            gap: 13px;
+            margin: 23px 0;
+            padding: 0;
+            list-style: none;
+        }
+
+        .features li {
+            display: flex;
+            align-items: flex-start;
+            gap: 9px;
+            color: #c5d0e5;
+            font-size: 12px;
+            line-height: 1.7;
+        }
+
+        .check {
+            flex: 0 0 18px;
+            display: grid;
+            place-items: center;
+            width: 18px;
+            height: 18px;
+            margin-top: 1px;
+            border-radius: 50%;
+            background: rgba(57, 217, 138, .1);
+            color: var(--green);
+            font-size: 11px;
+            font-weight: 900;
+        }
+
+        .subscribe-btn {
+            width: 100%;
+            min-height: 48px;
+            margin-top: auto;
+            padding: 13px 10px;
+            border: 1px solid #e7b83e;
+            border-radius: 13px;
+            background: linear-gradient(135deg, var(--gold-light), var(--gold));
+            color: #15110a;
+            font-size: 12px;
+            font-weight: 900;
+            cursor: pointer;
+            transition: filter .2s, transform .2s;
+        }
+
+        .subscribe-btn:hover {
+            filter: brightness(1.08);
+            transform: translateY(-2px);
+        }
+
+        .plan:not(.featured) .subscribe-btn {
+            border-color: rgba(102, 145, 215, .35);
+            background: linear-gradient(135deg, #254779, #19325a);
+            color: #fff;
+        }
+
+        .subscribe-btn:disabled {
+            opacity: .65;
+            cursor: wait;
+            transform: none;
+        }
+
+        /* BENEFITS */
+
+        .benefits {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 13px;
+            margin-top: 30px;
+        }
+
+        .benefit {
+            padding: 19px 14px;
+            text-align: center;
+            border: 1px solid var(--border);
+            border-radius: 17px;
+            background: #10192b;
+        }
+
+        .benefit-icon {
+            margin-bottom: 9px;
+            font-size: 25px;
+        }
+
+        .benefit h3 {
+            margin: 0 0 7px;
+            color: var(--gold);
+            font-size: 13px;
+        }
+
+        .benefit p {
+            margin: 0;
+            color: var(--muted);
+            font-size: 11px;
+            line-height: 1.8;
+        }
+
+        /* NOTICE */
+
+        .notice {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            margin-top: 27px;
+            padding: 17px;
+            border: 1px solid rgba(245, 196, 81, .17);
+            border-left: 3px solid var(--gold);
+            border-radius: 14px;
+            background: #121a29;
+            color: #b4c0d5;
+            font-size: 12px;
+            line-height: 1.9;
+        }
+
+        .notice-icon {
+            font-size: 20px;
+        }
+
+        .notice strong {
+            color: var(--gold-light);
+        }
+
+        /* FOOTER */
+
+        footer {
+            padding: 23px 15px 30px;
+            border-top: 1px solid var(--border);
+            color: #8391aa;
+            text-align: center;
+            font-size: 11px;
+            line-height: 1.9;
+        }
+
+        footer strong {
+            color: var(--gold);
+        }
+
+        /* STATUS */
+
+        #content {
+            display: none;
+        }
+
+        #error {
+            display: none;
+            max-width: 700px;
+            margin: 15px auto;
+            padding: 14px;
+            border: 1px solid #713939;
+            border-radius: 12px;
+            background: #291417;
+            color: #ffb5b5;
+            font-size: 13px;
+            line-height: 1.7;
+        }
+
+        /* RESPONSIVE */
+
+        @media (max-width: 760px) {
+            header {
+                padding: 12px 14px;
+            }
+
+            .logo {
+                font-size: 18px;
+            }
+
+            .back-btn {
+                padding: 10px 11px;
+                font-size: 10px;
+            }
+
+            main {
+                width: min(100% - 24px, 560px);
+                padding-top: 22px;
+            }
+
+            .hero {
+                padding: 30px 17px;
+                border-radius: 22px;
+            }
+
+            .plans {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+
+            .plan {
+                padding: 23px;
+            }
+
+            .plan.featured {
+                order: -1;
+            }
+
+            .plan-description {
+                min-height: auto;
+            }
+
+            .price {
+                font-size: 30px;
+            }
+
+            .benefits {
+                grid-template-columns: 1fr;
+                gap: 10px;
+            }
+
+            .benefit {
+                display: flex;
+                align-items: center;
+                gap: 13px;
+                text-align: left;
+                padding: 15px;
+            }
+
+            .benefit-icon {
+                margin: 0;
+                font-size: 24px;
+            }
+
+            .benefit h3 {
+                margin-bottom: 4px;
+            }
+
+            .section-heading h2 {
+                font-size: 20px;
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *,
+            *::before,
+            *::after {
+                scroll-behavior: auto !important;
+                animation-duration: .01ms !important;
+                transition-duration: .01ms !important;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- LOADING -->
+    <div id="loading" class="app-loader">
+        <div class="loader-logo">6+MODS ✦</div>
+        <div class="loader-spinner"></div>
+    </div>
+
+    <div id="error" role="alert"></div>
+
+    <div id="content">
+
+        <!-- HEADER -->
+        <header>
+            <div class="logo">
+                <span class="logo-mark">✦</span>
+                <span>6+MODS</span>
+            </div>
+
+            <button id="backBtn" class="back-btn" type="button">
+                ← DASHBOARD
+            </button>
+        </header>
+
+        <main>
+
+            <!-- HERO -->
+            <section class="hero">
+                <div class="hero-crown">👑</div>
+
+                <div class="eyebrow">UPGRADE YOUR EXPERIENCE</div>
+
+                <h1>6+MODS <span>PREMIUM</span></h1>
+
+                <p>
+                    Chagua kifurushi kinachokufaa na upate
+                    ufikiaji wa huduma za Premium kulingana
+                    na muda wa uanachama wako.
+                </p>
+
+                <div class="hero-badge">
+                    ✦ PREMIUM MEMBERSHIP
+                </div>
+            </section>
+
+            <!-- PLANS -->
+            <section aria-labelledby="plansTitle">
+
+                <div class="section-heading">
+                    <div>
+                        <h2 id="plansTitle">Chagua Kifurushi</h2>
+                        <p>
+                            Vifurushi vitatu, chagua muda unaokufaa.
+                        </p>
+                    </div>
+
+                    <div class="secure-label">
+                        ✦ 3 PREMIUM PLANS
+                    </div>
+                </div>
+
+                <div class="plans">
+
+                    <!-- DAILY -->
+                    <article class="plan">
+
+                        <div class="plan-icon">⚡</div>
+
+                        <h2>DAILY</h2>
+
+                        <div class="plan-description">
+                            Kifurushi cha siku moja kwa matumizi ya muda mfupi.
+                        </div>
+
+                        <div class="price">TSh 3,000</div>
+                        <div class="price-caption">Kwa siku moja</div>
+
+                        <div class="duration">◷ Siku 1</div>
+
+                        <ul class="features">
+                            <li>
+                                <span class="check">✓</span>
+                                <span>Ufikiaji wa huduma za Premium kwa siku 1</span>
+                            </li>
+                            <li>
+                                <span class="check">✓</span>
+                                <span>Chaguo linalofaa kwa matumizi ya muda mfupi</span>
+                            </li>
+                            <li>
+                                <span class="check">✓</span>
+                                <span>Uanachama kulingana na masharti ya kifurushi</span>
+                            </li>
+                        </ul>
+
+                        <button
+                            class="subscribe-btn"
+                            type="button"
+                            data-plan="DAILY"
+                            data-price="3000">
+                            CHAGUA DAILY →
+                        </button>
+
+                    </article>
+
+                    <!-- WEEKLY -->
+                    <article class="plan featured">
+
+                        <div class="popular-badge">
+                            ★ POPULAR
+                        </div>
+
+                        <div class="plan-icon">👑</div>
+
+                        <h2>WEEKLY</h2>
+
+                        <div class="plan-description">
+                            Kifurushi cha wiki nzima kwa matumizi ya kila siku.
+                        </div>
+
+                        <div class="price">TSh 10,000</div>
+                        <div class="price-caption">Kwa siku 7</div>
+
+                        <div class="duration">◷ Siku 7</div>
+
+                        <ul class="features">
+                            <li>
+                                <span class="check">✓</span>
+                                <span>Ufikiaji wa huduma za Premium kwa siku 7</span>
+                            </li>
+                            <li>
+                                <span class="check">✓</span>
+                                <span>Matumizi ya huduma zinazojumuishwa kwenye mpango</span>
+                            </li>
+                            <li>
+                                <span class="check">✓</span>
+                                <span>Uanachama kulingana na masharti ya kifurushi</span>
+                            </li>
+                        </ul>
+
+                        <button
+                            class="subscribe-btn"
+                            type="button"
+                            data-plan="WEEKLY"
+                            data-price="10000">
+                            👑 CHAGUA WEEKLY
+                        </button>
+
+                    </article>
+
+                    <!-- MONTHLY -->
+                    <article class="plan">
+
+                        <div class="plan-icon">💎</div>
+
+                        <h2>MONTHLY</h2>
+
+                        <div class="plan-description">
+                            Kifurushi cha mwezi kwa wanaotaka muda mrefu zaidi.
+                        </div>
+
+                        <div class="price">TSh 30,000</div>
+                        <div class="price-caption">Kwa siku 30</div>
+
+                        <div class="duration">◷ Siku 30</div>
+
+                        <ul class="features">
+                            <li>
+                                <span class="check">✓</span>
+                                <span>Ufikiaji wa huduma za Premium kwa siku 30</span>
+                            </li>
+                            <li>
+                                <span class="check">✓</span>
+                                <span>Muda mrefu wa kutumia huduma zinazojumuishwa</span>
+                            </li>
+                            <li>
+                                <span class="check">✓</span>
+                                <span>Uanachama kulingana na masharti ya kifurushi</span>
+                            </li>
+                        </ul>
+
+                        <button
+                            class="subscribe-btn"
+                            type="button"
+                            data-plan="MONTHLY"
+                            data-price="30000">
+                            💎 CHAGUA MONTHLY →
+                        </button>
+
+                    </article>
+
+                </div>
+            </section>
+
+            <!-- BENEFITS -->
+            <section class="benefits" aria-label="Taarifa za huduma">
+
+                <div class="benefit">
+                    <div class="benefit-icon">📱</div>
+                    <div>
+                        <h3>Rahisi Kutumia</h3>
+                        <p>
+                            Muonekano ulioboreshwa kwa simu na kompyuta.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="benefit">
+                    <div class="benefit-icon">👑</div>
+                    <div>
+                        <h3>Premium Experience</h3>
+                        <p>
+                            Chagua kifurushi kulingana na muda unaohitaji.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="benefit">
+                    <div class="benefit-icon">🛡️</div>
+                    <div>
+                        <h3>Malipo kwa Uwazi</h3>
+                        <p>
+                            Hakiki kiasi na maelezo kabla ya kufanya malipo.
+                        </p>
+                    </div>
+                </div>
+
+            </section>
+
+            <!-- NOTICE -->
+            <aside class="notice">
+                <div class="notice-icon">⚠️</div>
+
+                <div>
+                    <strong>Muhimu kuhusu malipo</strong><br>
+
+                    Vifurushi vilivyoonyeshwa ni:
+                    Daily TSh 3,000, Weekly TSh 10,000 na
+                    Monthly TSh 30,000.
+
+                    <br><br>
+
+                    Kuonyesha bei hapa hakumaanishi kuwa malipo
+                    yameunganishwa. Uanachama wa Premium unapaswa
+                    kuwashwa baada ya malipo kuthibitishwa kwa
+                    mfumo salama.
+
+                    <br><br>
+
+                    <strong>Kumbuka:</strong>
+                    Betting ina hatari ya kupoteza fedha.
+                    Hakuna utabiri unaohakikisha ushindi.
+                </div>
+            </aside>
+
+        </main>
+
+        <footer>
+            <strong>6+MODS ✦</strong><br>
+            Premium Membership · Daily · Weekly · Monthly
+        </footer>
+
+    </div>
+
+    <script type="module" src="premium.js"></script>
+
+</body>
+</html>
