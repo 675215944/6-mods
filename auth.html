@@ -1,0 +1,695 @@
+<!DOCTYPE html>
+<html lang="sw">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#080b14">
+
+    <title>Ingia au Jisajili | 6+MODS</title>
+
+    <link rel="stylesheet" href="style.css">
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            background: linear-gradient(
+                135deg,
+                #080b14,
+                #101b35,
+                #080b14
+            );
+            color: white;
+            font-family: Arial, sans-serif;
+        }
+
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.35);
+            border-bottom: 1px solid #263451;
+        }
+
+        .logo {
+            font-size: 25px;
+            font-weight: 900;
+            color: #00e5ff;
+        }
+
+        .home-link {
+            color: white;
+            text-decoration: none;
+            font-size: 14px;
+        }
+
+        .auth-box {
+            width: 92%;
+            max-width: 430px;
+            margin: 45px auto;
+            padding: 28px 22px;
+            background: #111827;
+            border: 1px solid #293957;
+            border-radius: 20px;
+            box-shadow: 0 15px 45px rgba(0, 0, 0, 0.4);
+        }
+
+        .auth-icon {
+            width: 65px;
+            height: 65px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            border-radius: 18px;
+            background: linear-gradient(
+                135deg,
+                #00e5ff,
+                #2563eb
+            );
+            color: #07101e;
+            font-size: 30px;
+            font-weight: 900;
+        }
+
+        h1 {
+            margin: 0 0 10px;
+            text-align: center;
+            font-size: 27px;
+        }
+
+        .description {
+            color: #a9b5c9;
+            text-align: center;
+            line-height: 1.6;
+            font-size: 14px;
+            margin-bottom: 25px;
+        }
+
+        .field {
+            margin-bottom: 17px;
+        }
+
+        .field label {
+            display: block;
+            font-size: 14px;
+            margin-bottom: 8px;
+            color: #dce6f7;
+        }
+
+        .field input {
+            width: 100%;
+            padding: 15px;
+            border: 1px solid #34445e;
+            border-radius: 11px;
+            background: #080e1b;
+            color: white;
+            font-size: 16px;
+            outline: none;
+        }
+
+        .field input:focus {
+            border-color: #00e5ff;
+            box-shadow: 0 0 0 3px rgba(0, 229, 255, 0.1);
+        }
+
+        .primary-btn {
+            width: 100%;
+            padding: 15px;
+            border: none;
+            border-radius: 11px;
+            background: linear-gradient(
+                90deg,
+                #00e5ff,
+                #2563eb
+            );
+            color: white;
+            font-size: 17px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        .primary-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .switch-box {
+            text-align: center;
+            margin-top: 24px;
+            padding-top: 20px;
+            border-top: 1px solid #293957;
+        }
+
+        .switch-box p {
+            color: #a9b5c9;
+            font-size: 14px;
+        }
+
+        .switch-btn {
+            border: none;
+            background: transparent;
+            color: #00e5ff;
+            font-weight: bold;
+            font-size: 15px;
+            cursor: pointer;
+            padding: 10px;
+        }
+
+        #message {
+            margin-top: 18px;
+            padding: 13px;
+            border-radius: 10px;
+            font-size: 14px;
+            line-height: 1.5;
+            text-align: center;
+            overflow-wrap: anywhere;
+        }
+
+        #message:empty {
+            display: none;
+        }
+
+        .success {
+            background: #063b2a;
+            color: #6dffc3;
+            border: 1px solid #148c62;
+        }
+
+        .error {
+            background: #401b23;
+            color: #ff9fae;
+            border: 1px solid #a63850;
+        }
+
+        .info {
+            background: #172d4c;
+            color: #a9d8ff;
+            border: 1px solid #315b92;
+        }
+
+        .footer {
+            text-align: center;
+            color: #77859b;
+            font-size: 12px;
+            margin: 30px 0;
+        }
+
+        [hidden] {
+            display: none !important;
+        }
+    </style>
+</head>
+
+<body>
+
+    <header class="top-bar">
+        <div class="logo">6+MODS</div>
+
+        <a href="index.html" class="home-link">
+            Nyumbani
+        </a>
+    </header>
+
+    <main class="auth-box">
+
+        <div class="auth-icon">6+</div>
+
+        <h1 id="formTitle">
+            Karibu Tena!
+        </h1>
+
+        <p class="description" id="formDescription">
+            Ingia kwenye akaunti yako ya 6+MODS.
+        </p>
+
+        <form id="authForm">
+
+            <div class="field" id="nameField" hidden>
+                <label for="name">
+                    Jina lako
+                </label>
+
+                <input
+                    type="text"
+                    id="name"
+                    placeholder="Andika jina lako"
+                    autocomplete="name"
+                >
+            </div>
+
+            <div class="field">
+                <label for="email">
+                    Barua pepe
+                </label>
+
+                <input
+                    type="email"
+                    id="email"
+                    placeholder="example@gmail.com"
+                    autocomplete="email"
+                    required
+                >
+            </div>
+
+            <div class="field">
+                <label for="password">
+                    Nenosiri
+                </label>
+
+                <input
+                    type="password"
+                    id="password"
+                    placeholder="Weka nenosiri"
+                    autocomplete="current-password"
+                    minlength="6"
+                    required
+                >
+            </div>
+
+            <button
+                type="submit"
+                class="primary-btn"
+                id="submitBtn"
+                disabled
+            >
+                Inaunganisha Firebase...
+            </button>
+
+        </form>
+
+        <div
+            id="message"
+            role="status"
+            aria-live="polite"
+            class="info"
+        >
+            Inaunganisha Firebase...
+        </div>
+
+        <div class="switch-box">
+
+            <p id="switchText">
+                Bado huna akaunti?
+            </p>
+
+            <button
+                type="button"
+                class="switch-btn"
+                id="toggleBtn"
+            >
+                Jisajili Sasa
+            </button>
+
+        </div>
+
+    </main>
+
+    <div class="footer">
+        © 2026 6+MODS. All Rights Reserved.
+    </div>
+
+    <!-- LOGIN / REGISTER UI -->
+
+    <script>
+        let isRegistering = false;
+        let firebaseReady = false;
+        let firebaseError = "";
+
+        const authForm =
+            document.getElementById("authForm");
+
+        const nameField =
+            document.getElementById("nameField");
+
+        const nameInput =
+            document.getElementById("name");
+
+        const emailInput =
+            document.getElementById("email");
+
+        const passwordInput =
+            document.getElementById("password");
+
+        const submitBtn =
+            document.getElementById("submitBtn");
+
+        const toggleBtn =
+            document.getElementById("toggleBtn");
+
+        const message =
+            document.getElementById("message");
+
+        function showMessage(text, type = "info") {
+            message.textContent = text;
+            message.className = type;
+        }
+
+        function setMode(register) {
+            isRegistering = register;
+
+            nameField.hidden = !register;
+            nameInput.required = register;
+
+            passwordInput.autocomplete = register
+                ? "new-password"
+                : "current-password";
+
+            document.getElementById(
+                "formTitle"
+            ).textContent = register
+                ? "Tengeneza Akaunti"
+                : "Karibu Tena!";
+
+            document.getElementById(
+                "formDescription"
+            ).textContent = register
+                ? "Jisajili ili uanze kutumia 6+MODS."
+                : "Ingia kwenye akaunti yako ya 6+MODS.";
+
+            document.getElementById(
+                "switchText"
+            ).textContent = register
+                ? "Tayari una akaunti?"
+                : "Bado huna akaunti?";
+
+            toggleBtn.textContent = register
+                ? "Ingia Sasa"
+                : "Jisajili Sasa";
+
+            if (firebaseReady) {
+                submitBtn.textContent = register
+                    ? "Jisajili"
+                    : "Ingia";
+
+                showMessage("");
+            } else {
+                submitBtn.textContent =
+                    "Inaunganisha Firebase...";
+
+                if (firebaseError) {
+                    showMessage(
+                        "Firebase haijapakiwa: " +
+                        firebaseError,
+                        "error"
+                    );
+                }
+            }
+        }
+
+        toggleBtn.addEventListener(
+            "click",
+            function () {
+                setMode(!isRegistering);
+            }
+        );
+
+        const params =
+            new URLSearchParams(
+                window.location.search
+            );
+
+        if (params.get("mode") === "register") {
+            setMode(true);
+        }
+
+        // Kosa la kupakia Firebase
+        // litaonekana kwenye ukurasa.
+
+        window.addEventListener(
+            "error",
+            function (event) {
+                if (!firebaseReady) {
+                    firebaseError =
+                        event.message ||
+                        "JavaScript error";
+
+                    showMessage(
+                        "Hitilafu: " + firebaseError,
+                        "error"
+                    );
+                }
+            }
+        );
+
+        window.addEventListener(
+            "unhandledrejection",
+            function (event) {
+                if (!firebaseReady) {
+                    firebaseError =
+                        event.reason?.message ||
+                        "Module error";
+
+                    showMessage(
+                        "Hitilafu: " + firebaseError,
+                        "error"
+                    );
+                }
+            }
+        );
+
+        // Kama module haijapakiwa,
+        // onyesha ujumbe baada ya sekunde 8.
+
+        setTimeout(function () {
+            if (!firebaseReady && !firebaseError) {
+                showMessage(
+                    "Firebase haijapakiwa. Hakikisha firebase.js ipo kwenye folder moja na auth.html, una intaneti, na unatumia http://localhost badala ya file://.",
+                    "error"
+                );
+            }
+        }, 8000);
+
+        // Zuia ukurasa kujifungua upya
+        // ikiwa Firebase haijawa tayari.
+
+        authForm.addEventListener(
+            "submit",
+            function (event) {
+                event.preventDefault();
+            }
+        );
+    </script>
+
+    <!-- FIREBASE AUTHENTICATION -->
+
+    <script type="module">
+
+        try {
+
+            const firebaseAuthModule = await import(
+                "https://www.gstatic.com/firebasejs/12.5.0/firebase-auth.js"
+            );
+
+            const firebaseLocalModule = await import(
+                "./firebase.js"
+            );
+
+            const {
+                createUserWithEmailAndPassword,
+                signInWithEmailAndPassword,
+                updateProfile
+            } = firebaseAuthModule;
+
+            const { auth } = firebaseLocalModule;
+
+            if (!auth) {
+                throw new Error(
+                    "firebase.js haijatoa auth. Hakikisha kuna export const auth = getAuth(app);"
+                );
+            }
+
+            firebaseReady = true;
+
+            submitBtn.disabled = false;
+
+            submitBtn.textContent = isRegistering
+                ? "Jisajili"
+                : "Ingia";
+
+            showMessage("");
+
+            console.log(
+                "6+MODS Firebase Authentication imepakiwa."
+            );
+
+            let busy = false;
+
+            authForm.addEventListener(
+                "submit",
+                async function (event) {
+
+                    event.preventDefault();
+
+                    if (busy) return;
+
+                    const email =
+                        emailInput.value.trim();
+
+                    const password =
+                        passwordInput.value;
+
+                    const name =
+                        nameInput.value.trim();
+
+                    if (isRegistering && !name) {
+                        showMessage(
+                            "Tafadhali andika jina lako.",
+                            "error"
+                        );
+                        return;
+                    }
+
+                    busy = true;
+                    submitBtn.disabled = true;
+
+                    showMessage(
+                        isRegistering
+                            ? "Tunasajili akaunti yako..."
+                            : "Tunaingia kwenye akaunti yako...",
+                        "info"
+                    );
+
+                    try {
+
+                        if (isRegistering) {
+
+                            const result =
+                                await createUserWithEmailAndPassword(
+                                    auth,
+                                    email,
+                                    password
+                                );
+
+                            try {
+                                await updateProfile(
+                                    result.user,
+                                    {
+                                        displayName: name
+                                    }
+                                );
+                            } catch (profileError) {
+                                console.warn(
+                                    "Jina halijahifadhiwa:",
+                                    profileError
+                                );
+                            }
+
+                            showMessage(
+                                "Hongera! Akaunti yako imesajiliwa kikamilifu.",
+                                "success"
+                            );
+
+                        } else {
+
+                            await signInWithEmailAndPassword(
+                                auth,
+                                email,
+                                password
+                            );
+
+                            showMessage(
+                                "Umeingia kwenye akaunti yako kikamilifu!",
+                                "success"
+                            );
+
+                        }
+
+                        setTimeout(function () {
+                            window.location.href =
+                                "user.html";
+                        }, 1500);
+
+                    } catch (error) {
+
+                        console.error(
+                            "Firebase Error:",
+                            error
+                        );
+
+                        const errors = {
+
+                            "auth/email-already-in-use":
+                                "Email hii tayari imesajiliwa. Tafadhali ingia.",
+
+                            "auth/invalid-email":
+                                "Email uliyoandika si sahihi.",
+
+                            "auth/weak-password":
+                                "Nenosiri ni dhaifu. Tumia nenosiri imara.",
+
+                            "auth/invalid-credential":
+                                "Email au nenosiri si sahihi.",
+
+                            "auth/user-not-found":
+                                "Akaunti haijapatikana.",
+
+                            "auth/wrong-password":
+                                "Nenosiri si sahihi.",
+
+                            "auth/network-request-failed":
+                                "Tatizo la intaneti. Hakikisha una mtandao.",
+
+                            "auth/too-many-requests":
+                                "Umejaribu mara nyingi. Subiri kidogo.",
+
+                            "auth/operation-not-allowed":
+                                "Washa Email/Password kwenye Firebase Authentication.",
+
+                            "auth/unauthorized-domain":
+                                "Domain hii haijaidhinishwa kwenye Firebase.",
+
+                            "auth/invalid-api-key":
+                                "Firebase API Key si sahihi."
+                        };
+
+                        showMessage(
+                            errors[error.code] ||
+                            error.message ||
+                            "Imeshindikana. Jaribu tena.",
+                            "error"
+                        );
+
+                    } finally {
+
+                        busy = false;
+                        submitBtn.disabled = false;
+
+                    }
+
+                }
+            );
+
+        } catch (error) {
+
+            console.error(
+                "Firebase initialization error:",
+                error
+            );
+
+            firebaseError =
+                error.message ||
+                "Firebase module error";
+
+            showMessage(
+                "Firebase haijaunganishwa: " +
+                firebaseError,
+                "error"
+            );
+
+            submitBtn.disabled = true;
+            submitBtn.textContent =
+                "Firebase haijaunganishwa";
+
+        }
+
+    </script>
+
+</body>
+</html>
