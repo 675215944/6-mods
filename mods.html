@@ -1,0 +1,668 @@
+<!DOCTYPE html><html lang="sw">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#080808"><title>Mods & Apps | 6+MODS</title>
+
+<style>
+    :root {
+        --black: #080808;
+        --panel: #141414;
+        --panel2: #1c1c1c;
+        --gold: #f5c451;
+        --gold2: #d6a52d;
+        --white: #ffffff;
+        --muted: #aaa;
+        --border: rgba(245,196,81,.22);
+    }
+
+    * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+    }
+
+    body {
+        min-height: 100vh;
+        background: var(--black);
+        color: var(--white);
+        font-family: Arial, sans-serif;
+    }
+
+    button, input, textarea, select {
+        font: inherit;
+    }
+
+    button {
+        cursor: pointer;
+    }
+
+    button:disabled {
+        opacity: .5;
+        cursor: not-allowed;
+    }
+
+    /* LOADING KATIKATI YA SCREEN */
+
+    #loading {
+        position: fixed;
+        inset: 0;
+        z-index: 99999;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        gap: 20px;
+        background: #080808;
+        color: var(--gold);
+        text-align: center;
+        padding: 20px;
+    }
+
+    .loader-logo {
+        font-size: 30px;
+        font-weight: 900;
+        letter-spacing: 2px;
+    }
+
+    .loader-spinner {
+        width: 48px;
+        height: 48px;
+        border: 4px solid #302819;
+        border-top-color: var(--gold);
+        border-right-color: var(--gold);
+        border-radius: 50%;
+        animation: spin .8s linear infinite;
+    }
+
+    .loading-text {
+        font-size: 13px;
+        color: #bbb;
+    }
+
+    @keyframes spin {
+        to { transform: rotate(360deg); }
+    }
+
+    #content[hidden] {
+        display: none !important;
+    }
+
+    /* HEADER */
+
+    header {
+        position: sticky;
+        top: 0;
+        z-index: 100;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 12px;
+        padding: 16px;
+        background: rgba(8,8,8,.96);
+        border-bottom: 1px solid var(--border);
+    }
+
+    .brand {
+        color: var(--gold);
+        font-size: 21px;
+        font-weight: 900;
+        letter-spacing: 1px;
+    }
+
+    .brand span {
+        color: white;
+    }
+
+    .back-btn {
+        background: linear-gradient(135deg, #f5c451, #c58c17);
+        color: #111;
+        border: none;
+        border-radius: 10px;
+        padding: 11px 13px;
+        font-size: 11px;
+        font-weight: 900;
+    }
+
+    main {
+        width: 100%;
+        max-width: 1100px;
+        padding: 20px 15px 45px;
+        margin: auto;
+    }
+
+    /* HERO */
+
+    .hero {
+        padding: 25px 20px;
+        border: 1px solid var(--border);
+        border-radius: 20px;
+        background:
+            radial-gradient(
+                circle at top right,
+                rgba(245,196,81,.15),
+                transparent 55%
+            ),
+            #121212;
+        margin-bottom: 25px;
+    }
+
+    .hero-label {
+        color: var(--gold);
+        font-size: 11px;
+        font-weight: bold;
+        letter-spacing: 2px;
+        margin-bottom: 12px;
+    }
+
+    .hero h1 {
+        font-size: clamp(26px, 6vw, 38px);
+        margin-bottom: 12px;
+    }
+
+    .hero h1 span {
+        color: var(--gold);
+    }
+
+    .hero p {
+        color: var(--muted);
+        font-size: 14px;
+        line-height: 1.7;
+    }
+
+    /* SEARCH */
+
+    .search-box {
+        display: block;
+        width: 100%;
+        padding: 15px;
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        outline: none;
+        background: var(--panel);
+        color: white;
+        margin-bottom: 18px;
+    }
+
+    .search-box:focus {
+        border-color: var(--gold);
+    }
+
+    /* CATEGORIES */
+
+    .categories {
+        display: flex;
+        gap: 9px;
+        overflow-x: auto;
+        padding-bottom: 12px;
+        margin-bottom: 10px;
+    }
+
+    .category {
+        flex-shrink: 0;
+        padding: 10px 16px;
+        border: 1px solid #333;
+        border-radius: 30px;
+        color: #ddd;
+        background: #171717;
+        font-size: 12px;
+        font-weight: bold;
+    }
+
+    .category.active {
+        background: var(--gold);
+        color: #111;
+        border-color: var(--gold);
+    }
+
+    .results-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin: 18px 0;
+        gap: 10px;
+    }
+
+    .results-row h2 {
+        font-size: 19px;
+    }
+
+    #appCount {
+        color: var(--gold);
+        font-size: 12px;
+    }
+
+    /* APP CARDS */
+
+    .mods-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 13px;
+    }
+
+    .mod-card {
+        min-width: 0;
+        padding: 15px 12px;
+        background: linear-gradient(145deg, #1b1b1b, #101010);
+        border: 1px solid #302819;
+        border-radius: 17px;
+        transition: border-color .2s, transform .2s;
+    }
+
+    .mod-card:active {
+        transform: scale(.98);
+    }
+
+    .mod-card:hover {
+        border-color: var(--gold);
+    }
+
+    .mod-icon {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 55px;
+        height: 55px;
+        background: #292316;
+        border: 1px solid var(--border);
+        border-radius: 15px;
+        font-size: 29px;
+        margin-bottom: 13px;
+    }
+
+    .mod-card h3 {
+        font-size: 15px;
+        line-height: 1.4;
+        margin-bottom: 8px;
+        overflow-wrap: anywhere;
+    }
+
+    .mod-card p {
+        min-height: 48px;
+        color: var(--muted);
+        font-size: 12px;
+        line-height: 1.6;
+        margin-bottom: 12px;
+    }
+
+    .badge {
+        display: inline-block;
+        padding: 5px 8px;
+        border-radius: 6px;
+        font-size: 9px;
+        font-weight: 900;
+        margin-bottom: 13px;
+    }
+
+    .badge.free {
+        background: #153c27;
+        color: #6ff0a5;
+    }
+
+    .badge.premium {
+        background: #443515;
+        color: var(--gold);
+    }
+
+    .download-btn,
+    .install-btn {
+        width: 100%;
+        padding: 12px 8px;
+        background: linear-gradient(135deg, #f5c451, #d39b24);
+        color: #111;
+        border: none;
+        border-radius: 10px;
+        font-size: 11px;
+        font-weight: 900;
+    }
+
+    .empty {
+        padding: 30px 10px;
+        text-align: center;
+        color: var(--muted);
+    }
+
+    /* DETAILS PAGE */
+
+    #detailsPage {
+        display: none;
+    }
+
+    .details-back {
+        background: transparent;
+        color: var(--gold);
+        border: 1px solid var(--border);
+        padding: 11px 15px;
+        border-radius: 10px;
+        margin-bottom: 20px;
+    }
+
+    .details-panel {
+        background: var(--panel);
+        border: 1px solid var(--border);
+        border-radius: 20px;
+        padding: 20px;
+    }
+
+    .details-header {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        margin-bottom: 24px;
+    }
+
+    .details-icon {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        width: 75px;
+        height: 75px;
+        font-size: 38px;
+        background: #302819;
+        border: 1px solid var(--border);
+        border-radius: 18px;
+    }
+
+    .details-header h2 {
+        font-size: 23px;
+        margin-bottom: 8px;
+        overflow-wrap: anywhere;
+    }
+
+    .details-header p {
+        color: var(--gold);
+        font-size: 12px;
+    }
+
+    .details-panel h3 {
+        font-size: 17px;
+        margin: 22px 0 12px;
+    }
+
+    .full-description {
+        color: #c6c6c6;
+        font-size: 14px;
+        line-height: 1.9;
+        white-space: pre-line;
+    }
+
+    .install-btn {
+        padding: 15px;
+        margin-top: 20px;
+        font-size: 14px;
+    }
+
+    .install-note {
+        color: var(--muted);
+        font-size: 12px;
+        line-height: 1.7;
+        margin-top: 10px;
+    }
+
+    /* RATINGS */
+
+    .rating-summary {
+        background: #202020;
+        border-radius: 12px;
+        padding: 15px;
+        margin-bottom: 18px;
+    }
+
+    #reviewScore {
+        color: var(--gold);
+        font-size: 20px;
+        font-weight: bold;
+    }
+
+    #reviewCount {
+        color: var(--muted);
+        font-size: 12px;
+        margin-top: 6px;
+    }
+
+    .review-item {
+        padding: 15px 0;
+        border-bottom: 1px solid #303030;
+    }
+
+    .review-item h4 {
+        margin-bottom: 7px;
+    }
+
+    .review-stars {
+        color: var(--gold);
+        margin-bottom: 8px;
+        letter-spacing: 2px;
+    }
+
+    .review-comment {
+        color: #ccc;
+        font-size: 13px;
+        line-height: 1.7;
+        overflow-wrap: anywhere;
+    }
+
+    .review-date {
+        display: block;
+        color: #888;
+        font-size: 10px;
+        margin-top: 8px;
+    }
+
+    .review-form {
+        padding: 15px;
+        margin-top: 20px;
+        background: #1d1d1d;
+        border-radius: 13px;
+    }
+
+    .review-form label {
+        display: block;
+        color: #ddd;
+        font-size: 12px;
+        margin: 14px 0 7px;
+    }
+
+    .review-form input,
+    .review-form textarea,
+    .review-form select {
+        width: 100%;
+        padding: 13px;
+        color: white;
+        background: #101010;
+        border: 1px solid #383838;
+        border-radius: 9px;
+        outline: none;
+    }
+
+    .review-form textarea {
+        min-height: 100px;
+        resize: vertical;
+    }
+
+    .review-form input:focus,
+    .review-form textarea:focus,
+    .review-form select:focus {
+        border-color: var(--gold);
+    }
+
+    #reviewMessage {
+        margin-top: 12px;
+        font-size: 12px;
+        color: var(--gold);
+        line-height: 1.6;
+    }
+
+    footer {
+        text-align: center;
+        color: #777;
+        font-size: 11px;
+        padding: 25px 15px;
+        border-top: 1px solid #222;
+    }
+
+    @media (min-width: 650px) {
+        .mods-grid {
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 18px;
+        }
+
+        main {
+            padding-top: 30px;
+        }
+
+        .details-panel {
+            padding: 30px;
+        }
+    }
+
+    @media (min-width: 900px) {
+        .mods-grid {
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+        }
+    }
+</style>
+
+</head><body><!-- LOADING SCREEN -->
+<div id="loading">
+    <div class="loader-logo">6+MODS ✦</div>
+    <div class="loader-spinner"></div>
+    <p class="loading-text">Inapakia apps zako...</p>
+</div>
+
+<!-- MAIN CONTENT -->
+<div id="content" hidden>
+
+    <header>
+        <div class="brand">6+<span>MODS</span> ✦</div>
+        <button class="back-btn" id="backBtn" type="button">
+            ← DASHBOARD
+        </button>
+    </header>
+
+    <main>
+
+        <!-- APPS LIST -->
+        <section id="listingPage">
+
+            <div class="hero">
+                <div class="hero-label">✦ PREMIUM APP COLLECTION</div>
+                <h1>Discover <span>Apps & Games</span></h1>
+                <p>
+                    Tafuta apps, games na tools unazohitaji.
+                    Fungua app kuona maelezo, ratings na namna
+                    ya kuipakua.
+                </p>
+            </div>
+
+            <input
+                type="search"
+                id="searchInput"
+                class="search-box"
+                placeholder="🔍 Tafuta app au game..."
+                autocomplete="off"
+            >
+
+            <div class="categories">
+                <button class="category active" data-category="All" type="button">Zote</button>
+                <button class="category" data-category="Games" type="button">Games</button>
+                <button class="category" data-category="Apps" type="button">Apps</button>
+                <button class="category" data-category="Tools" type="button">Tools</button>
+            </div>
+
+            <div class="results-row">
+                <h2>Apps Collection</h2>
+                <span id="appCount">0 apps</span>
+            </div>
+
+            <div class="mods-grid" id="modsGrid"></div>
+
+            <p id="emptyMessage" class="empty" hidden>
+                Hakuna app iliyopatikana.
+            </p>
+
+        </section>
+
+        <!-- APP DETAILS -->
+        <section id="detailsPage">
+
+            <button
+                type="button"
+                class="details-back"
+                id="detailsBack"
+            >
+                ← Rudi kwenye Apps
+            </button>
+
+            <div class="details-panel">
+
+                <div id="detailsContent"></div>
+
+                <h3>⭐ Reviews & Ratings</h3>
+
+                <div class="rating-summary">
+                    <div id="reviewScore">Bado hakuna ratings</div>
+                    <div id="reviewCount">0 reviews</div>
+                </div>
+
+                <div id="reviewList"></div>
+
+                <form id="reviewForm" class="review-form">
+
+                    <h3>Andika Review Yako</h3>
+
+                    <label for="reviewName">Jina lako</label>
+                    <input
+                        type="text"
+                        id="reviewName"
+                        maxlength="60"
+                        placeholder="Andika jina lako"
+                        required
+                    >
+
+                    <label for="reviewRating">Toa Rating</label>
+                    <select id="reviewRating" required>
+                        <option value="">Chagua nyota</option>
+                        <option value="5">★★★★★ - Bora sana</option>
+                        <option value="4">★★★★ - Nzuri</option>
+                        <option value="3">★★★ - Wastani</option>
+                        <option value="2">★★ - Si nzuri sana</option>
+                        <option value="1">★ - Mbaya</option>
+                    </select>
+
+                    <label for="reviewText">Maoni yako</label>
+                    <textarea
+                        id="reviewText"
+                        maxlength="1000"
+                        placeholder="Andika maoni yako kuhusu app..."
+                        required
+                    ></textarea>
+
+                    <button
+                        type="submit"
+                        class="install-btn"
+                    >
+                        Tuma Review
+                    </button>
+
+                    <p id="reviewMessage" role="status"></p>
+
+                </form>
+
+            </div>
+
+        </section>
+
+    </main>
+
+    <footer>
+        © 2026 6+MODS · All Rights Reserved
+    </footer>
+
+</div>
+
+<script type="module" src="mods.js"></script>
+
+</body>
+</html>
