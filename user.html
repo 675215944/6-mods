@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="sw">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#080808">
+
+<title>6+MODS | Dashboard</title>
+
+<style>
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: #080808;
+    color: #fff;
+    padding-bottom: 90px;
+}
+
+header {
+    background: #111;
+    border-bottom: 1px solid #393015;
+    padding: 17px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.logo {
+    font-size: 24px;
+    font-weight: 900;
+    color: #ffd700;
+}
+
+.logout {
+    background: #241b08;
+    border: 1px solid #b58b20;
+    color: #ffd700;
+    padding: 10px 14px;
+    border-radius: 25px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+main {
+    max-width: 950px;
+    margin: auto;
+    padding: 18px;
+}
+
+.welcome {
+    background: linear-gradient(135deg, #302409, #111, #1d180d);
+    border: 1px solid #70551a;
+    padding: 24px;
+    border-radius: 20px;
+    margin-bottom: 25px;
+    box-shadow: 0 8px 25px #0008;
+}
+
+.welcome h1 {
+    font-size: 24px;
+    margin: 0 0 10px;
+}
+
+.gold {
+    color: #ffd700;
+}
+
+.email {
+    color: #bbb;
+    overflow-wrap: anywhere;
+}
+
+.badge {
+    display: inline-block;
+    background: #352807;
+    border: 1px solid #b58b20;
+    color: #ffd700;
+    border-radius: 30px;
+    padding: 8px 14px;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+.section-title {
+    font-size: 20px;
+    margin: 26px 0 15px;
+    color: #ffd700;
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(145px, 1fr));
+    gap: 14px;
+}
+
+.card {
+    background: #151515;
+    border: 1px solid #403417;
+    border-radius: 17px;
+    padding: 19px 14px;
+    text-align: center;
+    transition: 0.3s;
+}
+
+.card:hover {
+    border-color: #ffd700;
+    transform: translateY(-3px);
+}
+
+.icon {
+    font-size: 35px;
+    margin-bottom: 10px;
+}
+
+.card h3 {
+    font-size: 16px;
+    margin: 8px 0;
+}
+
+.card p {
+    font-size: 12px;
+    color: #aaa;
+    line-height: 1.5;
+    min-height: 35px;
+}
+
+.card button {
+    background: linear-gradient(135deg, #fff1a0, #ffd700, #b8860b);
+    border: none;
+    color: #171100;
+    border-radius: 25px;
+    padding: 11px 12px;
+    width: 100%;
+    font-size: 12px;
+    font-weight: 800;
+    cursor: pointer;
+}
+
+.vip {
+    border-color: #a67c19;
+    background: linear-gradient(145deg, #241c0a, #111);
+}
+
+.notice {
+    background: #151515;
+    border-left: 3px solid #ffd700;
+    padding: 15px;
+    border-radius: 10px;
+    color: #bbb;
+    font-size: 13px;
+    line-height: 1.6;
+    margin-top: 22px;
+}
+
+.bottom-nav {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: #111;
+    border-top: 1px solid #493914;
+    display: flex;
+    justify-content: space-around;
+    padding: 11px 4px;
+    z-index: 100;
+}
+
+.bottom-nav a {
+    color: #aaa;
+    text-decoration: none;
+    text-align: center;
+    font-size: 11px;
+    flex: 1;
+}
+
+.bottom-nav a span {
+    display: block;
+    font-size: 23px;
+    margin-bottom: 4px;
+}
+
+.bottom-nav a.active {
+    color: #ffd700;
+}
+
+#loading {
+    text-align: center;
+    padding: 65px 15px;
+    color: #ffd700;
+}
+
+#dashboard {
+    display: none;
+}
+
+#error {
+    color: #ff9a9a;
+    text-align: center;
+    padding: 15px;
+}
+</style>
+</head>
+
+<body>
+
+<div id="loading">Inakagua akaunti yako...</div>
+<div id="error"></div>
+
+<div id="dashboard">
+
+<header>
+    <div class="logo">6+MODS ✦</div>
+    <button id="logoutBtn" class="logout">Logout ↗</button>
+</header>
+
+<main>
+
+<section class="welcome">
+    <h1>Karibu, <span id="username" class="gold">Mtumiaji</span> 👋</h1>
+    <p class="email" id="userEmail"></p>
+    <span class="badge" id="accountStatus">FREE MEMBER</span>
+</section>
+
+<h2 class="section-title">⚽ Betting Tips</h2>
+
+<div class="grid">
+
+    <div class="card">
+        <div class="icon">⚽</div>
+        <h3>Free Tips</h3>
+        <p>Angalia tips za bure za mechi.</p>
+        <button id="freeTipsBtn">ANGALIA TIPS →</button>
+    </div>
+
+    <div class="card vip">
+        <div class="icon">👑</div>
+        <h3>VIP Tips</h3>
+        <p>Tips maalumu kwa wanachama wa VIP.</p>
+        <button id="vipTipsBtn">FUNGUA VIP →</button>
+    </div>
+
+</div>
+
+<h2 class="section-title">🛒 Market & Services</h2>
+
+<div class="grid">
+
+    <div class="card">
+        <div class="icon">📱</div>
+        <h3>Mods & Apps</h3>
+        <p>Angalia Apps na Mods mbalimbali.</p>
+        <button id="modsBtn">ANGALIA →</button>
+    </div>
+
+    <div class="card">
+        <div class="icon">🛒</div>
+        <h3>Market</h3>
+        <p>Bidhaa na huduma mbalimbali.</p>
+        <button id="marketBtn">FUNGUA →</button>
+    </div>
+
+    <div class="card vip">
+        <div class="icon">💎</div>
+        <h3>Premium</h3>
+        <p>Fungua huduma za Premium.</p>
+        <button id="premiumBtn">JIUNGE →</button>
+    </div>
+
+    <div class="card">
+        <div class="icon">👤</div>
+        <h3>My Account</h3>
+        <p>Angalia taarifa za akaunti yako.</p>
+        <button id="profileBtn">AKAUNTI →</button>
+    </div>
+
+</div>
+
+<div class="notice">
+    Hairuhusiwi Kubashiri chini ya Umri wa miaka 18.
+</div>
+
+</main>
+
+<nav class="bottom-nav">
+    <a href="user.html" class="active"><span>🏠</span>Home</a>
+    <a href="tips.html"><span>⚽</span>Tips</a>
+    <a href="market.html"><span>🛒</span>Market</a>
+    <a href="profile.html"><span>👤</span>Account</a>
+</nav>
+
+</div>
+
+<script type="module" src="user.js"></script>
+
+</body>
+</html>
