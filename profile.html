@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="sw">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#080808">
+
+<title>My Account | 6+MODS</title>
+
+<style>
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    background: #080808;
+    color: white;
+    font-family: Arial, sans-serif;
+    padding-bottom: 90px;
+}
+
+header {
+    background: #111;
+    border-bottom: 1px solid #493914;
+    padding: 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+}
+
+.logo {
+    font-size: 22px;
+    font-weight: 900;
+    color: #ffd700;
+}
+
+.gold-btn {
+    background: linear-gradient(
+        135deg,
+        #fff0a0,
+        #ffd700,
+        #b8860b
+    );
+    color: #171100;
+    border: none;
+    border-radius: 30px;
+    padding: 12px 15px;
+    font-weight: 900;
+    cursor: pointer;
+}
+
+main {
+    max-width: 750px;
+    margin: auto;
+    padding: 20px;
+}
+
+.profile-card {
+    background: linear-gradient(
+        145deg,
+        #302408,
+        #17130c,
+        #111
+    );
+    border: 1px solid #80621e;
+    border-radius: 22px;
+    padding: 28px 20px;
+    text-align: center;
+    margin-bottom: 22px;
+}
+
+.avatar {
+    width: 85px;
+    height: 85px;
+    margin: auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: linear-gradient(
+        135deg,
+        #fff0a0,
+        #ffd700,
+        #b8860b
+    );
+    color: #111;
+    font-size: 38px;
+    font-weight: 900;
+    border: 4px solid #44330b;
+}
+
+.profile-card h1 {
+    margin: 17px 0 8px;
+    font-size: 24px;
+}
+
+.email {
+    color: #bbb;
+    font-size: 14px;
+    overflow-wrap: anywhere;
+}
+
+.badge {
+    display: inline-block;
+    margin-top: 13px;
+    padding: 9px 16px;
+    border-radius: 25px;
+    background: #382a0a;
+    border: 1px solid #b58b20;
+    color: #ffd700;
+    font-size: 12px;
+    font-weight: 800;
+}
+
+.section {
+    background: #151515;
+    border: 1px solid #493914;
+    border-radius: 18px;
+    padding: 20px;
+    margin-bottom: 18px;
+}
+
+.section h2 {
+    color: #ffd700;
+    font-size: 18px;
+    margin-top: 0;
+}
+
+.info-row {
+    padding: 14px 0;
+    border-bottom: 1px solid #333;
+}
+
+.info-row:last-child {
+    border-bottom: none;
+}
+
+.info-label {
+    display: block;
+    color: #999;
+    font-size: 12px;
+    margin-bottom: 7px;
+}
+
+.info-value {
+    font-size: 14px;
+    overflow-wrap: anywhere;
+}
+
+input {
+    width: 100%;
+    background: #202020;
+    color: white;
+    border: 1px solid #5a461c;
+    border-radius: 11px;
+    padding: 14px;
+    font-size: 15px;
+    margin: 10px 0;
+}
+
+input:focus {
+    outline: none;
+    border-color: #ffd700;
+}
+
+.action-btn {
+    width: 100%;
+    padding: 14px;
+    margin-top: 10px;
+    background: linear-gradient(
+        135deg,
+        #fff0a0,
+        #ffd700,
+        #b8860b
+    );
+    color: #171100;
+    border: none;
+    border-radius: 25px;
+    font-weight: 900;
+    cursor: pointer;
+}
+
+.action-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.logout-btn {
+    width: 100%;
+    padding: 15px;
+    background: #3b1111;
+    color: #ff9999;
+    border: 1px solid #8a3030;
+    border-radius: 25px;
+    font-weight: 900;
+    cursor: pointer;
+}
+
+.message {
+    padding: 12px;
+    border-radius: 10px;
+    margin: 12px 0;
+    font-size: 13px;
+    line-height: 1.6;
+}
+
+.message:empty {
+    display: none;
+}
+
+.message.success {
+    background: #123b25;
+    color: #8df0b0;
+}
+
+.message.error {
+    background: #431b1b;
+    color: #ffaaaa;
+}
+
+.message.info {
+    background: #30270f;
+    color: #ffe08a;
+}
+
+.bottom-nav {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 20;
+    background: #111;
+    border-top: 1px solid #493914;
+    display: flex;
+    padding: 11px 5px;
+}
+
+.bottom-nav a {
+    flex: 1;
+    text-align: center;
+    text-decoration: none;
+    color: #aaa;
+    font-size: 11px;
+}
+
+.bottom-nav span {
+    display: block;
+    font-size: 23px;
+    margin-bottom: 4px;
+}
+
+.bottom-nav .active {
+    color: #ffd700;
+}
+
+.app-loader {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 22px;
+    background: #080808;
+}
+
+.loader-logo {
+    font-size: 28px;
+    font-weight: 900;
+    color: #ffd700;
+    letter-spacing: 2px;
+}
+
+.loader-spinner {
+    width: 34px;
+    height: 34px;
+    border: 3px solid #30270f;
+    border-top-color: #ffd700;
+    border-radius: 50%;
+    animation: spin 0.65s linear infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .loader-spinner {
+        animation: none;
+    }
+}
+
+#content {
+    display: none;
+}
+
+#error {
+    color: #ff9999;
+    text-align: center;
+    padding: 15px;
+}
+</style>
+</head>
+
+<body>
+
+<div id="loading" class="app-loader">
+    <div class="loader-logo">6+MODS ✦</div>
+    <div class="loader-spinner"></div>
+</div>
+
+<div id="error"></div>
+
+<div id="content">
+
+<header>
+    <div class="logo">6+MODS ✦</div>
+
+    <button id="backBtn" class="gold-btn">
+        ✦ DASHBOARD ↗
+    </button>
+</header>
+
+<main>
+
+    <section class="profile-card">
+        <div class="avatar" id="avatar">👤</div>
+
+        <h1 id="displayName">Mtumiaji</h1>
+
+        <p class="email" id="email"></p>
+
+        <span class="badge" id="membership">
+            FREE MEMBER
+        </span>
+    </section>
+
+    <section class="section">
+        <h2>👤 Taarifa za Akaunti</h2>
+
+        <div class="info-row">
+            <span class="info-label">Jina</span>
+            <span class="info-value" id="infoName">—</span>
+        </div>
+
+        <div class="info-row">
+            <span class="info-label">Email</span>
+            <span class="info-value" id="infoEmail">—</span>
+        </div>
+
+        <div class="info-row">
+            <span class="info-label">User ID</span>
+            <span class="info-value" id="userId">—</span>
+        </div>
+
+        <div class="info-row">
+            <span class="info-label">Hali ya Akaunti</span>
+            <span class="info-value" id="accountStatus">
+                FREE
+            </span>
+        </div>
+    </section>
+
+    <section class="section">
+        <h2>✏️ Badilisha Jina</h2>
+
+        <form id="nameForm">
+            <label for="newName">Jina jipya</label>
+
+            <input
+                id="newName"
+                type="text"
+                maxlength="60"
+                autocomplete="name"
+                placeholder="Andika jina jipya"
+                required
+            >
+
+            <button
+                type="submit"
+                id="saveNameBtn"
+                class="action-btn">
+                HIFADHI JINA
+            </button>
+        </form>
+
+        <div id="nameMessage" class="message"></div>
+    </section>
+
+    <section class="section">
+        <h2>🔑 Usalama wa Akaunti</h2>
+
+        <p style="color:#bbb;font-size:14px;line-height:1.7">
+            Unaweza kuomba link ya kubadilisha nenosiri.
+            Link itatumwa kwenye email yako.
+        </p>
+
+        <button
+            id="resetPasswordBtn"
+            class="action-btn">
+            TUMA LINK YA PASSWORD
+        </button>
+
+        <div id="passwordMessage" class="message"></div>
+    </section>
+
+    <button id="logoutBtn" class="logout-btn">
+        🚪 LOGOUT
+    </button>
+
+</main>
+
+<nav class="bottom-nav">
+    <a href="user.html">
+        <span>🏠</span>Home
+    </a>
+
+    <a href="tips.html">
+        <span>⚽</span>Tips
+    </a>
+
+    <a href="market.html">
+        <span>🛒</span>Market
+    </a>
+
+    <a href="profile.html" class="active">
+        <span>👤</span>Account
+    </a>
+</nav>
+
+</div>
+
+<script type="module" src="profile.js"></script>
+
+</body>
+</html>
