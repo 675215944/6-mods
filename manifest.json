@@ -1,0 +1,10 @@
+{
+    "name": "6+MODS",
+    "short_name": "6+MODS",
+    "description": "6+MODS Mods, Apps na Premium",
+    "start_url": "index.html",
+    "display": "standalone",
+    "background_color": "#0b0b0b",
+    "theme_color": "#111111",
+    "orientation": "portrait"
+}

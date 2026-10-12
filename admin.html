@@ -1,0 +1,852 @@
+<!DOCTYPE html>
+<html lang="sw">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#080808">
+
+    <title>Admin Panel | 6+MODS</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        :root {
+            --gold: #ffd700;
+            --gold-dark: #b8860b;
+            --bg: #080808;
+            --panel: #141414;
+            --border: #493914;
+            --text: #ffffff;
+            --muted: #aaaaaa;
+            --green: #36d399;
+            --red: #ff7070;
+        }
+
+        body {
+            margin: 0;
+            background: var(--bg);
+            color: var(--text);
+            font-family: Arial, sans-serif;
+        }
+
+        button, input, select, textarea {
+            font: inherit;
+        }
+
+        button {
+            cursor: pointer;
+        }
+
+        header {
+            position: sticky;
+            top: 0;
+            z-index: 20;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            padding: 16px;
+            background: #101010;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .logo {
+            color: var(--gold);
+            font-weight: 900;
+            font-size: 21px;
+        }
+
+        .header-small {
+            font-size: 11px;
+            color: var(--muted);
+            margin-top: 4px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1100px;
+            margin: auto;
+            padding: 16px;
+        }
+
+        .panel {
+            background: var(--panel);
+            border: 1px solid #302713;
+            border-radius: 16px;
+            padding: 18px;
+            margin-bottom: 18px;
+        }
+
+        h1, h2, h3 {
+            margin-top: 0;
+        }
+
+        h2 {
+            font-size: 19px;
+            color: var(--gold);
+        }
+
+        h3 {
+            font-size: 15px;
+        }
+
+        .muted {
+            color: var(--muted);
+            font-size: 13px;
+            line-height: 1.6;
+        }
+
+        .gold-button,
+        .secondary-button,
+        .danger-button {
+            border: none;
+            border-radius: 10px;
+            padding: 12px 15px;
+            font-weight: 800;
+        }
+
+        .gold-button {
+            background: linear-gradient(
+                135deg,
+                #fff0a0,
+                #ffd700,
+                #b8860b
+            );
+            color: #171100;
+        }
+
+        .secondary-button {
+            background: #242424;
+            border: 1px solid #494949;
+            color: white;
+        }
+
+        .danger-button {
+            background: #421818;
+            border: 1px solid #773030;
+            color: #ffaaaa;
+        }
+
+        .full {
+            width: 100%;
+        }
+
+        input, select, textarea {
+            display: block;
+            width: 100%;
+            background: #090909;
+            color: white;
+            border: 1px solid #383838;
+            border-radius: 10px;
+            padding: 13px;
+            margin-top: 7px;
+            outline: none;
+        }
+
+        input:focus,
+        select:focus,
+        textarea:focus {
+            border-color: var(--gold);
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 90px;
+        }
+
+        label {
+            display: block;
+            font-size: 13px;
+            color: #dddddd;
+            margin-bottom: 14px;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 12px;
+        }
+
+        .form-grid label {
+            margin-bottom: 0;
+        }
+
+        .span-2 {
+            grid-column: span 2;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 12px;
+        }
+
+        .stat {
+            background: #0b0b0b;
+            border: 1px solid var(--border);
+            border-radius: 13px;
+            padding: 16px;
+        }
+
+        .stat-number {
+            color: var(--gold);
+            font-size: 25px;
+            font-weight: 900;
+            margin-top: 9px;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: var(--muted);
+        }
+
+        .navigation {
+            display: flex;
+            gap: 8px;
+            overflow-x: auto;
+            padding: 3px 0 13px;
+            margin-bottom: 10px;
+        }
+
+        .nav-button {
+            flex: 0 0 auto;
+            padding: 11px 14px;
+            color: #cccccc;
+            background: #171717;
+            border: 1px solid #393023;
+            border-radius: 10px;
+        }
+
+        .nav-button.active {
+            background: var(--gold);
+            color: #151000;
+            font-weight: 900;
+        }
+
+        .section {
+            display: none;
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        .item-list {
+            display: grid;
+            gap: 12px;
+        }
+
+        .item {
+            background: #0b0b0b;
+            border: 1px solid #34302a;
+            border-radius: 12px;
+            padding: 15px;
+            overflow-wrap: anywhere;
+        }
+
+        .item-title {
+            font-weight: 900;
+            margin-bottom: 8px;
+        }
+
+        .item-meta {
+            color: var(--muted);
+            font-size: 12px;
+            line-height: 1.8;
+        }
+
+        .item-actions {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-top: 12px;
+        }
+
+        .item-actions button {
+            flex: 1;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 5px 9px;
+            border-radius: 20px;
+            background: #29210d;
+            color: var(--gold);
+            font-size: 11px;
+            font-weight: 900;
+        }
+
+        .badge.green {
+            background: #0b3425;
+            color: #7cf0b9;
+        }
+
+        .badge.red {
+            background: #401a1a;
+            color: #ffaaaa;
+        }
+
+        .notice {
+            border-left: 3px solid var(--gold);
+            background: #19160e;
+            color: #d2c9ad;
+            padding: 13px;
+            border-radius: 8px;
+            font-size: 12px;
+            line-height: 1.7;
+            margin-bottom: 15px;
+        }
+
+        .message {
+            display: none;
+            padding: 13px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            font-size: 13px;
+            line-height: 1.5;
+            overflow-wrap: anywhere;
+        }
+
+        .message.success {
+            display: block;
+            color: #8af0b7;
+            background: #10271b;
+            border: 1px solid #24583c;
+        }
+
+        .message.error {
+            display: block;
+            color: #ffaaaa;
+            background: #301515;
+            border: 1px solid #633030;
+        }
+
+        #dashboard,
+        #loginBox {
+            display: none;
+        }
+
+        #loading {
+            padding: 70px 15px;
+            text-align: center;
+            color: var(--gold);
+        }
+
+        .loader {
+            width: 32px;
+            height: 32px;
+            margin: 0 auto 15px;
+            border: 3px solid #382f15;
+            border-top-color: var(--gold);
+            border-radius: 50%;
+            animation: spin .7s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .empty {
+            text-align: center;
+            padding: 22px;
+            color: var(--muted);
+            background: #0b0b0b;
+            border-radius: 10px;
+            font-size: 13px;
+        }
+
+        @media (min-width: 700px) {
+            .stats {
+                grid-template-columns: repeat(4, minmax(0, 1fr));
+            }
+
+            .container {
+                padding: 24px;
+            }
+        }
+
+        @media (max-width: 420px) {
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .span-2 {
+                grid-column: span 1;
+            }
+
+            header {
+                padding: 13px;
+            }
+
+            .logo {
+                font-size: 18px;
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .loader {
+                animation: none;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<header>
+    <div>
+        <div class="logo">6+MODS ✦</div>
+        <div class="header-small">ADMIN CONTROL PANEL</div>
+    </div>
+
+    <button id="logoutBtn" class="secondary-button" hidden>
+        Toka
+    </button>
+</header>
+
+<div id="loading">
+    <div class="loader"></div>
+    Inakagua akaunti yako...
+</div>
+
+<div class="container">
+
+    <div id="message" class="message"></div>
+
+    <!-- LOGIN -->
+
+    <section id="loginBox" class="panel">
+        <h2>🔐 Admin Login</h2>
+
+        <p class="muted">
+            Ingia kwa akaunti ya Firebase iliyoidhinishwa kuwa Admin.
+        </p>
+
+        <form id="loginForm">
+            <label>
+                Gmail / Email
+                <input
+                    id="loginEmail"
+                    type="email"
+                    autocomplete="username"
+                    required
+                >
+            </label>
+
+            <label>
+                Nenosiri
+                <input
+                    id="loginPassword"
+                    type="password"
+                    autocomplete="current-password"
+                    required
+                >
+            </label>
+
+            <button class="gold-button full" type="submit">
+                INGIA KWENYE ADMIN
+            </button>
+        </form>
+    </section>
+
+    <!-- DASHBOARD -->
+
+    <div id="dashboard">
+
+        <section class="panel">
+            <h2>Dashboard</h2>
+            <p class="muted">
+                Karibu kwenye usimamizi wa 6+MODS.
+            </p>
+
+            <div class="stats">
+                <div class="stat">
+                    <div class="stat-label">JUMLA YA APPS</div>
+                    <div id="appsCount" class="stat-number">0</div>
+                </div>
+
+                <div class="stat">
+                    <div class="stat-label">FREE TIPS</div>
+                    <div id="tipsCount" class="stat-number">0</div>
+                </div>
+
+                <div class="stat">
+                    <div class="stat-label">PREMIUM TIPS</div>
+                    <div id="premiumCount" class="stat-number">0</div>
+                </div>
+
+                <div class="stat">
+                    <div class="stat-label">MALIPO</div>
+                    <div id="paymentsCount" class="stat-number">0</div>
+                </div>
+            </div>
+        </section>
+
+        <nav class="navigation">
+            <button class="nav-button active" data-section="tipsSection">
+                ⚽ Betting Tips
+            </button>
+
+            <button class="nav-button" data-section="appsSection">
+                📱 Apps
+            </button>
+
+            <button class="nav-button" data-section="pricingSection">
+                💰 Bei
+            </button>
+
+            <button class="nav-button" data-section="paymentsSection">
+                💳 Malipo
+            </button>
+
+            <button class="nav-button" data-section="securitySection">
+                🔐 Usalama
+            </button>
+        </nav>
+
+        <!-- BETTING TIPS -->
+
+        <section id="tipsSection" class="section active">
+
+            <div class="panel">
+                <h2>⚽ Chapisha Betting Tip</h2>
+
+                <div class="notice">
+                    Free Tips zitahifadhiwa kwenye <b>tips</b>.
+                    Premium Tips zitahifadhiwa kwenye
+                    <b>premiumTips</b>, ambazo lazima zilindwe kwa Firestore Rules.
+                </div>
+
+                <form id="tipForm">
+
+                    <div class="form-grid">
+
+                        <label>
+                            Aina ya Tip
+                            <select id="tipType" required>
+                                <option value="FREE">Free Tip</option>
+                                <option value="PREMIUM">Premium Tip</option>
+                            </select>
+                        </label>
+
+                        <label>
+                            Ligi
+                            <input
+                                id="tipLeague"
+                                placeholder="Mfano: Premier League"
+                                required
+                            >
+                        </label>
+
+                        <label>
+                            Timu ya Nyumbani
+                            <input
+                                id="tipHomeTeam"
+                                placeholder="Mfano: Arsenal"
+                                required
+                            >
+                        </label>
+
+                        <label>
+                            Timu ya Ugenini
+                            <input
+                                id="tipAwayTeam"
+                                placeholder="Mfano: Chelsea"
+                                required
+                            >
+                        </label>
+
+                        <label>
+                            Tarehe ya Mechi
+                            <input id="tipDate" type="date" required>
+                        </label>
+
+                        <label>
+                            Muda wa Mechi
+                            <input id="tipTime" type="time" required>
+                        </label>
+
+                        <label>
+                            Aina ya Ubashiri
+                            <select id="tipMarket" required>
+                                <option value="1X2">1X2</option>
+                                <option value="Over 1.5">Over 1.5</option>
+                                <option value="Over 2.5">Over 2.5</option>
+                                <option value="Under 2.5">Under 2.5</option>
+                                <option value="Both Teams To Score">
+                                    Both Teams To Score
+                                </option>
+                                <option value="Double Chance">
+                                    Double Chance
+                                </option>
+                                <option value="Draw No Bet">Draw No Bet</option>
+                                <option value="Other">Nyingine</option>
+                            </select>
+                        </label>
+
+                        <label>
+                            Prediction
+                            <input
+                                id="tipPrediction"
+                                placeholder="Mfano: Home Win"
+                                required
+                            >
+                        </label>
+
+                        <label>
+                            Odds
+                            <input
+                                id="tipOdds"
+                                type="number"
+                                min="1"
+                                step="0.01"
+                                placeholder="1.85"
+                                required
+                            >
+                        </label>
+
+                        <label>
+                            Matokeo / Status
+                            <select id="tipStatus" required>
+                                <option value="Pending">Pending</option>
+                                <option value="Won">Won</option>
+                                <option value="Lost">Lost</option>
+                                <option value="Void">Void</option>
+                            </select>
+                        </label>
+
+                        <label class="span-2">
+                            Maelezo ya Ziada (si lazima)
+                            <textarea
+                                id="tipDescription"
+                                placeholder="Maelezo kuhusu mechi..."
+                            ></textarea>
+                        </label>
+
+                    </div>
+
+                    <button
+                        id="publishTipBtn"
+                        class="gold-button full"
+                        type="submit"
+                        style="margin-top:16px"
+                    >
+                        🚀 CHAPISHA TIP
+                    </button>
+
+                    <button
+                        id="cancelTipEdit"
+                        class="secondary-button full"
+                        type="button"
+                        hidden
+                        style="margin-top:10px"
+                    >
+                        Ghairi Marekebisho
+                    </button>
+
+                </form>
+            </div>
+
+            <div class="panel">
+                <h2>📋 Free Betting Tips</h2>
+                <div id="freeTipsList" class="item-list">
+                    <div class="empty">Inapakia...</div>
+                </div>
+            </div>
+
+            <div class="panel">
+                <h2>👑 Premium Betting Tips</h2>
+                <div id="premiumTipsList" class="item-list">
+                    <div class="empty">Inapakia...</div>
+                </div>
+            </div>
+
+        </section>
+
+        <!-- APPS -->
+
+        <section id="appsSection" class="section">
+
+            <div class="panel">
+                <h2>📱 Ongeza App</h2>
+
+                <form id="appForm">
+
+                    <label>
+                        Jina la App
+                        <input id="appName" required>
+                    </label>
+
+                    <label>
+                        Category
+                        <input id="appCategory" required>
+                    </label>
+
+                    <label>
+                        Icon URL (si lazima)
+                        <input id="appIcon" type="url">
+                    </label>
+
+                    <label>
+                        Picha URL (si lazima)
+                        <input id="appImage" type="url">
+                    </label>
+
+                    <label>
+                        Maelezo
+                        <textarea id="appDescription" required></textarea>
+                    </label>
+
+                    <label>
+                        Maelekezo (si lazima)
+                        <textarea id="appInstructions"></textarea>
+                    </label>
+
+                    <label>
+                        Aina ya App
+                        <select id="appType">
+                            <option value="FREE">Free</option>
+                            <option value="PREMIUM">Premium</option>
+                        </select>
+                    </label>
+
+                    <label>
+                        Bei (TSh)
+                        <input
+                            id="appPrice"
+                            type="number"
+                            min="0"
+                            value="0"
+                        >
+                    </label>
+
+                    <label>
+                        Download URL
+                        <input id="appLink" type="url" required>
+                    </label>
+
+                    <button class="gold-button full" type="submit">
+                        HIFADHI APP
+                    </button>
+
+                </form>
+            </div>
+
+            <div class="panel">
+                <h2>Apps Zilizopo</h2>
+                <div id="appsList" class="item-list">
+                    <div class="empty">Inapakia...</div>
+                </div>
+            </div>
+
+        </section>
+
+        <!-- PREMIUM PRICING -->
+
+        <section id="pricingSection" class="section">
+
+            <div class="panel">
+                <h2>💰 Bei za Premium</h2>
+
+                <p class="muted">
+                    Bei hizi huhifadhiwa kwenye Firestore.
+                    Kuzihifadhi hapa hakumaanishi kuwa malipo
+                    yameunganishwa au yamethibitishwa.
+                </p>
+
+                <form id="pricingForm">
+
+                    <label>
+                        Daily Premium — TSh
+                        <input
+                            id="dailyPrice"
+                            type="number"
+                            min="1"
+                            step="1"
+                            required
+                        >
+                    </label>
+
+                    <label>
+                        Weekly Premium — TSh
+                        <input
+                            id="weeklyPrice"
+                            type="number"
+                            min="1"
+                            step="1"
+                            required
+                        >
+                    </label>
+
+                    <label>
+                        Monthly Premium — TSh
+                        <input
+                            id="monthlyPrice"
+                            type="number"
+                            min="1"
+                            step="1"
+                            required
+                        >
+                    </label>
+
+                    <button class="gold-button full" type="submit">
+                        HIFADHI BEI
+                    </button>
+
+                </form>
+            </div>
+
+        </section>
+
+        <!-- PAYMENTS -->
+
+        <section id="paymentsSection" class="section">
+            <div class="panel">
+                <h2>💳 Rekodi za Malipo</h2>
+
+                <div class="notice">
+                    Paneli hii inasoma rekodi zilizohifadhiwa na backend.
+                    Haitoi uthibitisho wa malipo kutoka kwenye browser.
+                </div>
+
+                <div id="paymentsList" class="item-list">
+                    <div class="empty">Inapakia...</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECURITY -->
+
+        <section id="securitySection" class="section">
+            <div class="panel">
+                <h2>🔐 Usalama wa Mfumo</h2>
+
+                <p class="muted">
+                    Akaunti yako lazima iwe na document ya admins
+                    yenye active = true na UID inayolingana na
+                    Firebase Authentication.
+                </p>
+
+                <p class="muted">
+                    Admin mpya anapaswa kuidhinishwa kupitia
+                    utaratibu salama wa backend au Firebase Console.
+                    Gmail pekee haitoi mamlaka ya Admin.
+                </p>
+
+                <p class="muted">
+                    Premium Tips na malipo lazima zilindwe na
+                    Firestore Rules na uthibitishaji wa backend.
+                </p>
+            </div>
+        </section>
+
+    </div>
+
+</div>
+
+<script type="module" src="./admin.js"></script>
+
+</body>
+</html>
