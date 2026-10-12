@@ -1,0 +1,674 @@
+<!DOCTYPE html><html lang="sw">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#080b14"><title>Betting Tips | 6+MODS</title>
+
+<style>
+    * {
+        box-sizing: border-box;
+    }
+
+    :root {
+        --bg: #080b14;
+        --panel: #111827;
+        --panel2: #172033;
+        --gold: #ffd700;
+        --gold2: #b8860b;
+        --text: #ffffff;
+        --muted: #aab3c5;
+        --border: #303b52;
+        --green: #36d399;
+        --red: #ff7070;
+        --blue: #70a7ff;
+    }
+
+    body {
+        margin: 0;
+        padding-bottom: 85px;
+        background:
+            radial-gradient(ellipse at top, #17213a 0%, var(--bg) 55%);
+        color: var(--text);
+        font-family: Arial, sans-serif;
+    }
+
+    button, input, select {
+        font: inherit;
+    }
+
+    button {
+        cursor: pointer;
+    }
+
+    header {
+        position: sticky;
+        top: 0;
+        z-index: 20;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+        padding: 15px;
+        background: rgba(8, 11, 20, .96);
+        border-bottom: 1px solid #55451d;
+        backdrop-filter: blur(14px);
+    }
+
+    .logo {
+        color: var(--gold);
+        font-size: 21px;
+        font-weight: 900;
+        letter-spacing: .5px;
+    }
+
+    .header-small {
+        color: var(--muted);
+        font-size: 10px;
+        margin-top: 4px;
+        letter-spacing: 1.5px;
+    }
+
+    .back-btn {
+        border: 1px solid #ffe680;
+        border-radius: 25px;
+        padding: 10px 13px;
+        background: linear-gradient(135deg, #fff0a0, #ffd700, #b8860b);
+        color: #171100;
+        font-size: 11px;
+        font-weight: 900;
+    }
+
+    main {
+        width: 100%;
+        max-width: 950px;
+        margin: auto;
+        padding: 17px;
+    }
+
+    .hero {
+        position: relative;
+        overflow: hidden;
+        padding: 28px 18px;
+        border-radius: 22px;
+        text-align: center;
+        background: linear-gradient(135deg, #253352, #151b2c 65%, #30240b);
+        border: 1px solid #6d5722;
+        box-shadow: 0 12px 35px #0005;
+        margin-bottom: 22px;
+    }
+
+    .hero::before {
+        content: "";
+        position: absolute;
+        width: 150px;
+        height: 150px;
+        top: -85px;
+        right: -45px;
+        border: 1px solid #ffd70035;
+        border-radius: 50%;
+        box-shadow: 0 0 0 20px #ffd70008, 0 0 0 40px #ffd70005;
+    }
+
+    .hero-icon {
+        font-size: 42px;
+    }
+
+    .hero h1 {
+        color: var(--gold);
+        margin: 10px 0;
+        font-size: 27px;
+    }
+
+    .hero p {
+        color: #d0d7e5;
+        font-size: 13px;
+        line-height: 1.8;
+        margin-bottom: 0;
+    }
+
+    .tabs {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+        margin-bottom: 22px;
+    }
+
+    .tab {
+        padding: 14px 8px;
+        border: 1px solid var(--border);
+        border-radius: 13px;
+        background: #121827;
+        color: #c5cede;
+        font-size: 13px;
+        font-weight: 900;
+    }
+
+    .tab.active {
+        background: linear-gradient(135deg, #fff0a0, #ffd700, #b8860b);
+        color: #171100;
+        border-color: var(--gold);
+    }
+
+    .section-heading {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 10px;
+        margin: 20px 0 14px;
+    }
+
+    .section-heading h2 {
+        color: var(--gold);
+        font-size: 18px;
+        margin: 0;
+    }
+
+    .count {
+        color: var(--muted);
+        font-size: 11px;
+    }
+
+    .tips-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 14px;
+    }
+
+    .tip-card {
+        padding: 17px;
+        border: 1px solid #34415b;
+        border-radius: 17px;
+        background: linear-gradient(145deg, #172033, #101521);
+        box-shadow: 0 8px 22px #0003;
+        min-width: 0;
+    }
+
+    .tip-top {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 8px;
+        margin-bottom: 13px;
+    }
+
+    .league {
+        color: #c5cede;
+        font-size: 11px;
+        overflow-wrap: anywhere;
+    }
+
+    .status {
+        flex-shrink: 0;
+        display: inline-block;
+        padding: 6px 9px;
+        border-radius: 20px;
+        font-size: 10px;
+        font-weight: 900;
+    }
+
+    .pending {
+        background: #40310c;
+        color: var(--gold);
+    }
+
+    .won {
+        background: #063c29;
+        color: #5bf0a2;
+    }
+
+    .lost {
+        background: #4b1717;
+        color: #ff8989;
+    }
+
+    .void {
+        background: #333b4d;
+        color: #d5dceb;
+    }
+
+    .teams {
+        text-align: center;
+        font-size: 17px;
+        font-weight: 900;
+        line-height: 1.6;
+        margin: 16px 0;
+        overflow-wrap: anywhere;
+    }
+
+    .versus {
+        display: inline-block;
+        color: var(--gold);
+        font-size: 11px;
+        margin: 0 5px;
+    }
+
+    .match-time {
+        text-align: center;
+        color: var(--muted);
+        font-size: 11px;
+        line-height: 1.7;
+        margin-bottom: 14px;
+    }
+
+    .match-state {
+        display: block;
+        margin-top: 7px;
+        font-size: 11px;
+        font-weight: 900;
+        letter-spacing: .3px;
+    }
+
+    .match-state.upcoming {
+        color: var(--gold);
+    }
+
+    .match-state.started {
+        color: var(--green);
+    }
+
+    .match-state.ended {
+        color: var(--red);
+    }
+
+    .prediction-box {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        padding: 13px;
+        border: 1px solid #514522;
+        border-radius: 12px;
+        background: linear-gradient(135deg, #282312, #1a1b21);
+    }
+
+    .label {
+        display: block;
+        color: var(--muted);
+        font-size: 10px;
+        margin-bottom: 6px;
+    }
+
+    .prediction {
+        font-size: 14px;
+        font-weight: 900;
+        overflow-wrap: anywhere;
+    }
+
+    .odds {
+        color: var(--gold);
+        font-size: 19px;
+        font-weight: 900;
+    }
+
+    .tip-description {
+        margin-top: 12px;
+        color: #b9c3d5;
+        font-size: 12px;
+        line-height: 1.7;
+        overflow-wrap: anywhere;
+    }
+
+    .empty {
+        padding: 27px 15px;
+        text-align: center;
+        color: var(--muted);
+        background: #111827;
+        border: 1px dashed #35415a;
+        border-radius: 15px;
+        font-size: 13px;
+        line-height: 1.7;
+    }
+
+    .vip-panel {
+        overflow: hidden;
+        position: relative;
+        padding: 24px 17px;
+        text-align: center;
+        border: 1px solid #9a7928;
+        border-radius: 22px;
+        background: linear-gradient(145deg, #30260f, #171a25 70%, #101521);
+    }
+
+    .crown {
+        font-size: 45px;
+    }
+
+    .vip-panel h2 {
+        color: var(--gold);
+        margin: 10px 0;
+    }
+
+    .vip-panel > p {
+        color: #d0d7e5;
+        font-size: 13px;
+        line-height: 1.8;
+    }
+
+    .price-grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 9px;
+        margin: 20px 0;
+    }
+
+    .price-card {
+        background: #0c1220;
+        border: 1px solid #5e4b20;
+        border-radius: 13px;
+        padding: 13px 5px;
+        min-width: 0;
+    }
+
+    .price-card.featured {
+        border-color: var(--gold);
+        box-shadow: 0 0 16px #ffd70015;
+    }
+
+    .price-name {
+        color: #c5cede;
+        font-size: 11px;
+        margin-bottom: 9px;
+    }
+
+    .price-amount {
+        color: var(--gold);
+        font-size: 15px;
+        font-weight: 900;
+        overflow-wrap: anywhere;
+    }
+
+    .price-unit {
+        color: var(--muted);
+        font-size: 10px;
+        margin-top: 5px;
+    }
+
+    .vip-button {
+        width: 100%;
+        padding: 15px;
+        border: 0;
+        border-radius: 30px;
+        background: linear-gradient(135deg, #fff0a0, #ffd700, #b8860b);
+        color: #171100;
+        font-weight: 900;
+        box-shadow: 0 6px 20px #ffd70020;
+    }
+
+    .vip-small {
+        color: var(--muted);
+        font-size: 11px !important;
+    }
+
+    .notice {
+        padding: 14px;
+        margin-top: 23px;
+        border-left: 3px solid var(--gold);
+        border-radius: 10px;
+        background: #121827;
+        color: #bac3d3;
+        font-size: 11px;
+        line-height: 1.8;
+    }
+
+    .bottom-nav {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        z-index: 30;
+        display: flex;
+        background: rgba(8, 11, 20, .97);
+        border-top: 1px solid #493914;
+        padding: 9px 4px;
+        backdrop-filter: blur(14px);
+    }
+
+    .bottom-nav a {
+        flex: 1;
+        color: #aab3c5;
+        text-align: center;
+        text-decoration: none;
+        font-size: 10px;
+    }
+
+    .bottom-nav a span {
+        display: block;
+        font-size: 21px;
+        margin-bottom: 4px;
+    }
+
+    .bottom-nav a.active {
+        color: var(--gold);
+    }
+
+    #loading {
+        position: fixed;
+        inset: 0;
+        z-index: 1000;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        gap: 20px;
+        background: var(--bg);
+        color: var(--gold);
+    }
+
+    .loader-logo {
+        font-size: 27px;
+        font-weight: 900;
+        letter-spacing: 2px;
+    }
+
+    .loader-spinner {
+        width: 35px;
+        height: 35px;
+        border: 3px solid #30270f;
+        border-top-color: var(--gold);
+        border-radius: 50%;
+        animation: spin .7s linear infinite;
+    }
+
+    @keyframes spin {
+        to { transform: rotate(360deg); }
+    }
+
+    #content {
+        display: none;
+    }
+
+    #error {
+        display: none;
+        max-width: 600px;
+        margin: 25px auto;
+        padding: 15px;
+        color: #ffaaaa;
+        background: #301515;
+        border: 1px solid #633030;
+        border-radius: 10px;
+        font-size: 13px;
+        line-height: 1.7;
+        overflow-wrap: anywhere;
+    }
+
+    [hidden] {
+        display: none !important;
+    }
+
+    @media (max-width: 400px) {
+        main {
+            padding: 12px;
+        }
+
+        .logo {
+            font-size: 18px;
+        }
+
+        .back-btn {
+            padding: 9px;
+            font-size: 10px;
+        }
+
+        .price-grid {
+            gap: 5px;
+        }
+
+        .price-amount {
+            font-size: 12px;
+        }
+
+        .price-card {
+            padding: 12px 3px;
+        }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        .loader-spinner {
+            animation: none;
+        }
+    }
+</style>
+
+</head><body><div id="loading">
+    <div class="loader-logo">6+MODS ✦</div>
+    <div class="loader-spinner"></div>
+    <div style="font-size:12px">Inapakia Betting Tips...</div>
+</div>
+
+<div id="error" role="alert"></div>
+
+<div id="content">
+
+    <header>
+        <div>
+            <div class="logo">6+MODS ✦</div>
+            <div class="header-small">BETTING TIPS CENTER</div>
+        </div>
+
+        <button id="backBtn" class="back-btn" type="button">
+            ✦ DASHBOARD ↗
+        </button>
+    </header>
+
+    <main>
+
+        <section class="hero">
+            <div class="hero-icon">⚽</div>
+            <h1>BETTING TIPS</h1>
+            <p>
+                Karibu kwenye Betting Tips za 6+MODS.
+                Angalia ratiba, muda uliobaki na matokeo ya tips.
+            </p>
+        </section>
+
+        <div class="tabs">
+            <button id="freeTab" class="tab active" type="button">
+                ⚽ FREE TIPS
+            </button>
+
+            <button id="vipTab" class="tab" type="button">
+                👑 VIP TIPS
+            </button>
+        </div>
+
+        <section id="freeSection">
+
+            <div class="section-heading">
+                <h2>⚽ Free Predictions</h2>
+                <span id="tipsCount" class="count">0 tips</span>
+            </div>
+
+            <div id="tipsGrid" class="tips-grid"></div>
+
+            <div id="emptyMessage" class="empty" hidden>
+                Hakuna Free Tips zilizowekwa kwa sasa.
+            </div>
+
+        </section>
+
+        <section id="vipSection" hidden>
+            <div class="vip-panel">
+                <div class="crown">👑</div>
+
+                <h2>VIP BETTING TIPS</h2>
+
+                <p>
+                    Fungua uanachama wa Premium ili kupata
+                    VIP Tips. Tips hizi hazitaonyeshwa kabla
+                    uanachama wako haujathibitishwa.
+                </p>
+
+                <div class="price-grid">
+
+                    <div class="price-card">
+                        <div class="price-name">DAILY VIP</div>
+                        <div class="price-amount">TSh 3,000</div>
+                        <div class="price-unit">Siku 1</div>
+                    </div>
+
+                    <div class="price-card featured">
+                        <div class="price-name">WEEKLY VIP</div>
+                        <div class="price-amount">TSh 10,000</div>
+                        <div class="price-unit">Siku 7</div>
+                    </div>
+
+                    <div class="price-card">
+                        <div class="price-name">MONTHLY VIP</div>
+                        <div class="price-amount">TSh 30,000</div>
+                        <div class="price-unit">Siku 30</div>
+                    </div>
+
+                </div>
+
+                <button id="joinVipBtn" class="vip-button" type="button">
+                    💎 JIUNGE NA PREMIUM
+                </button>
+
+                <p class="vip-small">
+                    VIP Tips zitaonekana baada ya malipo
+                    kuthibitishwa na uanachama kuidhinishwa.
+                </p>
+            </div>
+
+            <div id="vipTipsContainer" hidden>
+                <div class="section-heading">
+                    <h2>👑 Premium Predictions</h2>
+                    <span id="vipTipsCount" class="count"></span>
+                </div>
+
+                <div id="vipTipsGrid" class="tips-grid"></div>
+            </div>
+        </section>
+
+        <div class="notice">
+            ⚠️ Huduma hii ni kwa watu wenye umri wa miaka 18 au zaidi.
+            Betting ina hatari ya kupoteza fedha; hakuna prediction
+            inayohakikisha ushindi.
+        </div>
+
+    </main>
+
+    <nav class="bottom-nav">
+        <a href="user.html">
+            <span>🏠</span>Home
+        </a>
+
+        <a href="tips.html" class="active">
+            <span>⚽</span>Tips
+        </a>
+
+        <a href="market.html">
+            <span>🛒</span>Market
+        </a>
+
+        <a href="profile.html">
+            <span>👤</span>Account
+        </a>
+    </nav>
+
+</div>
+
+<script type="module" src="./tips.js"></script>
+
+</body>
+</html>
