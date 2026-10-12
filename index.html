@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="sw">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#080b14">
+
+<title>Welcome | 6+MODS</title>
+
+<style>
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    min-height: 100vh;
+    min-height: 100dvh;
+    background: radial-gradient(circle at center, #17254a, #080b14 70%);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-family: Arial, sans-serif;
+    overflow: hidden;
+    color: white;
+}
+
+.welcome {
+    text-align: center;
+    padding: 20px;
+    animation: fadeIn 1s ease;
+}
+
+.logo {
+    font-size: clamp(48px, 12vw, 75px);
+    font-weight: 900;
+    color: #ffd700;
+    letter-spacing: 2px;
+    text-shadow: 0 0 15px #ffd70080;
+    animation: glow 2s infinite alternate;
+}
+
+.subtitle {
+    margin-top: 15px;
+    font-size: 15px;
+    letter-spacing: 4px;
+    color: #d5d9e5;
+    animation: slideUp 1.5s ease;
+}
+
+.loader {
+    width: 180px;
+    height: 4px;
+    background: #29334d;
+    border-radius: 10px;
+    margin: 35px auto 0;
+    overflow: hidden;
+}
+
+.loader::before {
+    content: "";
+    display: block;
+    width: 0;
+    height: 100%;
+    background: linear-gradient(90deg, #ffb700, #fff2a8);
+    animation: loading 4s linear forwards;
+}
+
+@keyframes glow {
+    from {
+        text-shadow: 0 0 10px #ffd70050;
+        transform: scale(1);
+    }
+    to {
+        text-shadow: 0 0 30px #ffd700;
+        transform: scale(1.05);
+    }
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(25px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes loading {
+    from { width: 0; }
+    to { width: 100%; }
+}
+</style>
+</head>
+
+<body>
+
+<div class="welcome">
+    <div class="logo">6+MODS</div>
+    <div class="subtitle">WELCOME TO THE FUTURE</div>
+    <div class="loader"></div>
+</div>
+
+<script>
+setTimeout(() => {
+    window.location.replace("auth.html");
+}, 4000);
+</script>
+
+</body>
+  </html>
