@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="theme-color" content="#080b14">
+    <meta name="theme-color" content="#080808">
 
     <title>Ingia au Jisajili | 6+MODS</title>
 
@@ -14,161 +14,374 @@
             box-sizing: border-box;
         }
 
+        :root {
+            --gold: #e8c66a;
+            --gold-light: #ffe9a6;
+            --gold-dark: #9e7928;
+            --black: #080808;
+            --glass: rgba(255, 255, 255, 0.045);
+            --border: rgba(232, 198, 106, 0.22);
+            --muted: #aaa69b;
+        }
+
+        html {
+            min-height: 100%;
+            background: var(--black);
+        }
+
         body {
             margin: 0;
             min-height: 100vh;
-            background: linear-gradient(
-                135deg,
-                #080b14,
-                #101b35,
-                #080b14
-            );
-            color: white;
-            font-family: Arial, sans-serif;
+            min-height: 100dvh;
+            color: #fff;
+            font-family: -apple-system, BlinkMacSystemFont,
+                "SF Pro Display", "Segoe UI", Arial, sans-serif;
+
+            background:
+                radial-gradient(
+                    ellipse at 50% 0%,
+                    rgba(171, 127, 39, 0.18),
+                    transparent 48%
+                ),
+                radial-gradient(
+                    ellipse at 0% 100%,
+                    rgba(140, 100, 30, 0.09),
+                    transparent 45%
+                ),
+                #080808;
+
+            -webkit-font-smoothing: antialiased;
+            overflow-x: hidden;
         }
+
+        button,
+        input {
+            font: inherit;
+        }
+
+        /* PREMIUM HEADER */
 
         .top-bar {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 20px;
-            background: rgba(0, 0, 0, 0.35);
-            border-bottom: 1px solid #263451;
-        }
-
-        .logo {
-            font-size: 25px;
-            font-weight: 900;
-            color: #00e5ff;
-        }
-
-        .home-link {
-            color: white;
-            text-decoration: none;
-            font-size: 14px;
-        }
-
-        .auth-box {
-            width: 92%;
-            max-width: 430px;
-            margin: 45px auto;
-            padding: 28px 22px;
-            background: #111827;
-            border: 1px solid #293957;
-            border-radius: 20px;
-            box-shadow: 0 15px 45px rgba(0, 0, 0, 0.4);
-        }
-
-        .auth-icon {
-            width: 65px;
-            height: 65px;
+            width: 100%;
+            min-height: 78px;
             display: flex;
             align-items: center;
             justify-content: center;
-            margin: 0 auto 20px;
-            border-radius: 18px;
+            padding: 18px 20px;
+
+            background: rgba(12, 12, 12, 0.72);
+            border-bottom: 1px solid rgba(232, 198, 106, 0.15);
+
+            backdrop-filter: blur(28px) saturate(150%);
+            -webkit-backdrop-filter: blur(28px) saturate(150%);
+        }
+
+        .logo {
+            font-size: 28px;
+            font-weight: 950;
+            letter-spacing: 2px;
+
+            color: var(--gold-light);
+
             background: linear-gradient(
                 135deg,
-                #00e5ff,
-                #2563eb
+                #fff1bd 0%,
+                #e8c66a 40%,
+                #a87d28 75%,
+                #ffe9a6 100%
             );
-            color: #07101e;
-            font-size: 30px;
-            font-weight: 900;
+
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+
+            filter: drop-shadow(0 0 16px rgba(232, 198, 106, 0.13));
+        }
+
+        /* MAIN GLASS CARD */
+
+        .auth-box {
+            position: relative;
+            isolation: isolate;
+
+            width: calc(100% - 32px);
+            max-width: 430px;
+
+            margin: 45px auto 25px;
+            padding: 32px 24px 28px;
+
+            background: linear-gradient(
+                145deg,
+                rgba(255, 255, 255, 0.075),
+                rgba(255, 255, 255, 0.018) 45%,
+                rgba(232, 198, 106, 0.035)
+            );
+
+            border: 1px solid var(--border);
+            border-radius: 30px;
+
+            box-shadow:
+                0 24px 70px rgba(0, 0, 0, 0.52),
+                inset 0 1px 0 rgba(255, 255, 255, 0.09),
+                0 0 40px rgba(201, 157, 55, 0.035);
+
+            backdrop-filter: blur(35px) saturate(150%);
+            -webkit-backdrop-filter: blur(35px) saturate(150%);
+
+            overflow: hidden;
+        }
+
+        .auth-box::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 15%;
+            width: 70%;
+            height: 1px;
+
+            background: linear-gradient(
+                90deg,
+                transparent,
+                rgba(255, 233, 166, 0.8),
+                transparent
+            );
+
+            pointer-events: none;
+        }
+
+        .auth-box::after {
+            content: "";
+            position: absolute;
+            top: -90px;
+            right: -100px;
+
+            width: 190px;
+            height: 190px;
+            border-radius: 50%;
+
+            background: rgba(232, 198, 106, 0.055);
+            filter: blur(45px);
+
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        /* GOLD BRAND ICON */
+
+        .auth-icon {
+            position: relative;
+
+            width: 76px;
+            height: 76px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            margin: 0 auto 24px;
+
+            border-radius: 24px;
+
+            background: linear-gradient(
+                145deg,
+                rgba(255, 233, 166, 0.19),
+                rgba(158, 121, 40, 0.08)
+            );
+
+            border: 1px solid rgba(255, 233, 166, 0.38);
+
+            box-shadow:
+                inset 0 1px 0 rgba(255, 255, 255, 0.13),
+                0 10px 35px rgba(201, 157, 55, 0.09);
+
+            color: var(--gold-light);
+            font-size: 32px;
+            font-weight: 950;
+            letter-spacing: -2px;
         }
 
         h1 {
-            margin: 0 0 10px;
+            margin: 0 0 12px;
             text-align: center;
-            font-size: 27px;
+
+            font-size: clamp(25px, 6vw, 30px);
+            font-weight: 800;
+            letter-spacing: -0.8px;
         }
 
         .description {
-            color: #a9b5c9;
+            margin: 0 0 30px;
+
+            color: var(--muted);
             text-align: center;
-            line-height: 1.6;
+
             font-size: 14px;
-            margin-bottom: 25px;
+            line-height: 1.75;
         }
 
+        /* FORM FIELDS */
+
         .field {
-            margin-bottom: 17px;
+            margin-bottom: 19px;
         }
 
         .field label {
             display: block;
-            font-size: 14px;
-            margin-bottom: 8px;
-            color: #dce6f7;
+            margin-bottom: 9px;
+
+            color: #e9e2d1;
+            font-size: 13px;
+            font-weight: 650;
+            letter-spacing: 0.2px;
         }
 
         .field input {
+            display: block;
             width: 100%;
-            padding: 15px;
-            border: 1px solid #34445e;
-            border-radius: 11px;
-            background: #080e1b;
-            color: white;
-            font-size: 16px;
+            min-height: 54px;
+            padding: 15px 16px;
+
+            color: #fff;
+            font-size: 15px;
+
+            background: rgba(0, 0, 0, 0.32);
+
+            border: 1px solid rgba(255, 255, 255, 0.105);
+            border-radius: 15px;
+
             outline: none;
+
+            transition:
+                border-color 0.25s ease,
+                box-shadow 0.25s ease,
+                background 0.25s ease;
+        }
+
+        .field input::placeholder {
+            color: #77746d;
         }
 
         .field input:focus {
-            border-color: #00e5ff;
-            box-shadow: 0 0 0 3px rgba(0, 229, 255, 0.1);
+            background: rgba(0, 0, 0, 0.52);
+            border-color: rgba(232, 198, 106, 0.75);
+
+            box-shadow:
+                0 0 0 4px rgba(232, 198, 106, 0.075),
+                0 0 22px rgba(232, 198, 106, 0.045);
         }
 
+        /* PREMIUM GOLD BUTTON */
+
         .primary-btn {
+            position: relative;
             width: 100%;
-            padding: 15px;
-            border: none;
-            border-radius: 11px;
+            min-height: 55px;
+            margin-top: 8px;
+            padding: 15px 18px;
+
+            border: 1px solid rgba(255, 233, 166, 0.65);
+            border-radius: 16px;
+
             background: linear-gradient(
-                90deg,
-                #00e5ff,
-                #2563eb
+                135deg,
+                #ffe9a6 0%,
+                #e8c66a 38%,
+                #c49a3d 72%,
+                #e8c66a 100%
             );
-            color: white;
-            font-size: 17px;
-            font-weight: bold;
+
+            color: #171108;
+
+            font-size: 16px;
+            font-weight: 850;
+            letter-spacing: 0.2px;
+
             cursor: pointer;
-            margin-top: 10px;
+
+            box-shadow:
+                0 8px 25px rgba(201, 157, 55, 0.17),
+                inset 0 1px 0 rgba(255, 255, 255, 0.5);
+
+            transition:
+                transform 0.2s ease,
+                box-shadow 0.2s ease,
+                filter 0.2s ease;
+        }
+
+        .primary-btn:active:not(:disabled) {
+            transform: scale(0.98);
+            box-shadow: 0 3px 12px rgba(201, 157, 55, 0.15);
+        }
+
+        .primary-btn:hover:not(:disabled) {
+            filter: brightness(1.07);
+
+            box-shadow:
+                0 10px 32px rgba(201, 157, 55, 0.25),
+                inset 0 1px 0 rgba(255, 255, 255, 0.55);
         }
 
         .primary-btn:disabled {
-            opacity: 0.6;
+            opacity: 0.58;
             cursor: not-allowed;
+            filter: grayscale(0.25);
         }
 
+        /* SWITCH LOGIN / REGISTER */
+
         .switch-box {
+            margin-top: 27px;
+            padding-top: 23px;
+
             text-align: center;
-            margin-top: 24px;
-            padding-top: 20px;
-            border-top: 1px solid #293957;
+
+            border-top: 1px solid rgba(255, 255, 255, 0.09);
         }
 
         .switch-box p {
-            color: #a9b5c9;
-            font-size: 14px;
+            margin: 0 0 8px;
+
+            color: var(--muted);
+            font-size: 13px;
         }
 
         .switch-btn {
-            border: none;
-            background: transparent;
-            color: #00e5ff;
-            font-weight: bold;
-            font-size: 15px;
+            min-height: 42px;
+            padding: 10px 15px;
+
+            border: 1px solid rgba(232, 198, 106, 0.24);
+            border-radius: 13px;
+
+            background: rgba(232, 198, 106, 0.045);
+
+            color: var(--gold-light);
+            font-size: 14px;
+            font-weight: 750;
+
             cursor: pointer;
-            padding: 10px;
+
+            transition:
+                background 0.2s ease,
+                border-color 0.2s ease;
         }
+
+        .switch-btn:hover {
+            background: rgba(232, 198, 106, 0.10);
+            border-color: rgba(232, 198, 106, 0.48);
+        }
+
+        /* STATUS MESSAGE */
 
         #message {
             margin-top: 18px;
-            padding: 13px;
-            border-radius: 10px;
-            font-size: 14px;
-            line-height: 1.5;
+            padding: 13px 14px;
+
+            border-radius: 13px;
+
+            font-size: 13px;
+            line-height: 1.6;
             text-align: center;
+
             overflow-wrap: anywhere;
         }
 
@@ -177,53 +390,124 @@
         }
 
         .success {
-            background: #063b2a;
-            color: #6dffc3;
-            border: 1px solid #148c62;
+            background: rgba(24, 125, 77, 0.15);
+            color: #8cf0b9;
+            border: 1px solid rgba(71, 202, 131, 0.32);
         }
 
         .error {
-            background: #401b23;
-            color: #ff9fae;
-            border: 1px solid #a63850;
+            background: rgba(160, 35, 55, 0.14);
+            color: #ffacb6;
+            border: 1px solid rgba(255, 95, 120, 0.3);
         }
 
         .info {
-            background: #172d4c;
-            color: #a9d8ff;
-            border: 1px solid #315b92;
+            background: rgba(232, 198, 106, 0.075);
+            color: var(--gold-light);
+            border: 1px solid rgba(232, 198, 106, 0.2);
         }
 
         .footer {
+            margin: 28px 15px 35px;
+            padding-bottom: 15px;
+
+            color: #77736a;
+            font-size: 11px;
+            letter-spacing: 0.5px;
+
             text-align: center;
-            color: #77859b;
-            font-size: 12px;
-            margin: 30px 0;
         }
 
         [hidden] {
             display: none !important;
+        }
+
+        /* APP INSTALL BUTTON */
+
+        #install6mods {
+            display: none;
+
+            position: fixed;
+            left: 50%;
+            bottom: max(22px, env(safe-area-inset-bottom));
+
+            transform: translateX(-50%);
+            z-index: 9999;
+
+            min-height: 50px;
+            padding: 13px 23px;
+
+            border: 1px solid rgba(255, 233, 166, 0.7);
+            border-radius: 30px;
+
+            background: linear-gradient(
+                135deg,
+                #ffe9a6,
+                #d5ad4e,
+                #b8860b
+            );
+
+            color: #100d06;
+
+            font-size: 13px;
+            font-weight: 900;
+            letter-spacing: 0.5px;
+
+            box-shadow:
+                0 8px 30px rgba(232, 198, 106, 0.22),
+                inset 0 1px 0 rgba(255, 255, 255, 0.5);
+
+            cursor: pointer;
+            white-space: nowrap;
+
+            transition: filter 0.2s ease;
+        }
+
+        #install6mods:active {
+            transform: translateX(-50%) scale(0.96);
+        }
+
+        @media (max-width: 480px) {
+            .top-bar {
+                min-height: 70px;
+            }
+
+            .auth-box {
+                margin-top: 30px;
+                padding: 29px 20px 25px;
+                border-radius: 26px;
+            }
+
+            .auth-icon {
+                width: 68px;
+                height: 68px;
+                border-radius: 21px;
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *,
+            *::before,
+            *::after {
+                transition-duration: 0.01ms !important;
+            }
         }
     </style>
 </head>
 
 <body>
 
+    <!-- HEADER: HOME BUTTON REMOVED -->
+
     <header class="top-bar">
         <div class="logo">6+MODS</div>
-
-        <a href="index.html" class="home-link">
-            Nyumbani
-        </a>
     </header>
 
     <main class="auth-box">
 
         <div class="auth-icon">6+</div>
 
-        <h1 id="formTitle">
-            Karibu Tena!
-        </h1>
+        <h1 id="formTitle">Karibu Tena!</h1>
 
         <p class="description" id="formDescription">
             Ingia kwenye akaunti yako ya 6+MODS.
@@ -232,9 +516,7 @@
         <form id="authForm">
 
             <div class="field" id="nameField" hidden>
-                <label for="name">
-                    Jina lako
-                </label>
+                <label for="name">Jina lako</label>
 
                 <input
                     type="text"
@@ -245,9 +527,7 @@
             </div>
 
             <div class="field">
-                <label for="email">
-                    Barua pepe
-                </label>
+                <label for="email">Barua pepe</label>
 
                 <input
                     type="email"
@@ -259,9 +539,7 @@
             </div>
 
             <div class="field">
-                <label for="password">
-                    Nenosiri
-                </label>
+                <label for="password">Nenosiri</label>
 
                 <input
                     type="password"
@@ -295,9 +573,7 @@
 
         <div class="switch-box">
 
-            <p id="switchText">
-                Bado huna akaunti?
-            </p>
+            <p id="switchText">Bado huna akaunti?</p>
 
             <button
                 type="button"
@@ -311,40 +587,25 @@
 
     </main>
 
-    <div class="footer">
-        © 2026 6+MODS. All Rights Reserved.
-    </div>
+    <footer class="footer">
+        © 2026 6+MODS · ALL RIGHTS RESERVED
+    </footer>
 
-    <!-- LOGIN / REGISTER UI -->
+    <!-- LOGIN / REGISTER INTERFACE -->
 
     <script>
         let isRegistering = false;
         let firebaseReady = false;
         let firebaseError = "";
 
-        const authForm =
-            document.getElementById("authForm");
-
-        const nameField =
-            document.getElementById("nameField");
-
-        const nameInput =
-            document.getElementById("name");
-
-        const emailInput =
-            document.getElementById("email");
-
-        const passwordInput =
-            document.getElementById("password");
-
-        const submitBtn =
-            document.getElementById("submitBtn");
-
-        const toggleBtn =
-            document.getElementById("toggleBtn");
-
-        const message =
-            document.getElementById("message");
+        const authForm = document.getElementById("authForm");
+        const nameField = document.getElementById("nameField");
+        const nameInput = document.getElementById("name");
+        const emailInput = document.getElementById("email");
+        const passwordInput = document.getElementById("password");
+        const submitBtn = document.getElementById("submitBtn");
+        const toggleBtn = document.getElementById("toggleBtn");
+        const message = document.getElementById("message");
 
         function showMessage(text, type = "info") {
             message.textContent = text;
@@ -361,32 +622,25 @@
                 ? "new-password"
                 : "current-password";
 
-            document.getElementById(
-                "formTitle"
-            ).textContent = register
-                ? "Tengeneza Akaunti"
-                : "Karibu Tena!";
+            document.getElementById("formTitle").textContent =
+                register ? "Tengeneza Akaunti" : "Karibu Tena!";
 
-            document.getElementById(
-                "formDescription"
-            ).textContent = register
-                ? "Jisajili ili uanze kutumia 6+MODS."
-                : "Ingia kwenye akaunti yako ya 6+MODS.";
+            document.getElementById("formDescription").textContent =
+                register
+                    ? "Jisajili ili uanze kutumia 6+MODS."
+                    : "Ingia kwenye akaunti yako ya 6+MODS.";
 
-            document.getElementById(
-                "switchText"
-            ).textContent = register
-                ? "Tayari una akaunti?"
-                : "Bado huna akaunti?";
+            document.getElementById("switchText").textContent =
+                register
+                    ? "Tayari una akaunti?"
+                    : "Bado huna akaunti?";
 
-            toggleBtn.textContent = register
-                ? "Ingia Sasa"
-                : "Jisajili Sasa";
+            toggleBtn.textContent =
+                register ? "Ingia Sasa" : "Jisajili Sasa";
 
             if (firebaseReady) {
-                submitBtn.textContent = register
-                    ? "Jisajili"
-                    : "Ingia";
+                submitBtn.textContent =
+                    register ? "Jisajili" : "Ingia";
 
                 showMessage("");
             } else {
@@ -395,31 +649,139 @@
 
                 if (firebaseError) {
                     showMessage(
-                        "Firebase haijapakiwa: " +
-                        firebaseError,
+                        "Firebase haijapakiwa: " + firebaseError,
                         "error"
                     );
                 }
             }
         }
 
-        toggleBtn.addEventListener(
-            "click",
-            function () {
-                setMode(!isRegistering);
-            }
-        );
+        toggleBtn.addEventListener("click", function () {
+            setMode(!isRegistering);
+        });
 
-        const params =
-            new URLSearchParams(
-                window.location.search
-            );
+        const params = new URLSearchParams(
+            window.location.search
+        );
 
         if (params.get("mode") === "register") {
             setMode(true);
         }
 
-        // Kosa la kupakia Firebase
+        window.addEventListener("error", function (event) {
+            if (!firebaseReady) {
+                firebaseError =
+                    event.message || "JavaScript error";
+
+                showMessage(
+                    "Hitilafu: " + firebaseError,
+                    "error"
+                );
+            }
+        });
+
+        window.addEventListener(
+            "unhandledrejection",
+            function (event) {
+                if (!firebaseReady) {
+                    firebaseError =
+                        event.reason?.message || "Module error";
+
+                    showMessage(
+                        "Hitilafu: " + firebaseError,
+                        "error"
+                    );
+                }
+            }
+        );
+
+        setTimeout(function () {
+            if (!firebaseReady && !firebaseError) {
+                showMessage(
+                    "Firebase haijapakiwa. Hakikisha firebase.js ipo kwenye folder moja na auth.html, una intaneti, na unatumia Hosting au localhost badala ya file://.",
+                    "error"
+                );
+            }
+        }, 8000);
+
+        authForm.addEventListener("submit", function (event) {
+            event.preventDefault();
+        });
+    </script>
+
+    <!-- FIREBASE AUTHENTICATION -->
+
+    <script type="module">
+        try {
+            const firebaseAuthModule = await import(
+                "https://www.gstatic.com/firebasejs/12.5.0/firebase-auth.js"
+            );
+
+            const firebaseLocalModule = await import(
+                "./firebase.js"
+            );
+
+            const {
+                createUserWithEmailAndPassword,
+                signInWithEmailAndPassword,
+                updateProfile
+            } = firebaseAuthModule;
+
+            const { auth } = firebaseLocalModule;
+
+            if (!auth) {
+                throw new Error(
+                    "firebase.js haijatoa auth. Hakikisha kuna export const auth = getAuth(app);"
+                );
+            }
+
+            firebaseReady = true;
+            submitBtn.disabled = false;
+
+            submitBtn.textContent =
+                isRegistering ? "Jisajili" : "Ingia";
+
+            showMessage("");
+
+            console.log(
+                "6+MODS Firebase Authentication imepakiwa."
+            );
+
+            let busy = false;
+
+            authForm.addEventListener(
+                "submit",
+                async function (event) {
+                    event.preventDefault();
+
+                    if (busy) return;
+
+                    const email = emailInput.value.trim();
+                    const password = passwordInput.value;
+                    const name = nameInput.value.trim();
+
+                    if (isRegistering && !name) {
+                        showMessage(
+                            "Tafadhali andika jina lako.",
+                            "error"
+                        );
+                        return;
+                    }
+
+                    busy = true;
+                    submitBtn.disabled = true;
+
+                    showMessage(
+                        isRegistering
+                            ? "Tunasajili akaunti yako..."
+                            : "Tunaingia kwenye akaunti yako...",
+                        "info"
+                    );
+
+                    try {
+                        if (isRegistering) {
+                            const result =
+                                await       // Kosa la kupakia Firebase
         // litaonekana kwenye ukurasa.
 
         window.addEventListener(
