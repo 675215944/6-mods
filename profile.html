@@ -3,207 +3,337 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="theme-color" content="#080808">
+<meta name="theme-color" content="#080808"><title>My Account | 6+MODS</title><style>
+:root {
+    --gold: #ffd700;
+    --gold-light: #fff1a6;
+    --gold-dark: #a77b12;
+    --bg: #080808;
+    --muted: #aaa9a3;
+    --glass: rgba(255,255,255,.055);
+    --glass-border: rgba(255,215,0,.17);
+}
 
-<title>My Account | 6+MODS</title>
-
-<style>
 * {
     box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
+}
+
+html {
+    scroll-behavior: smooth;
 }
 
 body {
     margin: 0;
-    background: #080808;
-    color: white;
-    font-family: Arial, sans-serif;
-    padding-bottom: 90px;
+    min-height: 100vh;
+    padding-bottom: calc(105px + env(safe-area-inset-bottom));
+    color: #fff;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI",
+                 Arial, sans-serif;
+    background:
+        radial-gradient(ellipse at 0% 0%, rgba(255,215,0,.10), transparent 35%),
+        radial-gradient(ellipse at 100% 40%, rgba(170,125,20,.07), transparent 35%),
+        linear-gradient(160deg, #080808, #111 55%, #070707);
+    background-attachment: fixed;
+}
+
+button,
+input {
+    font: inherit;
+}
+
+button {
+    -webkit-appearance: none;
+    appearance: none;
 }
 
 header {
-    background: #111;
-    border-bottom: 1px solid #493914;
-    padding: 16px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
     display: flex;
     justify-content: space-between;
     align-items: center;
     gap: 10px;
+    padding: 14px 17px;
+    padding-top: calc(14px + env(safe-area-inset-top));
+    background: rgba(10,10,10,.75);
+    border-bottom: 1px solid rgba(255,215,0,.15);
+    backdrop-filter: blur(28px) saturate(160%);
+    -webkit-backdrop-filter: blur(28px) saturate(160%);
 }
 
 .logo {
-    font-size: 22px;
-    font-weight: 900;
-    color: #ffd700;
+    color: var(--gold);
+    font-size: 21px;
+    font-weight: 950;
+    letter-spacing: -.7px;
+    white-space: nowrap;
+    text-shadow: 0 0 20px rgba(255,215,0,.18);
 }
 
 .gold-btn {
-    background: linear-gradient(
-        135deg,
-        #fff0a0,
-        #ffd700,
-        #b8860b
-    );
+    background: linear-gradient(135deg, #fff5bb, #ffd700 52%, #b8860b);
     color: #171100;
-    border: none;
-    border-radius: 30px;
-    padding: 12px 15px;
+    border: 1px solid rgba(255,255,255,.35);
+    border-radius: 25px;
+    padding: 11px 14px;
+    font-size: 12px;
     font-weight: 900;
     cursor: pointer;
+    box-shadow:
+        0 5px 18px rgba(255,215,0,.12),
+        inset 0 1px 1px rgba(255,255,255,.7);
+    transition: transform .2s ease;
+}
+
+.gold-btn:active,
+.action-btn:active,
+.logout-btn:active {
+    transform: scale(.97);
 }
 
 main {
-    max-width: 750px;
+    width: 100%;
+    max-width: 760px;
     margin: auto;
-    padding: 20px;
+    padding: 22px 17px;
 }
 
+/* PROFILE HERO */
+
 .profile-card {
-    background: linear-gradient(
-        145deg,
-        #302408,
-        #17130c,
-        #111
-    );
-    border: 1px solid #80621e;
-    border-radius: 22px;
-    padding: 28px 20px;
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    padding: 30px 20px;
     text-align: center;
-    margin-bottom: 22px;
+    margin-bottom: 20px;
+    border: 1px solid rgba(255,215,0,.25);
+    border-radius: 30px;
+    background:
+        radial-gradient(ellipse at 50% 0%, rgba(255,215,0,.17), transparent 65%),
+        linear-gradient(145deg, rgba(255,255,255,.085), rgba(255,255,255,.025));
+    box-shadow:
+        0 18px 45px rgba(0,0,0,.25),
+        inset 0 1px 0 rgba(255,255,255,.12);
+    backdrop-filter: blur(25px);
+    -webkit-backdrop-filter: blur(25px);
+}
+
+.profile-card::after {
+    content: "";
+    position: absolute;
+    z-index: -1;
+    width: 160px;
+    height: 160px;
+    top: -85px;
+    right: -65px;
+    border-radius: 50%;
+    background: rgba(255,215,0,.13);
+    filter: blur(35px);
 }
 
 .avatar {
-    width: 85px;
-    height: 85px;
+    width: 92px;
+    height: 92px;
     margin: auto;
     display: flex;
     align-items: center;
     justify-content: center;
     border-radius: 50%;
-    background: linear-gradient(
-        135deg,
-        #fff0a0,
-        #ffd700,
-        #b8860b
-    );
+    background: linear-gradient(135deg, #fff5bb, #ffd700, #a77b12);
     color: #111;
     font-size: 38px;
     font-weight: 900;
-    border: 4px solid #44330b;
+    border: 4px solid rgba(255,255,255,.18);
+    box-shadow:
+        0 0 0 5px rgba(255,215,0,.08),
+        0 10px 30px rgba(255,215,0,.13),
+        inset 0 1px 2px rgba(255,255,255,.75);
 }
 
 .profile-card h1 {
-    margin: 17px 0 8px;
-    font-size: 24px;
+    margin: 19px 0 8px;
+    font-size: clamp(22px, 5vw, 28px);
+    font-weight: 900;
+    letter-spacing: -.5px;
+    overflow-wrap: anywhere;
 }
 
 .email {
-    color: #bbb;
+    color: #b9b7b0;
     font-size: 14px;
+    line-height: 1.6;
     overflow-wrap: anywhere;
 }
 
 .badge {
-    display: inline-block;
-    margin-top: 13px;
-    padding: 9px 16px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    margin-top: 10px;
+    padding: 10px 16px;
     border-radius: 25px;
-    background: #382a0a;
-    border: 1px solid #b58b20;
-    color: #ffd700;
-    font-size: 12px;
-    font-weight: 800;
+    background: rgba(255,215,0,.09);
+    border: 1px solid rgba(255,215,0,.32);
+    color: var(--gold);
+    font-size: 11px;
+    font-weight: 900;
+    letter-spacing: .8px;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.04);
 }
 
+/* GLASS SECTIONS */
+
 .section {
-    background: #151515;
-    border: 1px solid #493914;
-    border-radius: 18px;
-    padding: 20px;
-    margin-bottom: 18px;
+    position: relative;
+    overflow: hidden;
+    padding: 21px;
+    margin-bottom: 17px;
+    border: 1px solid var(--glass-border);
+    border-radius: 24px;
+    background:
+        linear-gradient(145deg, rgba(255,255,255,.065), rgba(255,255,255,.025));
+    box-shadow:
+        0 12px 30px rgba(0,0,0,.18),
+        inset 0 1px 0 rgba(255,255,255,.065);
+    backdrop-filter: blur(22px);
+    -webkit-backdrop-filter: blur(22px);
 }
 
 .section h2 {
-    color: #ffd700;
-    font-size: 18px;
-    margin-top: 0;
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    color: var(--gold);
+    font-size: 17px;
+    font-weight: 850;
+    margin: 0 0 17px;
+    line-height: 1.5;
 }
 
 .info-row {
-    padding: 14px 0;
-    border-bottom: 1px solid #333;
+    padding: 15px 0;
+    border-bottom: 1px solid rgba(255,255,255,.075);
+}
+
+.info-row:first-of-type {
+    padding-top: 4px;
 }
 
 .info-row:last-child {
     border-bottom: none;
+    padding-bottom: 2px;
 }
 
 .info-label {
     display: block;
-    color: #999;
-    font-size: 12px;
-    margin-bottom: 7px;
+    color: #92918b;
+    font-size: 11px;
+    font-weight: 700;
+    margin-bottom: 8px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
 }
 
 .info-value {
+    display: block;
+    color: #f3f1eb;
     font-size: 14px;
+    line-height: 1.65;
     overflow-wrap: anywhere;
 }
 
+/* INPUTS */
+
+label {
+    display: block;
+    color: #c7c4ba;
+    font-size: 13px;
+    font-weight: 650;
+    margin-bottom: 8px;
+}
+
 input {
+    display: block;
     width: 100%;
-    background: #202020;
+    min-height: 51px;
+    background: rgba(0,0,0,.28);
     color: white;
-    border: 1px solid #5a461c;
-    border-radius: 11px;
-    padding: 14px;
+    border: 1px solid rgba(255,255,255,.12);
+    border-radius: 15px;
+    padding: 14px 15px;
     font-size: 15px;
     margin: 10px 0;
+    outline: none;
+    transition: border-color .2s, box-shadow .2s, background .2s;
+}
+
+input::placeholder {
+    color: #77756f;
 }
 
 input:focus {
-    outline: none;
-    border-color: #ffd700;
+    border-color: rgba(255,215,0,.65);
+    background: rgba(255,255,255,.045);
+    box-shadow: 0 0 0 4px rgba(255,215,0,.07);
 }
+
+/* ACTION BUTTONS */
 
 .action-btn {
     width: 100%;
-    padding: 14px;
+    min-height: 49px;
+    padding: 14px 16px;
     margin-top: 10px;
-    background: linear-gradient(
-        135deg,
-        #fff0a0,
-        #ffd700,
-        #b8860b
-    );
+    background: linear-gradient(135deg, #fff5bb, #ffd700 52%, #b8860b);
     color: #171100;
-    border: none;
-    border-radius: 25px;
-    font-weight: 900;
+    border: 1px solid rgba(255,255,255,.35);
+    border-radius: 16px;
+    font-size: 13px;
+    font-weight: 950;
+    letter-spacing: .3px;
     cursor: pointer;
+    box-shadow:
+        0 6px 18px rgba(255,215,0,.09),
+        inset 0 1px 0 rgba(255,255,255,.65);
+    transition: transform .2s ease, opacity .2s ease;
 }
 
 .action-btn:disabled {
-    opacity: 0.6;
+    opacity: .55;
     cursor: not-allowed;
 }
 
 .logout-btn {
     width: 100%;
+    min-height: 52px;
     padding: 15px;
-    background: #3b1111;
-    color: #ff9999;
-    border: 1px solid #8a3030;
-    border-radius: 25px;
+    background: linear-gradient(135deg, rgba(120,25,25,.25), rgba(55,15,15,.45));
+    color: #ff9b9b;
+    border: 1px solid rgba(255,90,90,.32);
+    border-radius: 18px;
+    font-size: 13px;
     font-weight: 900;
     cursor: pointer;
+    transition: transform .2s ease, background .2s ease;
 }
 
+.logout-btn:active {
+    background: rgba(150,30,30,.3);
+}
+
+/* STATUS MESSAGES */
+
 .message {
-    padding: 12px;
-    border-radius: 10px;
-    margin: 12px 0;
+    padding: 12px 14px;
+    border-radius: 13px;
+    margin: 12px 0 0;
     font-size: 13px;
-    line-height: 1.6;
+    line-height: 1.7;
+    overflow-wrap: anywhere;
 }
 
 .message:empty {
@@ -211,49 +341,68 @@ input:focus {
 }
 
 .message.success {
-    background: #123b25;
+    background: rgba(30,130,75,.15);
+    border: 1px solid rgba(80,220,135,.2);
     color: #8df0b0;
 }
 
 .message.error {
-    background: #431b1b;
+    background: rgba(160,35,35,.15);
+    border: 1px solid rgba(255,100,100,.2);
     color: #ffaaaa;
 }
 
 .message.info {
-    background: #30270f;
+    background: rgba(255,215,0,.07);
+    border: 1px solid rgba(255,215,0,.16);
     color: #ffe08a;
 }
 
+/* FLOATING GLASS NAVIGATION */
+
 .bottom-nav {
     position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    z-index: 20;
-    background: #111;
-    border-top: 1px solid #493914;
+    left: 12px;
+    right: 12px;
+    bottom: calc(10px + env(safe-area-inset-bottom));
+    z-index: 200;
     display: flex;
-    padding: 11px 5px;
+    padding: 9px 5px;
+    border: 1px solid rgba(255,215,0,.18);
+    border-radius: 25px;
+    background: rgba(18,18,18,.80);
+    box-shadow:
+        0 12px 40px rgba(0,0,0,.45),
+        inset 0 1px 0 rgba(255,255,255,.08);
+    backdrop-filter: blur(30px) saturate(170%);
+    -webkit-backdrop-filter: blur(30px) saturate(170%);
 }
 
 .bottom-nav a {
     flex: 1;
+    min-width: 0;
     text-align: center;
     text-decoration: none;
-    color: #aaa;
+    color: #92908a;
     font-size: 11px;
+    font-weight: 650;
+    padding: 6px 2px;
+    border-radius: 16px;
+    transition: color .2s, background .2s;
 }
 
 .bottom-nav span {
     display: block;
-    font-size: 23px;
+    font-size: 21px;
     margin-bottom: 4px;
 }
 
 .bottom-nav .active {
-    color: #ffd700;
+    color: var(--gold);
+    background: rgba(255,215,0,.09);
 }
+
+/* LOADING SCREEN */
 
 .app-loader {
     position: fixed;
@@ -264,33 +413,31 @@ input:focus {
     align-items: center;
     justify-content: center;
     gap: 22px;
-    background: #080808;
+    background:
+        radial-gradient(ellipse at center, rgba(255,215,0,.09), transparent 45%),
+        #080808;
 }
 
 .loader-logo {
     font-size: 28px;
-    font-weight: 900;
-    color: #ffd700;
+    font-weight: 950;
+    color: var(--gold);
     letter-spacing: 2px;
+    text-shadow: 0 0 25px rgba(255,215,0,.22);
 }
 
 .loader-spinner {
-    width: 34px;
-    height: 34px;
-    border: 3px solid #30270f;
-    border-top-color: #ffd700;
+    width: 36px;
+    height: 36px;
+    border: 3px solid rgba(255,215,0,.14);
+    border-top-color: var(--gold);
+    border-right-color: #fff0a0;
     border-radius: 50%;
-    animation: spin 0.65s linear infinite;
+    animation: spin .75s linear infinite;
 }
 
 @keyframes spin {
     to { transform: rotate(360deg); }
-}
-
-@media (prefers-reduced-motion: reduce) {
-    .loader-spinner {
-        animation: none;
-    }
 }
 
 #content {
@@ -301,139 +448,143 @@ input:focus {
     color: #ff9999;
     text-align: center;
     padding: 15px;
+    overflow-wrap: anywhere;
 }
-</style>
-</head>
 
-<body>
+@media (min-width: 600px) {
+    main {
+        padding: 28px 22px;
+    }
 
-<div id="loading" class="app-loader">
+    .profile-card {
+        padding: 36px 25px;
+    }
+
+    .section {
+        padding: 24px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        scroll-behavior: auto !important;
+        animation-duration: .01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: .01ms !important;
+    }
+}
+</style></head><body><div id="loading" class="app-loader">
     <div class="loader-logo">6+MODS ✦</div>
     <div class="loader-spinner"></div>
-</div>
+</div><div id="error"></div><div id="content"><header>
+    <div class="logo">6+MODS ✦</div><button id="backBtn" class="gold-btn">
+    ✦ DASHBOARD ↗
+</button>
 
-<div id="error"></div>
+</header><main><section class="profile-card">
+    <div class="avatar" id="avatar">👤</div>
 
-<div id="content">
+    <h1 id="displayName">Mtumiaji</h1>
 
-<header>
-    <div class="logo">6+MODS ✦</div>
+    <p class="email" id="email"></p>
 
-    <button id="backBtn" class="gold-btn">
-        ✦ DASHBOARD ↗
-    </button>
-</header>
+    <span class="badge" id="membership">
+        FREE MEMBER
+    </span>
+</section>
 
-<main>
+<section class="section">
+    <h2>👤 Taarifa za Akaunti</h2>
 
-    <section class="profile-card">
-        <div class="avatar" id="avatar">👤</div>
+    <div class="info-row">
+        <span class="info-label">Jina</span>
+        <span class="info-value" id="infoName">—</span>
+    </div>
 
-        <h1 id="displayName">Mtumiaji</h1>
+    <div class="info-row">
+        <span class="info-label">Email</span>
+        <span class="info-value" id="infoEmail">—</span>
+    </div>
 
-        <p class="email" id="email"></p>
+    <div class="info-row">
+        <span class="info-label">User ID</span>
+        <span class="info-value" id="userId">—</span>
+    </div>
 
-        <span class="badge" id="membership">
-            FREE MEMBER
+    <div class="info-row">
+        <span class="info-label">Hali ya Akaunti</span>
+        <span class="info-value" id="accountStatus">
+            FREE
         </span>
-    </section>
+    </div>
+</section>
 
-    <section class="section">
-        <h2>👤 Taarifa za Akaunti</h2>
+<section class="section">
+    <h2>✏️ Badilisha Jina</h2>
 
-        <div class="info-row">
-            <span class="info-label">Jina</span>
-            <span class="info-value" id="infoName">—</span>
-        </div>
+    <form id="nameForm">
+        <label for="newName">Jina jipya</label>
 
-        <div class="info-row">
-            <span class="info-label">Email</span>
-            <span class="info-value" id="infoEmail">—</span>
-        </div>
-
-        <div class="info-row">
-            <span class="info-label">User ID</span>
-            <span class="info-value" id="userId">—</span>
-        </div>
-
-        <div class="info-row">
-            <span class="info-label">Hali ya Akaunti</span>
-            <span class="info-value" id="accountStatus">
-                FREE
-            </span>
-        </div>
-    </section>
-
-    <section class="section">
-        <h2>✏️ Badilisha Jina</h2>
-
-        <form id="nameForm">
-            <label for="newName">Jina jipya</label>
-
-            <input
-                id="newName"
-                type="text"
-                maxlength="60"
-                autocomplete="name"
-                placeholder="Andika jina jipya"
-                required
-            >
-
-            <button
-                type="submit"
-                id="saveNameBtn"
-                class="action-btn">
-                HIFADHI JINA
-            </button>
-        </form>
-
-        <div id="nameMessage" class="message"></div>
-    </section>
-
-    <section class="section">
-        <h2>🔑 Usalama wa Akaunti</h2>
-
-        <p style="color:#bbb;font-size:14px;line-height:1.7">
-            Unaweza kuomba link ya kubadilisha nenosiri.
-            Link itatumwa kwenye email yako.
-        </p>
+        <input
+            id="newName"
+            type="text"
+            maxlength="60"
+            autocomplete="name"
+            placeholder="Andika jina jipya"
+            required
+        >
 
         <button
-            id="resetPasswordBtn"
+            type="submit"
+            id="saveNameBtn"
             class="action-btn">
-            TUMA LINK YA PASSWORD
+            HIFADHI JINA
         </button>
+    </form>
 
-        <div id="passwordMessage" class="message"></div>
-    </section>
+    <div id="nameMessage" class="message"></div>
+</section>
 
-    <button id="logoutBtn" class="logout-btn">
-        🚪 LOGOUT
+<section class="section">
+    <h2>🔑 Usalama wa Akaunti</h2>
+
+    <p style="color:#b9b7b0;font-size:14px;line-height:1.8">
+        Unaweza kuomba link ya kubadilisha nenosiri.
+        Link itatumwa kwenye email yako.
+    </p>
+
+    <button
+        id="resetPasswordBtn"
+        class="action-btn">
+        TUMA LINK YA PASSWORD
     </button>
 
-</main>
+    <div id="passwordMessage" class="message"></div>
+</section>
 
-<nav class="bottom-nav">
+<button id="logoutBtn" class="logout-btn">
+    🚪 LOGOUT
+</button>
+
+</main><nav class="bottom-nav">
     <a href="user.html">
         <span>🏠</span>Home
-    </a>
+    </a><a href="tips.html">
+    <span>⚽</span>Tips
+</a>
 
-    <a href="tips.html">
-        <span>⚽</span>Tips
-    </a>
+<a href="market.html">
+    <span>🛒</span>Market
+</a>
 
-    <a href="market.html">
-        <span>🛒</span>Market
-    </a>
+<a href="profile.html" class="active">
+    <span>👤</span>Account
+</a>
 
-    <a href="profile.html" class="active">
-        <span>👤</span>Account
-    </a>
 </nav>
-
 </div>
-
-<script type="module" src="profile.js"></script>
-
+  <script type="module" src="profile.js"></script>
 </body>
 </html>
