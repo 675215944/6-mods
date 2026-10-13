@@ -1,10 +1,26 @@
 {
-    "name": "6+MODS",
-    "short_name": "6+MODS",
-    "description": "6+MODS Mods, Apps na Premium",
-    "start_url": "index.html",
-    "display": "standalone",
-    "background_color": "#0b0b0b",
-    "theme_color": "#111111",
-    "orientation": "portrait"
+  "name": "6+MODS",
+  "short_name": "6+MODS",
+  "description": "6+MODS - Apps, Mods na Premium",
+  "id": "/",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#080b14",
+  "theme_color": "#080b14",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
 }
