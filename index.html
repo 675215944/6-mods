@@ -115,6 +115,14 @@ setTimeout(() => {
     window.location.replace("auth.html");
 }, 4000);
 </script>
-
+<script>
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker.register("/sw.js")
+      .then(() => console.log("6+MODS PWA Ready"))
+      .catch(error => console.error("PWA Error:", error));
+  });
+}
+</script>
 </body>
   </html>
