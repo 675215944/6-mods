@@ -690,6 +690,62 @@
         }
 
     </script>
+<style>
+#install6mods {
+    display: none;
+    position: fixed;
+    bottom: 25px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 9999;
+    padding: 14px 24px;
+    border: 1px solid #ffe28a;
+    border-radius: 30px;
+    background: linear-gradient(135deg, #ffd700, #b8860b);
+    color: #080b14;
+    font-size: 14px;
+    font-weight: 800;
+    box-shadow: 0 5px 25px #ffd70055;
+    cursor: pointer;
+    white-space: nowrap;
+}
 
+#install6mods:active {
+    transform: translateX(-50%) scale(0.96);
+}
+</style>
+
+<button id="install6mods" type="button">
+    📲 INSTALL 6+MODS
+</button>
+
+<script>
+let deferredInstallPrompt = null;
+
+const installButton = document.getElementById("install6mods");
+
+window.addEventListener("beforeinstallprompt", (event) => {
+    event.preventDefault();
+    deferredInstallPrompt = event;
+    installButton.style.display = "block";
+});
+
+installButton.addEventListener("click", async () => {
+    if (!deferredInstallPrompt) return;
+
+    const promptEvent = deferredInstallPrompt;
+    deferredInstallPrompt = null;
+
+    installButton.style.display = "none";
+
+    await promptEvent.prompt();
+    await promptEvent.userChoice;
+});
+
+window.addEventListener("appinstalled", () => {
+    deferredInstallPrompt = null;
+    installButton.style.display = "none";
+});
+</script>
 </body>
 </html>
