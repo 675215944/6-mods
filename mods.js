@@ -64,7 +64,7 @@ onAuthStateChanged(auth, (user) => {
     loading.style.display = "none";
 
     if (user) {
-        content.style.display = "block";
+        content.hidden = false;
         renderMods();
     } else {
         window.location.replace("auth.html");
