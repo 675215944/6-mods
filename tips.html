@@ -1,551 +1,1046 @@
-<!DOCTYPE html><html lang="sw">
+<!DOCTYPE html>
+<html lang="sw">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="theme-color" content="#080b14"><title>Betting Tips | 6+MODS</title>
-
-<style>
-    * {
-        box-sizing: border-box;
-    }
-
-    :root {
-        --bg: #080b14;
-        --panel: #111827;
-        --panel2: #172033;
-        --gold: #ffd700;
-        --gold2: #b8860b;
-        --text: #ffffff;
-        --muted: #aab3c5;
-        --border: #303b52;
-        --green: #36d399;
-        --red: #ff7070;
-        --blue: #70a7ff;
-    }
-
-    body {
-        margin: 0;
-        padding-bottom: 85px;
-        background:
-            radial-gradient(ellipse at top, #17213a 0%, var(--bg) 55%);
-        color: var(--text);
-        font-family: Arial, sans-serif;
-    }
-
-    button, input, select {
-        font: inherit;
-    }
-
-    button {
-        cursor: pointer;
-    }
-
-    header {
-        position: sticky;
-        top: 0;
-        z-index: 20;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        gap: 10px;
-        padding: 15px;
-        background: rgba(8, 11, 20, .96);
-        border-bottom: 1px solid #55451d;
-        backdrop-filter: blur(14px);
-    }
-
-    .logo {
-        color: var(--gold);
-        font-size: 21px;
-        font-weight: 900;
-        letter-spacing: .5px;
-    }
-
-    .header-small {
-        color: var(--muted);
-        font-size: 10px;
-        margin-top: 4px;
-        letter-spacing: 1.5px;
-    }
-
-    .back-btn {
-        border: 1px solid #ffe680;
-        border-radius: 25px;
-        padding: 10px 13px;
-        background: linear-gradient(135deg, #fff0a0, #ffd700, #b8860b);
-        color: #171100;
-        font-size: 11px;
-        font-weight: 900;
-    }
-
-    main {
-        width: 100%;
-        max-width: 950px;
-        margin: auto;
-        padding: 17px;
-    }
-
-    .hero {
-        position: relative;
-        overflow: hidden;
-        padding: 28px 18px;
-        border-radius: 22px;
-        text-align: center;
-        background: linear-gradient(135deg, #253352, #151b2c 65%, #30240b);
-        border: 1px solid #6d5722;
-        box-shadow: 0 12px 35px #0005;
-        margin-bottom: 22px;
-    }
-
-    .hero::before {
-        content: "";
-        position: absolute;
-        width: 150px;
-        height: 150px;
-        top: -85px;
-        right: -45px;
-        border: 1px solid #ffd70035;
-        border-radius: 50%;
-        box-shadow: 0 0 0 20px #ffd70008, 0 0 0 40px #ffd70005;
-    }
-
-    .hero-icon {
-        font-size: 42px;
-    }
-
-    .hero h1 {
-        color: var(--gold);
-        margin: 10px 0;
-        font-size: 27px;
-    }
-
-    .hero p {
-        color: #d0d7e5;
-        font-size: 13px;
-        line-height: 1.8;
-        margin-bottom: 0;
-    }
-
-    .tabs {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 10px;
-        margin-bottom: 22px;
-    }
-
-    .tab {
-        padding: 14px 8px;
-        border: 1px solid var(--border);
-        border-radius: 13px;
-        background: #121827;
-        color: #c5cede;
-        font-size: 13px;
-        font-weight: 900;
-    }
-
-    .tab.active {
-        background: linear-gradient(135deg, #fff0a0, #ffd700, #b8860b);
-        color: #171100;
-        border-color: var(--gold);
-    }
-
-    .section-heading {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        gap: 10px;
-        margin: 20px 0 14px;
-    }
-
-    .section-heading h2 {
-        color: var(--gold);
-        font-size: 18px;
-        margin: 0;
-    }
-
-    .count {
-        color: var(--muted);
-        font-size: 11px;
-    }
-
-    .tips-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-        gap: 14px;
-    }
-
-    .tip-card {
-        padding: 17px;
-        border: 1px solid #34415b;
-        border-radius: 17px;
-        background: linear-gradient(145deg, #172033, #101521);
-        box-shadow: 0 8px 22px #0003;
-        min-width: 0;
-    }
-
-    .tip-top {
-        display: flex;
-        justify-content: space-between;
-        align-items: flex-start;
-        gap: 8px;
-        margin-bottom: 13px;
-    }
-
-    .league {
-        color: #c5cede;
-        font-size: 11px;
-        overflow-wrap: anywhere;
-    }
-
-    .status {
-        flex-shrink: 0;
-        display: inline-block;
-        padding: 6px 9px;
-        border-radius: 20px;
-        font-size: 10px;
-        font-weight: 900;
-    }
-
-    .pending {
-        background: #40310c;
-        color: var(--gold);
-    }
-
-    .won {
-        background: #063c29;
-        color: #5bf0a2;
-    }
-
-    .lost {
-        background: #4b1717;
-        color: #ff8989;
-    }
-
-    .void {
-        background: #333b4d;
-        color: #d5dceb;
-    }
-
-    .teams {
-        text-align: center;
-        font-size: 17px;
-        font-weight: 900;
-        line-height: 1.6;
-        margin: 16px 0;
-        overflow-wrap: anywhere;
-    }
-
-    .versus {
-        display: inline-block;
-        color: var(--gold);
-        font-size: 11px;
-        margin: 0 5px;
-    }
-
-    .match-time {
-        text-align: center;
-        color: var(--muted);
-        font-size: 11px;
-        line-height: 1.7;
-        margin-bottom: 14px;
-    }
-
-    .match-state {
-        display: block;
-        margin-top: 7px;
-        font-size: 11px;
-        font-weight: 900;
-        letter-spacing: .3px;
-    }
-
-    .match-state.upcoming {
-        color: var(--gold);
-    }
-
-    .match-state.started {
-        color: var(--green);
-    }
-
-    .match-state.ended {
-        color: var(--red);
-    }
-
-    .prediction-box {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        gap: 12px;
-        padding: 13px;
-        border: 1px solid #514522;
-        border-radius: 12px;
-        background: linear-gradient(135deg, #282312, #1a1b21);
-    }
-
-    .label {
-        display: block;
-        color: var(--muted);
-        font-size: 10px;
-        margin-bottom: 6px;
-    }
-
-    .prediction {
-        font-size: 14px;
-        font-weight: 900;
-        overflow-wrap: anywhere;
-    }
-
-    .odds {
-        color: var(--gold);
-        font-size: 19px;
-        font-weight: 900;
-    }
-
-    .tip-description {
-        margin-top: 12px;
-        color: #b9c3d5;
-        font-size: 12px;
-        line-height: 1.7;
-        overflow-wrap: anywhere;
-    }
-
-    .empty {
-        padding: 27px 15px;
-        text-align: center;
-        color: var(--muted);
-        background: #111827;
-        border: 1px dashed #35415a;
-        border-radius: 15px;
-        font-size: 13px;
-        line-height: 1.7;
-    }
-
-    .vip-panel {
-        overflow: hidden;
-        position: relative;
-        padding: 24px 17px;
-        text-align: center;
-        border: 1px solid #9a7928;
-        border-radius: 22px;
-        background: linear-gradient(145deg, #30260f, #171a25 70%, #101521);
-    }
-
-    .crown {
-        font-size: 45px;
-    }
-
-    .vip-panel h2 {
-        color: var(--gold);
-        margin: 10px 0;
-    }
-
-    .vip-panel > p {
-        color: #d0d7e5;
-        font-size: 13px;
-        line-height: 1.8;
-    }
-
-    .price-grid {
-        display: grid;
-        grid-template-columns: repeat(3, minmax(0, 1fr));
-        gap: 9px;
-        margin: 20px 0;
-    }
-
-    .price-card {
-        background: #0c1220;
-        border: 1px solid #5e4b20;
-        border-radius: 13px;
-        padding: 13px 5px;
-        min-width: 0;
-    }
-
-    .price-card.featured {
-        border-color: var(--gold);
-        box-shadow: 0 0 16px #ffd70015;
-    }
-
-    .price-name {
-        color: #c5cede;
-        font-size: 11px;
-        margin-bottom: 9px;
-    }
-
-    .price-amount {
-        color: var(--gold);
-        font-size: 15px;
-        font-weight: 900;
-        overflow-wrap: anywhere;
-    }
-
-    .price-unit {
-        color: var(--muted);
-        font-size: 10px;
-        margin-top: 5px;
-    }
-
-    .vip-button {
-        width: 100%;
-        padding: 15px;
-        border: 0;
-        border-radius: 30px;
-        background: linear-gradient(135deg, #fff0a0, #ffd700, #b8860b);
-        color: #171100;
-        font-weight: 900;
-        box-shadow: 0 6px 20px #ffd70020;
-    }
-
-    .vip-small {
-        color: var(--muted);
-        font-size: 11px !important;
-    }
-
-    .notice {
-        padding: 14px;
-        margin-top: 23px;
-        border-left: 3px solid var(--gold);
-        border-radius: 10px;
-        background: #121827;
-        color: #bac3d3;
-        font-size: 11px;
-        line-height: 1.8;
-    }
-
-    .bottom-nav {
-        position: fixed;
-        bottom: 0;
-        left: 0;
-        right: 0;
-        z-index: 30;
-        display: flex;
-        background: rgba(8, 11, 20, .97);
-        border-top: 1px solid #493914;
-        padding: 9px 4px;
-        backdrop-filter: blur(14px);
-    }
-
-    .bottom-nav a {
-        flex: 1;
-        color: #aab3c5;
-        text-align: center;
-        text-decoration: none;
-        font-size: 10px;
-    }
-
-    .bottom-nav a span {
-        display: block;
-        font-size: 21px;
-        margin-bottom: 4px;
-    }
-
-    .bottom-nav a.active {
-        color: var(--gold);
-    }
-
-    #loading {
-        position: fixed;
-        inset: 0;
-        z-index: 1000;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-        gap: 20px;
-        background: var(--bg);
-        color: var(--gold);
-    }
-
-    .loader-logo {
-        font-size: 27px;
-        font-weight: 900;
-        letter-spacing: 2px;
-    }
-
-    .loader-spinner {
-        width: 35px;
-        height: 35px;
-        border: 3px solid #30270f;
-        border-top-color: var(--gold);
-        border-radius: 50%;
-        animation: spin .7s linear infinite;
-    }
-
-    @keyframes spin {
-        to { transform: rotate(360deg); }
-    }
-
-    #content {
-        display: none;
-    }
-
-    #error {
-        display: none;
-        max-width: 600px;
-        margin: 25px auto;
-        padding: 15px;
-        color: #ffaaaa;
-        background: #301515;
-        border: 1px solid #633030;
-        border-radius: 10px;
-        font-size: 13px;
-        line-height: 1.7;
-        overflow-wrap: anywhere;
-    }
-
-    [hidden] {
-        display: none !important;
-    }
-
-    @media (max-width: 400px) {
-        main {
-            padding: 12px;
+    <meta name="theme-color" content="#080808">
+
+    <title>Betting Tips | 6+MODS</title>
+
+    <style>
+        :root {
+            color-scheme: dark;
+
+            --bg: #080808;
+            --gold: #ffd978;
+            --gold2: #b88b2e;
+            --gold-light: #fff0bc;
+
+            --text: #f7f7f7;
+            --muted: #a4a4ad;
+
+            --glass: rgba(255, 255, 255, 0.055);
+            --glass-strong: rgba(255, 255, 255, 0.085);
+            --glass-border: rgba(255, 255, 255, 0.13);
+
+            --green: #40e59a;
+            --red: #ff647c;
+            --blue: #75baff;
+
+            --radius: 26px;
+
+            --glass-shadow:
+                0 20px 60px rgba(0, 0, 0, 0.28),
+                inset 0 1px 0 rgba(255, 255, 255, 0.10);
+        }
+
+        * {
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        html {
+            min-height: 100%;
+            scroll-behavior: smooth;
+            background: var(--bg);
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            padding: 0 0 calc(115px + env(safe-area-inset-bottom));
+            overflow-x: hidden;
+
+            color: var(--text);
+            font-family:
+                -apple-system,
+                BlinkMacSystemFont,
+                "SF Pro Display",
+                "SF Pro Text",
+                "Segoe UI",
+                sans-serif;
+
+            background:
+                radial-gradient(
+                    ellipse at 8% 0%,
+                    rgba(184, 139, 46, 0.16),
+                    transparent 38%
+                ),
+                radial-gradient(
+                    ellipse at 95% 25%,
+                    rgba(115, 115, 150, 0.10),
+                    transparent 35%
+                ),
+                radial-gradient(
+                    ellipse at 50% 90%,
+                    rgba(255, 217, 120, 0.065),
+                    transparent 40%
+                ),
+                #080808;
+
+            background-attachment: fixed;
+        }
+
+        body::before {
+            content: "";
+            position: fixed;
+            inset: 0;
+            z-index: -1;
+            pointer-events: none;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    rgba(255, 255, 255, 0.018),
+                    transparent 35%,
+                    rgba(255, 217, 120, 0.018)
+                );
+
+            opacity: 0.9;
+        }
+
+        button,
+        a {
+            font: inherit;
+        }
+
+        button {
+            color: inherit;
+        }
+
+        a {
+            color: inherit;
+            text-decoration: none;
+        }
+
+        button:focus-visible,
+        a:focus-visible {
+            outline: 2px solid var(--gold);
+            outline-offset: 4px;
+        }
+
+        /* iOS-style translucent top bar */
+
+        header {
+            position: sticky;
+            top: 0;
+            z-index: 50;
+
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+
+            padding:
+                calc(12px + env(safe-area-inset-top))
+                17px
+                13px;
+
+            background: rgba(18, 18, 20, 0.64);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.09);
+
+            -webkit-backdrop-filter: blur(35px) saturate(180%);
+            backdrop-filter: blur(35px) saturate(180%);
         }
 
         .logo {
-            font-size: 18px;
+            color: var(--gold);
+            font-size: 21px;
+            font-weight: 900;
+            letter-spacing: -0.8px;
+
+            text-shadow: 0 0 24px rgba(255, 217, 120, 0.20);
+        }
+
+        .header-subtitle {
+            margin-top: 3px;
+            color: var(--muted);
+            font-size: 9px;
+            font-weight: 800;
+            letter-spacing: 2px;
         }
 
         .back-btn {
-            padding: 9px;
+            min-height: 40px;
+            padding: 10px 13px;
+
+            border: 1px solid rgba(255, 217, 120, 0.25);
+            border-radius: 15px;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    rgba(255, 217, 120, 0.15),
+                    rgba(255, 255, 255, 0.035)
+                );
+
+            box-shadow:
+                inset 0 1px 0 rgba(255, 255, 255, 0.12),
+                0 8px 25px rgba(0, 0, 0, 0.15);
+
+            color: var(--gold-light);
             font-size: 10px;
+            font-weight: 850;
+            letter-spacing: 0.3px;
+
+            cursor: pointer;
+            white-space: nowrap;
+
+            -webkit-backdrop-filter: blur(18px);
+            backdrop-filter: blur(18px);
+
+            transition:
+                transform 0.2s ease,
+                background 0.2s ease;
         }
 
-        .price-grid {
-            gap: 5px;
+        .back-btn:active {
+            transform: scale(0.96);
         }
 
-        .price-amount {
+        /* Main layout */
+
+        main {
+            width: 100%;
+            max-width: 760px;
+            margin: 0 auto;
+            padding: 22px 15px 30px;
+        }
+
+        /* Liquid Glass hero */
+
+        .hero {
+            position: relative;
+            isolation: isolate;
+            overflow: hidden;
+
+            padding: 29px 21px 27px;
+            margin-bottom: 22px;
+
+            text-align: center;
+
+            border: 1px solid rgba(255, 255, 255, 0.14);
+            border-radius: 31px;
+
+            background:
+                radial-gradient(
+                    ellipse at 50% 0%,
+                    rgba(255, 217, 120, 0.16),
+                    transparent 62%
+                ),
+                linear-gradient(
+                    145deg,
+                    rgba(255, 255, 255, 0.085),
+                    rgba(255, 255, 255, 0.025) 60%,
+                    rgba(255, 217, 120, 0.035)
+                );
+
+            box-shadow:
+                0 25px 70px rgba(0, 0, 0, 0.24),
+                inset 0 1px 0 rgba(255, 255, 255, 0.17),
+                inset 0 -1px 0 rgba(255, 255, 255, 0.025);
+
+            -webkit-backdrop-filter: blur(30px) saturate(160%);
+            backdrop-filter: blur(30px) saturate(160%);
+        }
+
+        .hero::before {
+            content: "";
+            position: absolute;
+            z-index: -1;
+            pointer-events: none;
+
+            width: 210px;
+            height: 210px;
+            top: -145px;
+            left: calc(50% - 105px);
+
+            border-radius: 50%;
+
+            background: rgba(255, 226, 154, 0.16);
+            filter: blur(45px);
+        }
+
+        .hero::after {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 12%;
+            right: 12%;
+            height: 1px;
+
+            background: linear-gradient(
+                90deg,
+                transparent,
+                rgba(255, 255, 255, 0.38),
+                transparent
+            );
+        }
+
+        .hero-icon {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            width: 68px;
+            height: 68px;
+            margin: 0 auto 16px;
+
+            border-radius: 23px;
+            border: 1px solid rgba(255, 217, 120, 0.30);
+
+            background:
+                linear-gradient(
+                    145deg,
+                    rgba(255, 217, 120, 0.22),
+                    rgba(255, 255, 255, 0.045)
+                );
+
+            box-shadow:
+                inset 0 1px 0 rgba(255, 255, 255, 0.20),
+                0 12px 35px rgba(255, 217, 120, 0.09);
+
+            font-size: 31px;
+        }
+
+        .hero h1 {
+            margin: 0;
+
+            color: var(--gold-light);
+            font-size: clamp(27px, 7vw, 36px);
+            font-weight: 950;
+            letter-spacing: -1.3px;
+            line-height: 1.1;
+
+            text-shadow: 0 0 35px rgba(255, 217, 120, 0.13);
+        }
+
+        .hero p {
+            max-width: 440px;
+            margin: 12px auto 0;
+
+            color: #b9b9c1;
+            font-size: 13px;
+            line-height: 1.75;
+        }
+
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+
+            margin-top: 18px;
+            padding: 8px 12px;
+
+            border: 1px solid rgba(255, 217, 120, 0.20);
+            border-radius: 999px;
+
+            background: rgba(255, 217, 120, 0.065);
+            color: var(--gold-light);
+
+            font-size: 10px;
+            font-weight: 800;
+            letter-spacing: 1.2px;
+        }
+
+        .hero-badge::before {
+            content: "";
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--green);
+            box-shadow: 0 0 12px rgba(64, 229, 154, 0.7);
+        }
+
+        /* Free / VIP tabs */
+
+        .tabs {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 7px;
+
+            padding: 6px;
+            margin-bottom: 22px;
+
+            border: 1px solid rgba(255, 255, 255, 0.10);
+            border-radius: 20px;
+
+            background: rgba(255, 255, 255, 0.035);
+
+            box-shadow:
+                inset 0 1px 0 rgba(255, 255, 255, 0.035);
+
+            -webkit-backdrop-filter: blur(25px);
+            backdrop-filter: blur(25px);
+        }
+
+        .tab-btn {
+            position: relative;
+
+            min-height: 48px;
+            padding: 12px 10px;
+
+            border: 1px solid transparent;
+            border-radius: 15px;
+
+            background: transparent;
+            color: #a8a8b1;
+
             font-size: 12px;
+            font-weight: 850;
+            letter-spacing: 0.4px;
+
+            cursor: pointer;
+
+            transition:
+                background 0.25s ease,
+                color 0.25s ease,
+                border-color 0.25s ease,
+                box-shadow 0.25s ease;
+        }
+
+        .tab-btn.active {
+            border-color: rgba(255, 217, 120, 0.23);
+
+            background:
+                linear-gradient(
+                    135deg,
+                    rgba(255, 217, 120, 0.17),
+                    rgba(255, 255, 255, 0.045)
+                );
+
+            color: var(--gold-light);
+
+            box-shadow:
+                inset 0 1px 0 rgba(255, 255, 255, 0.12),
+                0 5px 18px rgba(0, 0, 0, 0.14);
+        }
+
+        .tab-btn:active {
+            transform: scale(0.98);
+        }
+
+        /* Section titles */
+
+        .section-heading {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+
+            margin: 0 2px 15px;
+        }
+
+        .section-heading h2 {
+            margin: 0;
+            color: #f5f5f7;
+
+            font-size: 18px;
+            font-weight: 850;
+            letter-spacing: -0.4px;
+        }
+
+        .count-badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+
+            min-width: 32px;
+            min-height: 27px;
+            padding: 5px 9px;
+
+            border: 1px solid rgba(255, 217, 120, 0.22);
+            border-radius: 999px;
+
+            background: rgba(255, 217, 120, 0.08);
+            color: var(--gold-light);
+
+            font-size: 11px;
+            font-weight: 850;
+        }
+
+        /* Tips cards */
+
+        .tips-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 13px;
+        }
+
+        .tip-card {
+            position: relative;
+            overflow: hidden;
+
+            padding: 18px;
+
+            border: 1px solid rgba(255, 255, 255, 0.11);
+            border-radius: 23px;
+
+            background:
+                linear-gradient(
+                    145deg,
+                    rgba(255, 255, 255, 0.075),
+                    rgba(255, 255, 255, 0.025) 65%,
+                    rgba(255, 217, 120, 0.025)
+                );
+
+            box-shadow:
+                0 13px 36px rgba(0, 0, 0, 0.18),
+                inset 0 1px 0 rgba(255, 255, 255, 0.09);
+
+            -webkit-backdrop-filter: blur(24px) saturate(150%);
+            backdrop-filter: blur(24px) saturate(150%);
+
+            transition:
+                transform 0.22s ease,
+                border-color 0.22s ease;
+        }
+
+        .tip-card::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 20px;
+            right: 20px;
+            height: 1px;
+
+            background: linear-gradient(
+                90deg,
+                transparent,
+                rgba(255, 255, 255, 0.25),
+                transparent
+            );
+        }
+
+        .tip-card:active {
+            transform: scale(0.99);
+        }
+
+        .tip-card h3 {
+            margin: 0 0 12px;
+            color: #fff;
+            font-size: 15px;
+            font-weight: 800;
+        }
+
+        .tip-card p {
+            color: #c4c4cc;
+            font-size: 12px;
+            line-height: 1.7;
+        }
+
+        .tip-card strong {
+            color: var(--gold-light);
+        }
+
+        .tip-card .match,
+        .match {
+            color: #f4f4f6;
+            font-weight: 750;
+        }
+
+        .tip-card .odds,
+        .odds {
+            color: var(--gold-light);
+            font-weight: 850;
+        }
+
+        .tip-card .status,
+        .status {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+
+            padding: 6px 9px;
+
+            border: 1px solid rgba(255, 255, 255, 0.09);
+            border-radius: 999px;
+
+            background: rgba(255, 255, 255, 0.045);
+
+            font-size: 10px;
+            font-weight: 800;
+        }
+
+        /* Empty state */
+
+        .empty-message,
+        #emptyMessage {
+            padding: 29px 18px;
+            margin-top: 12px;
+
+            text-align: center;
+
+            border: 1px dashed rgba(255, 255, 255, 0.15);
+            border-radius: 23px;
+
+            background: rgba(255, 255, 255, 0.025);
+            color: var(--muted);
+
+            font-size: 13px;
+            line-height: 1.7;
+        }
+
+        /* VIP panel */
+
+        .vip-panel {
+            position: relative;
+            overflow: hidden;
+
+            padding: 21px 17px;
+            margin-bottom: 19px;
+
+            border: 1px solid rgba(255, 217, 120, 0.24);
+            border-radius: 27px;
+
+            background:
+                radial-gradient(
+                    ellipse at 100% 0%,
+                    rgba(255, 217, 120, 0.13),
+                    transparent 48%
+                ),
+                linear-gradient(
+                    145deg,
+                    rgba(255, 217, 120, 0.075),
+                    rgba(255, 255, 255, 0.025) 65%
+                );
+
+            box-shadow:
+                0 18px 50px rgba(0, 0, 0, 0.20),
+                inset 0 1px 0 rgba(255, 255, 255, 0.13);
+
+            -webkit-backdrop-filter: blur(30px) saturate(155%);
+            backdrop-filter: blur(30px) saturate(155%);
+        }
+
+        .vip-panel::after {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 15%;
+            right: 15%;
+            height: 1px;
+
+            background: linear-gradient(
+                90deg,
+                transparent,
+                rgba(255, 240, 188, 0.45),
+                transparent
+            );
+
+            pointer-events: none;
+        }
+
+        .vip-panel h2 {
+            margin: 0 0 8px;
+            color: var(--gold-light);
+
+            font-size: 23px;
+            font-weight: 950;
+            letter-spacing: -0.7px;
+        }
+
+        .vip-panel > p {
+            margin: 0 0 19px;
+            color: #c0c0c8;
+            font-size: 12px;
+            line-height: 1.7;
+        }
+
+        .vip-prices {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 10px;
+            margin-bottom: 17px;
         }
 
         .price-card {
-            padding: 12px 3px;
+            position: relative;
+
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+
+            padding: 15px 14px;
+
+            border: 1px solid rgba(255, 255, 255, 0.11);
+            border-radius: 19px;
+
+            background: rgba(255, 255, 255, 0.045);
+
+            box-shadow:
+                inset 0 1px 0 rgba(255, 255, 255, 0.06);
+
+            -webkit-backdrop-filter: blur(18px);
+            backdrop-filter: blur(18px);
         }
-    }
 
-    @media (prefers-reduced-motion: reduce) {
-        .loader-spinner {
-            animation: none;
+        .price-card > div:first-child {
+            min-width: 0;
         }
-    }
-</style>
 
-</head><body><div id="loading">
-    <div class="loader-logo">6+MODS ✦</div>
-    <div class="loader-spinner"></div>
-    <div style="font-size:12px">Inapakia Betting Tips...</div>
-</div>
+        .price-card h3 {
+            margin: 0 0 5px;
+            color: #f7f7f7;
 
-<div id="error" role="alert"></div>
+            font-size: 13px;
+            font-weight: 850;
+        }
 
-<div id="content">
+        .price-card p {
+            margin: 0;
+            color: var(--muted);
+            font-size: 10px;
+            line-height: 1.5;
+        }
+
+        .price {
+            flex-shrink: 0;
+
+            color: var(--gold-light);
+            font-size: 17px;
+            font-weight: 950;
+            letter-spacing: -0.4px;
+
+            text-align: right;
+            white-space: nowrap;
+        }
+
+        .price small {
+            display: block;
+            margin-top: 3px;
+
+            color: var(--muted);
+            font-size: 9px;
+            font-weight: 650;
+            letter-spacing: 0;
+        }
+
+        .join-btn,
+        #joinVipBtn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 9px;
+
+            width: 100%;
+            min-height: 51px;
+            padding: 14px 17px;
+
+            border: 1px solid rgba(255, 240, 188, 0.48);
+            border-radius: 18px;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #ffe8a0 0%,
+                    #ffd978 43%,
+                    #bd8e32 100%
+                );
+
+            color: #211706;
+
+            font-size: 13px;
+            font-weight: 950;
+            letter-spacing: 0.15px;
+
+            box-shadow:
+                0 9px 28px rgba(184, 139, 46, 0.18),
+                inset 0 1px 0 rgba(255, 255, 255, 0.55);
+
+            cursor: pointer;
+
+            transition:
+                transform 0.2s ease,
+                filter 0.2s ease,
+                box-shadow 0.2s ease;
+        }
+
+        .join-btn:active,
+        #joinVipBtn:active {
+            transform: scale(0.98);
+            filter: brightness(0.96);
+        }
+
+        /* VIP tips area */
+
+        #vipTipsContainer {
+            margin-top: 22px;
+        }
+
+        /* Notice */
+
+        .notice {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+
+            padding: 15px;
+
+            border: 1px solid rgba(255, 255, 255, 0.09);
+            border-radius: 19px;
+
+            background: rgba(255, 255, 255, 0.035);
+            color: #b6b6be;
+
+            font-size: 11px;
+            line-height: 1.75;
+
+            -webkit-backdrop-filter: blur(20px);
+            backdrop-filter: blur(20px);
+        }
+
+        .notice-icon {
+            flex-shrink: 0;
+            font-size: 16px;
+        }
+
+        /* Floating iOS 26-style bottom navigation */
+
+        .bottom-nav {
+            position: fixed;
+            z-index: 100;
+
+            left: 12px;
+            right: 12px;
+            bottom: max(10px, env(safe-area-inset-bottom));
+
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 5px;
+
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 9px 7px;
+
+            border: 1px solid rgba(255, 255, 255, 0.16);
+            border-radius: 27px;
+
+            background:
+                linear-gradient(
+                    145deg,
+                    rgba(49, 49, 53, 0.80),
+                    rgba(23, 23, 26, 0.76)
+                );
+
+            box-shadow:
+                0 15px 50px rgba(0, 0, 0, 0.45),
+                inset 0 1px 0 rgba(255, 255, 255, 0.14),
+                inset 0 -1px 0 rgba(255, 255, 255, 0.025);
+
+            -webkit-backdrop-filter: blur(38px) saturate(185%);
+            backdrop-filter: blur(38px) saturate(185%);
+        }
+
+        .bottom-nav a {
+            position: relative;
+
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+
+            min-width: 0;
+            min-height: 54px;
+            padding: 8px 3px;
+
+            border: 1px solid transparent;
+            border-radius: 19px;
+
+            color: #b4b4bc;
+
+            font-size: 9px;
+            font-weight: 750;
+            letter-spacing: 0.1px;
+
+            transition:
+                color 0.2s ease,
+                background 0.2s ease,
+                border-color 0.2s ease,
+                transform 0.2s ease;
+        }
+
+        .bottom-nav a .nav-icon {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            min-height: 23px;
+            font-size: 20px;
+            line-height: 1;
+        }
+
+        .bottom-nav a.active {
+            border-color: rgba(255, 217, 120, 0.17);
+
+            background:
+                linear-gradient(
+                    145deg,
+                    rgba(255, 217, 120, 0.16),
+                    rgba(255, 255, 255, 0.045)
+                );
+
+            color: var(--gold-light);
+
+            box-shadow:
+                inset 0 1px 0 rgba(255, 255, 255, 0.10),
+                0 4px 15px rgba(0, 0, 0, 0.13);
+        }
+
+        .bottom-nav a:active {
+            transform: scale(0.94);
+        }
+
+        /* Loading state */
+
+        #loading {
+            min-height: 50vh;
+
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 17px;
+
+            color: var(--muted);
+            font-size: 12px;
+        }
+
+        .spinner {
+            width: 43px;
+            height: 43px;
+
+            border: 2px solid rgba(255, 255, 255, 0.10);
+            border-top-color: var(--gold);
+            border-right-color: rgba(255, 217, 120, 0.40);
+            border-radius: 50%;
+
+            box-shadow: 0 0 25px rgba(255, 217, 120, 0.07);
+
+            animation: spin 0.85s linear infinite;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        #error {
+            padding: 17px;
+            margin: 15px 0;
+
+            border: 1px solid rgba(255, 100, 124, 0.25);
+            border-radius: 19px;
+
+            background: rgba(255, 100, 124, 0.07);
+            color: #ffb0bd;
+
+            font-size: 12px;
+            line-height: 1.7;
+        }
+
+        /* General utility styling */
+
+        .hidden {
+            display: none !important;
+        }
+
+        #content {
+            animation: appear 0.45s ease both;
+        }
+
+        @keyframes appear {
+            from {
+                opacity: 0;
+                transform: translateY(8px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        ::selection {
+            color: #171207;
+            background: var(--gold);
+        }
+
+        ::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            border-radius: 99px;
+            background: rgba(255, 217, 120, 0.25);
+        }
+
+        /* Larger screens */
+
+        @media (min-width: 600px) {
+            main {
+                padding-top: 30px;
+            }
+
+            .hero {
+                padding: 36px 28px;
+            }
+
+            .tips-grid {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+
+            .vip-prices {
+                grid-template-columns: repeat(3, minmax(0, 1fr));
+            }
+
+            .price-card {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 13px;
+            }
+
+            .price {
+                text-align: left;
+                white-space: normal;
+            }
+
+            .bottom-nav {
+                bottom: max(15px, env(safe-area-inset-bottom));
+            }
+        }
+
+        /* Accessibility: respect reduced-motion settings */
+
+        @media (prefers-reduced-motion: reduce) {
+            *,
+            *::before,
+            *::after {
+                scroll-behavior: auto !important;
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+    </style>
+</head>
+
+<body>
 
     <header>
         <div>
             <div class="logo">6+MODS ✦</div>
-            <div class="header-small">BETTING TIPS CENTER</div>
+            <div class="header-subtitle">BETTING TIPS CENTER</div>
         </div>
 
-        <button id="backBtn" class="back-btn" type="button">
+        <button class="back-btn" id="backBtn" type="button">
             ✦ DASHBOARD ↗
         </button>
     </header>
@@ -554,121 +1049,170 @@
 
         <section class="hero">
             <div class="hero-icon">⚽</div>
+
             <h1>BETTING TIPS</h1>
+
             <p>
-                Karibu kwenye Betting Tips za 6+MODS.
-                Angalia ratiba, muda uliobaki na matokeo ya tips.
+                Pata uchambuzi wa mechi na betting tips kupitia
+                mfumo wa kisasa wa 6+MODS.
             </p>
+
+            <div class="hero-badge">
+                PREMIUM TIPS CENTER
+            </div>
         </section>
 
         <div class="tabs">
-            <button id="freeTab" class="tab active" type="button">
+            <button class="tab tab-btn active" id="freeTab" type="button">
                 ⚽ FREE TIPS
             </button>
 
-            <button id="vipTab" class="tab" type="button">
-                👑 VIP TIPS
+            <button class="tab tab-btn" id="vipTab" type="button">
+                ✦ VIP TIPS
             </button>
         </div>
 
-        <section id="freeSection">
+        <div id="loading">
+            <div class="spinner"></div>
+            <span></span>
+        </div>
 
-            <div class="section-heading">
-                <h2>⚽ Free Predictions</h2>
-                <span id="tipsCount" class="count">0 tips</span>
-            </div>
+        <div id="error" hidden></div>
 
-            <div id="tipsGrid" class="tips-grid"></div>
+        <div id="content" style="display:none;">
 
-            <div id="emptyMessage" class="empty" hidden>
-                Hakuna Free Tips zilizowekwa kwa sasa.
-            </div>
+            <section id="freeSection">
 
-        </section>
-
-        <section id="vipSection" hidden>
-            <div class="vip-panel">
-                <div class="crown">👑</div>
-
-                <h2>VIP BETTING TIPS</h2>
-
-                <p>
-                    Fungua uanachama wa Premium ili kupata
-                    VIP Tips. Tips hizi hazitaonyeshwa kabla
-                    uanachama wako haujathibitishwa.
-                </p>
-
-                <div class="price-grid">
-
-                    <div class="price-card">
-                        <div class="price-name">DAILY VIP</div>
-                        <div class="price-amount">TSh 3,000</div>
-                        <div class="price-unit">Siku 1</div>
-                    </div>
-
-                    <div class="price-card featured">
-                        <div class="price-name">WEEKLY VIP</div>
-                        <div class="price-amount">TSh 10,000</div>
-                        <div class="price-unit">Siku 7</div>
-                    </div>
-
-                    <div class="price-card">
-                        <div class="price-name">MONTHLY VIP</div>
-                        <div class="price-amount">TSh 30,000</div>
-                        <div class="price-unit">Siku 30</div>
-                    </div>
-
-                </div>
-
-                <button id="joinVipBtn" class="vip-button" type="button">
-                    💎 JIUNGE NA PREMIUM
-                </button>
-
-                <p class="vip-small">
-                    VIP Tips zitaonekana baada ya malipo
-                    kuthibitishwa na uanachama kuidhinishwa.
-                </p>
-            </div>
-
-            <div id="vipTipsContainer" hidden>
                 <div class="section-heading">
-                    <h2>👑 Premium Predictions</h2>
-                    <span id="vipTipsCount" class="count"></span>
+                    <h2>⚽ Free Tips</h2>
+
+                    <span class="count-badge" id="tipsCount">
+                        0
+                    </span>
                 </div>
 
-                <div id="vipTipsGrid" class="tips-grid"></div>
-            </div>
-        </section>
+                <div class="tips-grid" id="tipsGrid"></div>
 
-        <div class="notice">
-            ⚠️ Huduma hii ni kwa watu wenye umri wa miaka 18 au zaidi.
-            Betting ina hatari ya kupoteza fedha; hakuna prediction
-            inayohakikisha ushindi.
+                <div id="emptyMessage" hidden>
+                    Hakuna free tips kwa sasa. Tafadhali rudi baadaye.
+                </div>
+
+            </section>
+
+            <section id="vipSection" hidden>
+
+                <div class="vip-panel">
+
+                    <h2>✦ VIP MEMBERSHIP</h2>
+
+                    <p>
+                        Jiunge na VIP ili kufungua eneo la tips za
+                        wanachama. Chagua kifurushi kinachokufaa.
+                    </p>
+
+                    <div class="vip-prices">
+
+                        <div class="price-card">
+                            <div>
+                                <h3>Daily VIP</h3>
+                                <p>Uanachama wa siku moja</p>
+                            </div>
+
+                            <div class="price">
+                                TSh 3,000
+                                <small>/ siku</small>
+                            </div>
+                        </div>
+
+                        <div class="price-card">
+                            <div>
+                                <h3>Weekly VIP</h3>
+                                <p>Uanachama wa siku saba</p>
+                            </div>
+
+                            <div class="price">
+                                TSh 10,000
+                                <small>/ wiki</small>
+                            </div>
+                        </div>
+
+                        <div class="price-card">
+                            <div>
+                                <h3>Monthly VIP</h3>
+                                <p>Uanachama wa mwezi mmoja</p>
+                            </div>
+
+                            <div class="price">
+                                TSh 30,000
+                                <small>/ mwezi</small>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <button class="join-btn" id="joinVipBtn" type="button">
+                        ✦ JIUNGE NA VIP
+                        <span>↗</span>
+                    </button>
+
+                </div>
+
+                <div id="vipTipsContainer">
+
+                    <div class="section-heading">
+                        <h2>✦ VIP Tips</h2>
+
+                        <span class="count-badge" id="vipTipsCount">
+                            0
+                        </span>
+                    </div>
+
+                    <div class="tips-grid" id="vipTipsGrid"></div>
+
+                </div>
+
+            </section>
+
+            <div class="notice">
+                <span class="notice-icon">ⓘ</span>
+
+                <div>
+                    <strong>Cheza kwa uwajibikaji.</strong>
+                    Betting ina hatari ya kupoteza fedha. Tips si
+                    dhamana ya kushinda. Huduma hii ni kwa watu wenye
+                    umri wa miaka 18 au zaidi.
+                </div>
+            </div>
+
         </div>
 
     </main>
 
     <nav class="bottom-nav">
+
         <a href="user.html">
-            <span>🏠</span>Home
+            <span class="nav-icon">⌂</span>
+            <span>Home</span>
         </a>
 
         <a href="tips.html" class="active">
-            <span>⚽</span>Tips
+            <span class="nav-icon">⚽</span>
+            <span>Tips</span>
         </a>
 
         <a href="market.html">
-            <span>🛒</span>Market
+            <span class="nav-icon">◈</span>
+            <span>Market</span>
         </a>
 
         <a href="profile.html">
-            <span>👤</span>Account
+            <span class="nav-icon">♙</span>
+            <span>Profile</span>
         </a>
+
     </nav>
 
-</div>
-
-<script type="module" src="./tips.js"></script>
+    <script type="module" src="./tips.js"></script>
 
 </body>
 </html>
