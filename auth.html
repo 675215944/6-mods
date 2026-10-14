@@ -2,12 +2,16 @@
 <html lang="sw">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <meta name="theme-color" content="#080808">
-    <link rel="manifest" href="/manifest.json">
-    <title>Ingia au Jisajili | 6+MODS</title>
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="6+MODS">
 
+    <link rel="manifest" href="/manifest.json">
     <link rel="stylesheet" href="style.css">
+
+    <title>Ingia au Jisajili | 6+MODS</title>
 
     <style>
         * {
@@ -19,9 +23,9 @@
             --gold-light: #ffe9a6;
             --gold-dark: #9e7928;
             --black: #080808;
-            --glass: rgba(255, 255, 255, 0.045);
-            --border: rgba(232, 198, 106, 0.22);
             --muted: #aaa69b;
+            --border: rgba(232, 198, 106, 0.22);
+            --glass: rgba(255, 255, 255, 0.045);
         }
 
         html {
@@ -33,9 +37,17 @@
             margin: 0;
             min-height: 100vh;
             min-height: 100dvh;
+            overflow-x: hidden;
+
             color: #fff;
-            font-family: -apple-system, BlinkMacSystemFont,
-                "SF Pro Display", "Segoe UI", Arial, sans-serif;
+
+            font-family:
+                -apple-system,
+                BlinkMacSystemFont,
+                "SF Pro Display",
+                "Segoe UI",
+                Arial,
+                sans-serif;
 
             background:
                 radial-gradient(
@@ -51,7 +63,6 @@
                 #080808;
 
             -webkit-font-smoothing: antialiased;
-            overflow-x: hidden;
         }
 
         button,
@@ -59,29 +70,55 @@
             font: inherit;
         }
 
-        /* PREMIUM HEADER */
+        button {
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        button:focus-visible,
+        input:focus-visible {
+            outline: 2px solid var(--gold-light);
+            outline-offset: 3px;
+        }
+
+        [hidden] {
+            display: none !important;
+        }
+
+        /* ==============================
+           PREMIUM IOS-STYLE HEADER
+        ============================== */
 
         .top-bar {
+            position: relative;
+            z-index: 10;
+
             width: 100%;
             min-height: 78px;
+
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 18px 20px;
+
+            padding:
+                18px
+                20px;
 
             background: rgba(12, 12, 12, 0.72);
-            border-bottom: 1px solid rgba(232, 198, 106, 0.15);
 
-            backdrop-filter: blur(28px) saturate(150%);
-            -webkit-backdrop-filter: blur(28px) saturate(150%);
+            border-bottom:
+                1px solid rgba(232, 198, 106, 0.15);
+
+            backdrop-filter:
+                blur(28px) saturate(150%);
+
+            -webkit-backdrop-filter:
+                blur(28px) saturate(150%);
         }
 
         .logo {
             font-size: 28px;
             font-weight: 950;
             letter-spacing: 2px;
-
-            color: var(--gold-light);
 
             background: linear-gradient(
                 135deg,
@@ -95,47 +132,88 @@
             background-clip: text;
             -webkit-text-fill-color: transparent;
 
-            filter: drop-shadow(0 0 16px rgba(232, 198, 106, 0.13));
+            filter:
+                drop-shadow(
+                    0 0 16px rgba(232, 198, 106, 0.13)
+                );
         }
 
-        /* MAIN GLASS CARD */
+        /* ==============================
+           FLOATING PWA INSTALL BANNER
+        ============================== */
 
-        .auth-box {
-            position: relative;
-            isolation: isolate;
+        .install-banner {
+            position: fixed;
 
-            width: calc(100% - 32px);
-            max-width: 430px;
-
-            margin: 45px auto 25px;
-            padding: 32px 24px 28px;
-
-            background: linear-gradient(
-                145deg,
-                rgba(255, 255, 255, 0.075),
-                rgba(255, 255, 255, 0.018) 45%,
-                rgba(232, 198, 106, 0.035)
+            top: calc(
+                90px + env(safe-area-inset-top, 0px)
             );
 
-            border: 1px solid var(--border);
-            border-radius: 30px;
+            left: 50%;
+
+            width: calc(100% - 32px);
+            max-width: 350px;
+
+            padding: 16px;
+
+            z-index: 9999;
+
+            color: #fff;
+
+            background:
+                linear-gradient(
+                    145deg,
+                    rgba(42, 39, 29, 0.94),
+                    rgba(13, 13, 13, 0.96)
+                );
+
+            border:
+                1px solid rgba(255, 233, 166, 0.34);
+
+            border-radius: 24px;
 
             box-shadow:
-                0 24px 70px rgba(0, 0, 0, 0.52),
-                inset 0 1px 0 rgba(255, 255, 255, 0.09),
-                0 0 40px rgba(201, 157, 55, 0.035);
+                0 20px 60px rgba(0, 0, 0, 0.65),
+                0 0 30px rgba(232, 198, 106, 0.10),
+                inset 0 1px 0 rgba(255, 255, 255, 0.15);
 
-            backdrop-filter: blur(35px) saturate(150%);
-            -webkit-backdrop-filter: blur(35px) saturate(150%);
+            backdrop-filter:
+                blur(35px) saturate(170%);
 
-            overflow: hidden;
+            -webkit-backdrop-filter:
+                blur(35px) saturate(170%);
+
+            transform:
+                translateX(-50%) translateY(-16px);
+
+            opacity: 0;
+
+            visibility: hidden;
+            pointer-events: none;
+
+            transition:
+                transform 0.35s ease,
+                opacity 0.35s ease,
+                visibility 0.35s ease;
         }
 
-        .auth-box::before {
+        .install-banner.show {
+            transform:
+                translateX(-50%) translateY(0);
+
+            opacity: 1;
+            visibility: visible;
+            pointer-events: auto;
+        }
+
+        .install-banner::before {
             content: "";
+
             position: absolute;
+
             top: 0;
             left: 15%;
+
             width: 70%;
             height: 1px;
 
@@ -149,24 +227,227 @@
             pointer-events: none;
         }
 
+        .install-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+
+            padding-right: 25px;
+        }
+
+        .install-icon {
+            width: 48px;
+            height: 48px;
+
+            flex-shrink: 0;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            border-radius: 15px;
+
+            background: linear-gradient(
+                145deg,
+                #ffe9a6,
+                #c49a3d
+            );
+
+            color: #171108;
+
+            font-size: 20px;
+            font-weight: 950;
+
+            box-shadow:
+                0 5px 20px rgba(232, 198, 106, 0.16);
+        }
+
+        .install-text {
+            min-width: 0;
+        }
+
+        .install-text h3 {
+            margin: 0 0 4px;
+
+            font-size: 15px;
+            font-weight: 800;
+
+            color: #fff1bd;
+        }
+
+        .install-text p {
+            margin: 0;
+
+            color: #bbb5a6;
+
+            font-size: 12px;
+            line-height: 1.5;
+        }
+
+        .install-close {
+            position: absolute;
+
+            top: 12px;
+            right: 12px;
+
+            width: 30px;
+            height: 30px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 50%;
+
+            background: rgba(255,255,255,0.09);
+
+            color: #ddd;
+
+            font-size: 19px;
+            font-weight: 400;
+
+            cursor: pointer;
+
+            transition:
+                background 0.2s ease,
+                transform 0.2s ease;
+        }
+
+        .install-close:hover {
+            background: rgba(255,255,255,0.18);
+        }
+
+        .install-close:active {
+            transform: scale(0.9);
+        }
+
+        .install-action {
+            width: 100%;
+            min-height: 44px;
+
+            margin-top: 15px;
+            padding: 11px 16px;
+
+            border:
+                1px solid rgba(255, 233, 166, 0.7);
+
+            border-radius: 14px;
+
+            background: linear-gradient(
+                135deg,
+                #ffe9a6,
+                #e8c66a 45%,
+                #c49a3d
+            );
+
+            color: #171108;
+
+            font-size: 13px;
+            font-weight: 900;
+            letter-spacing: 0.4px;
+
+            cursor: pointer;
+
+            box-shadow:
+                0 8px 25px rgba(232, 198, 106, 0.18),
+                inset 0 1px 0 rgba(255,255,255,0.4);
+
+            transition:
+                transform 0.2s ease,
+                filter 0.2s ease;
+        }
+
+        .install-action:hover {
+            filter: brightness(1.07);
+        }
+
+        .install-action:active {
+            transform: scale(0.98);
+        }
+
+        /* ==============================
+           MAIN AUTH GLASS CARD
+        ============================== */
+
+        .auth-box {
+            position: relative;
+            isolation: isolate;
+
+            width: calc(100% - 32px);
+            max-width: 430px;
+
+            margin: 45px auto 25px;
+            padding: 32px 24px 28px;
+
+            background: linear-gradient(
+                145deg,
+                rgba(255,255,255,0.075),
+                rgba(255,255,255,0.018) 45%,
+                rgba(232,198,106,0.035)
+            );
+
+            border: 1px solid var(--border);
+            border-radius: 30px;
+
+            box-shadow:
+                0 24px 70px rgba(0,0,0,0.52),
+                inset 0 1px 0 rgba(255,255,255,0.09),
+                0 0 40px rgba(201,157,55,0.035);
+
+            backdrop-filter:
+                blur(35px) saturate(150%);
+
+            -webkit-backdrop-filter:
+                blur(35px) saturate(150%);
+
+            overflow: hidden;
+        }
+
+        .auth-box::before {
+            content: "";
+
+            position: absolute;
+            top: 0;
+            left: 15%;
+
+            width: 70%;
+            height: 1px;
+
+            background: linear-gradient(
+                90deg,
+                transparent,
+                rgba(255,233,166,0.8),
+                transparent
+            );
+
+            pointer-events: none;
+        }
+
         .auth-box::after {
             content: "";
+
             position: absolute;
             top: -90px;
             right: -100px;
 
             width: 190px;
             height: 190px;
+
             border-radius: 50%;
 
-            background: rgba(232, 198, 106, 0.055);
+            background:
+                rgba(232,198,106,0.055);
+
             filter: blur(45px);
 
             z-index: -1;
             pointer-events: none;
         }
 
-        /* GOLD BRAND ICON */
+        /* ==============================
+           GOLD BRAND ICON
+        ============================== */
 
         .auth-icon {
             position: relative;
@@ -184,17 +465,19 @@
 
             background: linear-gradient(
                 145deg,
-                rgba(255, 233, 166, 0.19),
-                rgba(158, 121, 40, 0.08)
+                rgba(255,233,166,0.19),
+                rgba(158,121,40,0.08)
             );
 
-            border: 1px solid rgba(255, 233, 166, 0.38);
+            border:
+                1px solid rgba(255,233,166,0.38);
 
             box-shadow:
-                inset 0 1px 0 rgba(255, 255, 255, 0.13),
-                0 10px 35px rgba(201, 157, 55, 0.09);
+                inset 0 1px 0 rgba(255,255,255,0.13),
+                0 10px 35px rgba(201,157,55,0.09);
 
             color: var(--gold-light);
+
             font-size: 32px;
             font-weight: 950;
             letter-spacing: -2px;
@@ -202,9 +485,12 @@
 
         h1 {
             margin: 0 0 12px;
+
             text-align: center;
 
-            font-size: clamp(25px, 6vw, 30px);
+            font-size:
+                clamp(25px, 6vw, 30px);
+
             font-weight: 800;
             letter-spacing: -0.8px;
         }
@@ -213,13 +499,16 @@
             margin: 0 0 30px;
 
             color: var(--muted);
+
             text-align: center;
 
             font-size: 14px;
             line-height: 1.75;
         }
 
-        /* FORM FIELDS */
+        /* ==============================
+           FORM FIELDS
+        ============================== */
 
         .field {
             margin-bottom: 19px;
@@ -227,9 +516,11 @@
 
         .field label {
             display: block;
+
             margin-bottom: 9px;
 
             color: #e9e2d1;
+
             font-size: 13px;
             font-weight: 650;
             letter-spacing: 0.2px;
@@ -237,16 +528,21 @@
 
         .field input {
             display: block;
+
             width: 100%;
             min-height: 54px;
+
             padding: 15px 16px;
 
             color: #fff;
             font-size: 15px;
 
-            background: rgba(0, 0, 0, 0.32);
+            background:
+                rgba(0,0,0,0.32);
 
-            border: 1px solid rgba(255, 255, 255, 0.105);
+            border:
+                1px solid rgba(255,255,255,0.105);
+
             border-radius: 15px;
 
             outline: none;
@@ -262,24 +558,32 @@
         }
 
         .field input:focus {
-            background: rgba(0, 0, 0, 0.52);
-            border-color: rgba(232, 198, 106, 0.75);
+            background: rgba(0,0,0,0.52);
+
+            border-color:
+                rgba(232,198,106,0.75);
 
             box-shadow:
-                0 0 0 4px rgba(232, 198, 106, 0.075),
-                0 0 22px rgba(232, 198, 106, 0.045);
+                0 0 0 4px rgba(232,198,106,0.075),
+                0 0 22px rgba(232,198,106,0.045);
         }
 
-        /* PREMIUM GOLD BUTTON */
+        /* ==============================
+           PREMIUM GOLD BUTTON
+        ============================== */
 
         .primary-btn {
             position: relative;
+
             width: 100%;
             min-height: 55px;
+
             margin-top: 8px;
             padding: 15px 18px;
 
-            border: 1px solid rgba(255, 233, 166, 0.65);
+            border:
+                1px solid rgba(255,233,166,0.65);
+
             border-radius: 16px;
 
             background: linear-gradient(
@@ -299,8 +603,8 @@
             cursor: pointer;
 
             box-shadow:
-                0 8px 25px rgba(201, 157, 55, 0.17),
-                inset 0 1px 0 rgba(255, 255, 255, 0.5);
+                0 8px 25px rgba(201,157,55,0.17),
+                inset 0 1px 0 rgba(255,255,255,0.5);
 
             transition:
                 transform 0.2s ease,
@@ -308,17 +612,16 @@
                 filter 0.2s ease;
         }
 
-        .primary-btn:active:not(:disabled) {
-            transform: scale(0.98);
-            box-shadow: 0 3px 12px rgba(201, 157, 55, 0.15);
-        }
-
         .primary-btn:hover:not(:disabled) {
             filter: brightness(1.07);
 
             box-shadow:
-                0 10px 32px rgba(201, 157, 55, 0.25),
-                inset 0 1px 0 rgba(255, 255, 255, 0.55);
+                0 10px 32px rgba(201,157,55,0.25),
+                inset 0 1px 0 rgba(255,255,255,0.55);
+        }
+
+        .primary-btn:active:not(:disabled) {
+            transform: scale(0.98);
         }
 
         .primary-btn:disabled {
@@ -327,7 +630,9 @@
             filter: grayscale(0.25);
         }
 
-        /* SWITCH LOGIN / REGISTER */
+        /* ==============================
+           LOGIN / REGISTER SWITCH
+        ============================== */
 
         .switch-box {
             margin-top: 27px;
@@ -335,7 +640,8 @@
 
             text-align: center;
 
-            border-top: 1px solid rgba(255, 255, 255, 0.09);
+            border-top:
+                1px solid rgba(255,255,255,0.09);
         }
 
         .switch-box p {
@@ -349,12 +655,16 @@
             min-height: 42px;
             padding: 10px 15px;
 
-            border: 1px solid rgba(232, 198, 106, 0.24);
+            border:
+                1px solid rgba(232,198,106,0.24);
+
             border-radius: 13px;
 
-            background: rgba(232, 198, 106, 0.045);
+            background:
+                rgba(232,198,106,0.045);
 
             color: var(--gold-light);
+
             font-size: 14px;
             font-weight: 750;
 
@@ -366,11 +676,16 @@
         }
 
         .switch-btn:hover {
-            background: rgba(232, 198, 106, 0.10);
-            border-color: rgba(232, 198, 106, 0.48);
+            background:
+                rgba(232,198,106,0.10);
+
+            border-color:
+                rgba(232,198,106,0.48);
         }
 
-        /* STATUS MESSAGE */
+        /* ==============================
+           STATUS MESSAGES
+        ============================== */
 
         #message {
             margin-top: 18px;
@@ -390,86 +705,64 @@
         }
 
         .success {
-            background: rgba(24, 125, 77, 0.15);
+            background:
+                rgba(24,125,77,0.15);
+
             color: #8cf0b9;
-            border: 1px solid rgba(71, 202, 131, 0.32);
+
+            border:
+                1px solid rgba(71,202,131,0.32);
         }
 
         .error {
-            background: rgba(160, 35, 55, 0.14);
+            background:
+                rgba(160,35,55,0.14);
+
             color: #ffacb6;
-            border: 1px solid rgba(255, 95, 120, 0.3);
+
+            border:
+                1px solid rgba(255,95,120,0.3);
         }
 
         .info {
-            background: rgba(232, 198, 106, 0.075);
+            background:
+                rgba(232,198,106,0.075);
+
             color: var(--gold-light);
-            border: 1px solid rgba(232, 198, 106, 0.2);
+
+            border:
+                1px solid rgba(232,198,106,0.2);
         }
+
+        /* ==============================
+           FOOTER
+        ============================== */
 
         .footer {
             margin: 28px 15px 35px;
             padding-bottom: 15px;
 
             color: #77736a;
+
             font-size: 11px;
             letter-spacing: 0.5px;
 
             text-align: center;
         }
 
-        [hidden] {
-            display: none !important;
-        }
-
-        /* APP INSTALL BUTTON */
-
-        #install6mods {
-            display: none;
-
-            position: fixed;
-            left: 50%;
-            bottom: max(22px, env(safe-area-inset-bottom));
-
-            transform: translateX(-50%);
-            z-index: 9999;
-
-            min-height: 50px;
-            padding: 13px 23px;
-
-            border: 1px solid rgba(255, 233, 166, 0.7);
-            border-radius: 30px;
-
-            background: linear-gradient(
-                135deg,
-                #ffe9a6,
-                #d5ad4e,
-                #b8860b
-            );
-
-            color: #100d06;
-
-            font-size: 13px;
-            font-weight: 900;
-            letter-spacing: 0.5px;
-
-            box-shadow:
-                0 8px 30px rgba(232, 198, 106, 0.22),
-                inset 0 1px 0 rgba(255, 255, 255, 0.5);
-
-            cursor: pointer;
-            white-space: nowrap;
-
-            transition: filter 0.2s ease;
-        }
-
-        #install6mods:active {
-            transform: translateX(-50%) scale(0.96);
-        }
+        /* ==============================
+           MOBILE RESPONSIVENESS
+        ============================== */
 
         @media (max-width: 480px) {
             .top-bar {
                 min-height: 70px;
+            }
+
+            .install-banner {
+                top: calc(
+                    82px + env(safe-area-inset-top, 0px)
+                );
             }
 
             .auth-box {
@@ -490,6 +783,7 @@
             *::before,
             *::after {
                 transition-duration: 0.01ms !important;
+                animation-duration: 0.01ms !important;
             }
         }
     </style>
@@ -497,26 +791,94 @@
 
 <body>
 
-    <!-- HEADER: HOME BUTTON REMOVED -->
+    <!-- ==============================
+         PREMIUM HEADER
+    ============================== -->
 
     <header class="top-bar">
         <div class="logo">6+MODS</div>
     </header>
 
+    <!-- ==============================
+         FLOATING INSTALL BANNER
+    ============================== -->
+
+    <div
+        id="installBanner"
+        class="install-banner"
+        role="region"
+        aria-label="Sakinisha 6+MODS"
+        aria-hidden="true"
+    >
+
+        <button
+            type="button"
+            id="closeInstall"
+            class="install-close"
+            aria-label="Funga tangazo la kusakinisha"
+        >
+            &times;
+        </button>
+
+        <div class="install-header">
+
+            <div class="install-icon">
+                6+
+            </div>
+
+            <div class="install-text">
+
+                <h3>Install 6+MODS</h3>
+
+                <p>
+                    Sakinisha app yetu kwa matumizi
+                    rahisi na ya haraka.
+                </p>
+
+            </div>
+
+        </div>
+
+        <button
+            type="button"
+            id="install6mods"
+            class="install-action"
+        >
+            ↓ INSTALL APP
+        </button>
+
+    </div>
+
+    <!-- ==============================
+         LOGIN / REGISTER CARD
+    ============================== -->
+
     <main class="auth-box">
 
         <div class="auth-icon">6+</div>
 
-        <h1 id="formTitle">Karibu Tena!</h1>
+        <h1 id="formTitle">
+            Karibu Tena!
+        </h1>
 
-        <p class="description" id="formDescription">
+        <p
+            class="description"
+            id="formDescription"
+        >
             Ingia kwenye akaunti yako ya 6+MODS.
         </p>
 
         <form id="authForm">
 
-            <div class="field" id="nameField" hidden>
-                <label for="name">Jina lako</label>
+            <div
+                class="field"
+                id="nameField"
+                hidden
+            >
+
+                <label for="name">
+                    Jina lako
+                </label>
 
                 <input
                     type="text"
@@ -524,10 +886,14 @@
                     placeholder="Andika jina lako"
                     autocomplete="name"
                 >
+
             </div>
 
             <div class="field">
-                <label for="email">Barua pepe</label>
+
+                <label for="email">
+                    Barua pepe
+                </label>
 
                 <input
                     type="email"
@@ -536,10 +902,14 @@
                     autocomplete="email"
                     required
                 >
+
             </div>
 
             <div class="field">
-                <label for="password">Nenosiri</label>
+
+                <label for="password">
+                    Nenosiri
+                </label>
 
                 <input
                     type="password"
@@ -549,6 +919,7 @@
                     minlength="6"
                     required
                 >
+
             </div>
 
             <button
@@ -573,7 +944,9 @@
 
         <div class="switch-box">
 
-            <p id="switchText">Bado huna akaunti?</p>
+            <p id="switchText">
+                Bado huna akaunti?
+            </p>
 
             <button
                 type="button"
@@ -587,25 +960,44 @@
 
     </main>
 
+    <!-- FOOTER -->
+
     <footer class="footer">
         © 2026 6+MODS · ALL RIGHTS RESERVED
     </footer>
 
-    <!-- LOGIN / REGISTER INTERFACE -->
+    <!-- ==============================
+         LOGIN / REGISTER INTERFACE
+    ============================== -->
 
     <script>
         let isRegistering = false;
         let firebaseReady = false;
         let firebaseError = "";
 
-        const authForm = document.getElementById("authForm");
-        const nameField = document.getElementById("nameField");
-        const nameInput = document.getElementById("name");
-        const emailInput = document.getElementById("email");
-        const passwordInput = document.getElementById("password");
-        const submitBtn = document.getElementById("submitBtn");
-        const toggleBtn = document.getElementById("toggleBtn");
-        const message = document.getElementById("message");
+        const authForm =
+            document.getElementById("authForm");
+
+        const nameField =
+            document.getElementById("nameField");
+
+        const nameInput =
+            document.getElementById("name");
+
+        const emailInput =
+            document.getElementById("email");
+
+        const passwordInput =
+            document.getElementById("password");
+
+        const submitBtn =
+            document.getElementById("submitBtn");
+
+        const toggleBtn =
+            document.getElementById("toggleBtn");
+
+        const message =
+            document.getElementById("message");
 
         function showMessage(text, type = "info") {
             message.textContent = text;
@@ -622,25 +1014,32 @@
                 ? "new-password"
                 : "current-password";
 
-            document.getElementById("formTitle").textContent =
-                register ? "Tengeneza Akaunti" : "Karibu Tena!";
+            document.getElementById(
+                "formTitle"
+            ).textContent = register
+                ? "Tengeneza Akaunti"
+                : "Karibu Tena!";
 
-            document.getElementById("formDescription").textContent =
-                register
-                    ? "Jisajili ili uanze kutumia 6+MODS."
-                    : "Ingia kwenye akaunti yako ya 6+MODS.";
+            document.getElementById(
+                "formDescription"
+            ).textContent = register
+                ? "Jisajili ili uanze kutumia 6+MODS."
+                : "Ingia kwenye akaunti yako ya 6+MODS.";
 
-            document.getElementById("switchText").textContent =
-                register
-                    ? "Tayari una akaunti?"
-                    : "Bado huna akaunti?";
+            document.getElementById(
+                "switchText"
+            ).textContent = register
+                ? "Tayari una akaunti?"
+                : "Bado huna akaunti?";
 
-            toggleBtn.textContent =
-                register ? "Ingia Sasa" : "Jisajili Sasa";
+            toggleBtn.textContent = register
+                ? "Ingia Sasa"
+                : "Jisajili Sasa";
 
             if (firebaseReady) {
-                submitBtn.textContent =
-                    register ? "Jisajili" : "Ingia";
+                submitBtn.textContent = register
+                    ? "Jisajili"
+                    : "Ingia";
 
                 showMessage("");
             } else {
@@ -649,140 +1048,29 @@
 
                 if (firebaseError) {
                     showMessage(
-                        "Firebase haijapakiwa: " + firebaseError,
+                        "Firebase haijapakiwa: " +
+                        firebaseError,
                         "error"
                     );
                 }
             }
         }
 
-        toggleBtn.addEventListener("click", function () {
-            setMode(!isRegistering);
-        });
-
-        const params = new URLSearchParams(
-            window.location.search
+        toggleBtn.addEventListener(
+            "click",
+            function () {
+                setMode(!isRegistering);
+            }
         );
+
+        const params =
+            new URLSearchParams(
+                window.location.search
+            );
 
         if (params.get("mode") === "register") {
             setMode(true);
         }
-
-        window.addEventListener("error", function (event) {
-            if (!firebaseReady) {
-                firebaseError =
-                    event.message || "JavaScript error";
-
-                showMessage(
-                    "Hitilafu: " + firebaseError,
-                    "error"
-                );
-            }
-        });
-
-        window.addEventListener(
-            "unhandledrejection",
-            function (event) {
-                if (!firebaseReady) {
-                    firebaseError =
-                        event.reason?.message || "Module error";
-
-                    showMessage(
-                        "Hitilafu: " + firebaseError,
-                        "error"
-                    );
-                }
-            }
-        );
-
-        setTimeout(function () {
-            if (!firebaseReady && !firebaseError) {
-                showMessage(
-                    "Firebase haijapakiwa. Hakikisha firebase.js ipo kwenye folder moja na auth.html, una intaneti, na unatumia Hosting au localhost badala ya file://.",
-                    "error"
-                );
-            }
-        }, 8000);
-
-        authForm.addEventListener("submit", function (event) {
-            event.preventDefault();
-        });
-    </script>
-
-    <!-- FIREBASE AUTHENTICATION -->
-
-    <script type="module">
-        try {
-            const firebaseAuthModule = await import(
-                "https://www.gstatic.com/firebasejs/12.5.0/firebase-auth.js"
-            );
-
-            const firebaseLocalModule = await import(
-                "./firebase.js"
-            );
-
-            const {
-                createUserWithEmailAndPassword,
-                signInWithEmailAndPassword,
-                updateProfile
-            } = firebaseAuthModule;
-
-            const { auth } = firebaseLocalModule;
-
-            if (!auth) {
-                throw new Error(
-                    "firebase.js haijatoa auth. Hakikisha kuna export const auth = getAuth(app);"
-                );
-            }
-
-            firebaseReady = true;
-            submitBtn.disabled = false;
-
-            submitBtn.textContent =
-                isRegistering ? "Jisajili" : "Ingia";
-
-            showMessage("");
-
-            console.log(
-                "6+MODS Firebase Authentication imepakiwa."
-            );
-
-            let busy = false;
-
-            authForm.addEventListener(
-                "submit",
-                async function (event) {
-                    event.preventDefault();
-
-                    if (busy) return;
-
-                    const email = emailInput.value.trim();
-                    const password = passwordInput.value;
-                    const name = nameInput.value.trim();
-
-                    if (isRegistering && !name) {
-                        showMessage(
-                            "Tafadhali andika jina lako.",
-                            "error"
-                        );
-                        return;
-                    }
-
-                    busy = true;
-                    submitBtn.disabled = true;
-
-                    showMessage(
-                        isRegistering
-                            ? "Tunasajili akaunti yako..."
-                            : "Tunaingia kwenye akaunti yako...",
-                        "info"
-                    );
-
-                    try {
-                        if (isRegistering) {
-                            const result =
-                                await       // Kosa la kupakia Firebase
-        // litaonekana kwenye ukurasa.
 
         window.addEventListener(
             "error",
@@ -816,20 +1104,14 @@
             }
         );
 
-        // Kama module haijapakiwa,
-        // onyesha ujumbe baada ya sekunde 8.
-
         setTimeout(function () {
             if (!firebaseReady && !firebaseError) {
                 showMessage(
-                    "Firebase haijapakiwa. Hakikisha firebase.js ipo kwenye folder moja na auth.html, una intaneti, na unatumia http://localhost badala ya file://.",
+                    "Firebase haijapakiwa. Hakikisha firebase.js ipo kwenye folder moja na auth.html, una intaneti, na unatumia Hosting au localhost badala ya file://.",
                     "error"
                 );
             }
         }, 8000);
-
-        // Zuia ukurasa kujifungua upya
-        // ikiwa Firebase haijawa tayari.
 
         authForm.addEventListener(
             "submit",
@@ -839,19 +1121,19 @@
         );
     </script>
 
-    <!-- FIREBASE AUTHENTICATION -->
+    <!-- ==============================
+         FIREBASE AUTHENTICATION
+    ============================== -->
 
     <script type="module">
-
         try {
+            const firebaseAuthModule =
+                await import(
+                    "https://www.gstatic.com/firebasejs/12.5.0/firebase-auth.js"
+                );
 
-            const firebaseAuthModule = await import(
-                "https://www.gstatic.com/firebasejs/12.5.0/firebase-auth.js"
-            );
-
-            const firebaseLocalModule = await import(
-                "./firebase.js"
-            );
+            const firebaseLocalModule =
+                await import("./firebase.js");
 
             const {
                 createUserWithEmailAndPassword,
@@ -868,12 +1150,12 @@
             }
 
             firebaseReady = true;
-
             submitBtn.disabled = false;
 
-            submitBtn.textContent = isRegistering
-                ? "Jisajili"
-                : "Ingia";
+            submitBtn.textContent =
+                isRegistering
+                    ? "Jisajili"
+                    : "Ingia";
 
             showMessage("");
 
@@ -886,7 +1168,6 @@
             authForm.addEventListener(
                 "submit",
                 async function (event) {
-
                     event.preventDefault();
 
                     if (busy) return;
@@ -919,9 +1200,7 @@
                     );
 
                     try {
-
                         if (isRegistering) {
-
                             const result =
                                 await createUserWithEmailAndPassword(
                                     auth,
@@ -949,7 +1228,6 @@
                             );
 
                         } else {
-
                             await signInWithEmailAndPassword(
                                 auth,
                                 email,
@@ -960,7 +1238,6 @@
                                 "Umeingia kwenye akaunti yako kikamilifu!",
                                 "success"
                             );
-
                         }
 
                         setTimeout(function () {
@@ -969,14 +1246,12 @@
                         }, 1500);
 
                     } catch (error) {
-
                         console.error(
                             "Firebase Error:",
                             error
                         );
 
                         const errors = {
-
                             "auth/email-already-in-use":
                                 "Email hii tayari imesajiliwa. Tafadhali ingia.",
 
@@ -1019,17 +1294,13 @@
                         );
 
                     } finally {
-
                         busy = false;
                         submitBtn.disabled = false;
-
                     }
-
                 }
             );
 
         } catch (error) {
-
             console.error(
                 "Firebase initialization error:",
                 error
@@ -1048,68 +1319,151 @@
             submitBtn.disabled = true;
             submitBtn.textContent =
                 "Firebase haijaunganishwa";
+        }
+    </script>
 
+    <!-- ==============================
+         SMART PWA INSTALLATION
+    ============================== -->
+
+    <script>
+        let deferredInstallPrompt = null;
+
+        const installBanner =
+            document.getElementById("installBanner");
+
+        const installButton =
+            document.getElementById("install6mods");
+
+        const closeInstall =
+            document.getElementById("closeInstall");
+
+        const installDismissKey =
+            "6mods_install_dismissed";
+
+        function isInstallDismissed() {
+            try {
+                return sessionStorage.getItem(
+                    installDismissKey
+                ) === "true";
+            } catch (error) {
+                return false;
+            }
         }
 
+        function dismissInstall() {
+            try {
+                sessionStorage.setItem(
+                    installDismissKey,
+                    "true"
+                );
+            } catch (error) {
+                console.warn(
+                    "Session storage unavailable:",
+                    error
+                );
+            }
+
+            hideInstallBanner();
+        }
+
+        function showInstallBanner() {
+            if (isInstallDismissed()) return;
+
+            installBanner.classList.add("show");
+
+            installBanner.setAttribute(
+                "aria-hidden",
+                "false"
+            );
+        }
+
+        function hideInstallBanner() {
+            installBanner.classList.remove("show");
+
+            installBanner.setAttribute(
+                "aria-hidden",
+                "true"
+            );
+        }
+
+        function isAppInstalled() {
+            return (
+                window.matchMedia(
+                    "(display-mode: standalone)"
+                ).matches ||
+                window.navigator.standalone === true
+            );
+        }
+
+        window.addEventListener(
+            "beforeinstallprompt",
+            function (event) {
+                event.preventDefault();
+
+                deferredInstallPrompt = event;
+
+                if (
+                    !isAppInstalled() &&
+                    !isInstallDismissed()
+                ) {
+                    showInstallBanner();
+                }
+            }
+        );
+
+        closeInstall.addEventListener(
+            "click",
+            function () {
+                dismissInstall();
+            }
+        );
+
+        installButton.addEventListener(
+            "click",
+            async function () {
+                if (!deferredInstallPrompt) return;
+
+                const promptEvent =
+                    deferredInstallPrompt;
+
+                deferredInstallPrompt = null;
+
+                hideInstallBanner();
+
+                try {
+                    await promptEvent.prompt();
+
+                    const choice =
+                        await promptEvent.userChoice;
+
+                    if (
+                        choice.outcome === "dismissed"
+                    ) {
+                        dismissInstall();
+                    }
+
+                } catch (error) {
+                    console.error(
+                        "PWA installation error:",
+                        error
+                    );
+                }
+            }
+        );
+
+        window.addEventListener(
+            "appinstalled",
+            function () {
+                deferredInstallPrompt = null;
+                hideInstallBanner();
+            }
+        );
+
+        if (isAppInstalled()) {
+            hideInstallBanner();
+        }
     </script>
-<style>
-#install6mods {
-    display: none;
-    position: fixed;
-    top: 15px;
-    left: 50%;
-    transform: translateX(-50%);
-    z-index: 9999;
-    padding: 14px 24px;
-    border: 1px solid #ffe28a;
-    border-radius: 30px;
-    background: linear-gradient(135deg, #ffd700, #b8860b);
-    color: #080b14;
-    font-size: 14px;
-    font-weight: 800;
-    box-shadow: 0 5px 25px #ffd70055;
-    cursor: pointer;
-    white-space: nowrap;
-    height: 30px;
-    width: 50px;
-}
 
-#install6mods:active {
-    transform: translateX(-50%) scale(0.96);
-}
-</style>
-
-<button id="install6mods" type="button">
-    📲 INSTALL 6+MODS
-</button>
-
-<script>
-let deferredInstallPrompt = null;
-
-const installButton = document.getElementById("install6mods");
-
-window.addEventListener("beforeinstallprompt", (event) => {
-    event.preventDefault();
-    deferredInstallPrompt = event;
-    installButton.style.display = "block";
-});
-
-installButton.addEventListener("click", async () => {
-    if (!deferredInstallPrompt) return;
-
-    const promptEvent = deferredInstallPrompt;
-    deferredInstallPrompt = null;
-
-    installButton.style.display = "none";
-
-    await promptEvent.prompt();
-    await promptEvent.userChoice;
-});
-
-window.addEventListener("appinstalled", () => {
-    deferredInstallPrompt = null;
-    installButton.style.display = "none";
-});
-</script>
 </body>
 </html>
