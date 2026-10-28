@@ -37,6 +37,12 @@
 
         button {
             cursor: pointer;
+            transition: opacity .2s, transform .2s;
+        }
+
+        button:disabled {
+            opacity: .55;
+            cursor: not-allowed;
         }
 
         header {
@@ -48,20 +54,23 @@
             align-items: center;
             gap: 12px;
             padding: 16px;
-            background: #101010;
+            background: rgba(16, 16, 16, .96);
             border-bottom: 1px solid var(--border);
+            backdrop-filter: blur(12px);
         }
 
         .logo {
             color: var(--gold);
             font-weight: 900;
-            font-size: 21px;
+            font-size: 22px;
+            letter-spacing: .5px;
         }
 
         .header-small {
-            font-size: 11px;
+            font-size: 10px;
             color: var(--muted);
-            margin-top: 4px;
+            margin-top: 5px;
+            letter-spacing: 2px;
         }
 
         .container {
@@ -72,7 +81,7 @@
         }
 
         .panel {
-            background: var(--panel);
+            background: linear-gradient(145deg, #171717, #101010);
             border: 1px solid #302713;
             border-radius: 16px;
             padding: 18px;
@@ -101,20 +110,15 @@
         .gold-button,
         .secondary-button,
         .danger-button {
-            border: none;
             border-radius: 10px;
             padding: 12px 15px;
             font-weight: 800;
         }
 
         .gold-button {
-            background: linear-gradient(
-                135deg,
-                #fff0a0,
-                #ffd700,
-                #b8860b
-            );
+            background: linear-gradient(135deg, #fff0a0, #ffd700, #b8860b);
             color: #171100;
+            border: none;
         }
 
         .secondary-button {
@@ -208,6 +212,7 @@
             overflow-x: auto;
             padding: 3px 0 13px;
             margin-bottom: 10px;
+            scrollbar-width: thin;
         }
 
         .nav-button {
@@ -266,6 +271,7 @@
 
         .item-actions button {
             flex: 1;
+            min-width: 110px;
         }
 
         .badge {
@@ -329,9 +335,9 @@
         }
 
         #loading {
+            display: none;
             padding: 70px 15px;
             text-align: center;
-            color: var(--gold);
         }
 
         .loader {
@@ -355,6 +361,25 @@
             background: #0b0b0b;
             border-radius: 10px;
             font-size: 13px;
+        }
+
+        #adminManagementSection .item {
+            border-color: #4a3a17;
+        }
+
+        .role-label {
+            display: inline-block;
+            padding: 5px 9px;
+            margin-top: 5px;
+            border-radius: 20px;
+            background: #29210d;
+            color: var(--gold);
+            font-size: 11px;
+            font-weight: 900;
+        }
+
+        [hidden] {
+            display: none !important;
         }
 
         @media (min-width: 700px) {
@@ -383,6 +408,10 @@
             .logo {
                 font-size: 18px;
             }
+
+            .panel {
+                padding: 14px;
+            }
         }
 
         @media (prefers-reduced-motion: reduce) {
@@ -406,22 +435,21 @@
     </button>
 </header>
 
-<div id="loading">
+<div id="loading" aria-live="polite">
     <div class="loader"></div>
-    Inakagua akaunti yako...
 </div>
 
 <div class="container">
 
-    <div id="message" class="message"></div>
+    <div id="message" class="message" role="status"></div>
 
     <!-- LOGIN -->
 
     <section id="loginBox" class="panel">
-        <h2>🔐 Admin Login</h2>
+        <h2>Karibu tena 👋</h2>
 
         <p class="muted">
-            Ingia kwa akaunti ya Firebase iliyoidhinishwa kuwa Admin.
+            Ingia kwenye akaunti yako.
         </p>
 
         <form id="loginForm">
@@ -457,11 +485,13 @@
 
         <section class="panel">
             <h2>Dashboard</h2>
+
             <p class="muted">
-                Karibu kwenye usimamizi wa 6+MODS.
+                Karibu kwenye 6+MODS.
             </p>
 
             <div class="stats">
+
                 <div class="stat">
                     <div class="stat-label">JUMLA YA APPS</div>
                     <div id="appsCount" class="stat-number">0</div>
@@ -481,29 +511,54 @@
                     <div class="stat-label">MALIPO</div>
                     <div id="paymentsCount" class="stat-number">0</div>
                 </div>
+
             </div>
         </section>
 
-        <nav class="navigation">
-            <button class="nav-button active" data-section="tipsSection">
+        <nav class="navigation" aria-label="Admin navigation">
+
+            <button
+                type="button"
+                class="nav-button active"
+                data-section="tipsSection"
+            >
                 ⚽ Betting Tips
             </button>
 
-            <button class="nav-button" data-section="appsSection">
+            <button
+                type="button"
+                class="nav-button"
+                data-section="appsSection"
+            >
                 📱 Apps
             </button>
 
-            <button class="nav-button" data-section="pricingSection">
+            <button
+                type="button"
+                class="nav-button"
+                data-section="pricingSection"
+            >
                 💰 Bei
             </button>
 
-            <button class="nav-button" data-section="paymentsSection">
+            <button
+                type="button"
+                class="nav-button"
+                data-section="paymentsSection"
+            >
                 💳 Malipo
             </button>
 
-            <button class="nav-button" data-section="securitySection">
-                🔐 Usalama
+            <button
+                type="button"
+                class="nav-button"
+                id="adminManagementNav"
+                data-section="adminManagementSection"
+                hidden
+            >
+                👥 Admin Management
             </button>
+
         </nav>
 
         <!-- BETTING TIPS -->
@@ -512,12 +567,6 @@
 
             <div class="panel">
                 <h2>⚽ Chapisha Betting Tip</h2>
-
-                <div class="notice">
-                    Free Tips zitahifadhiwa kwenye <b>tips</b>.
-                    Premium Tips zitahifadhiwa kwenye
-                    <b>premiumTips</b>, ambazo lazima zilindwe kwa Firestore Rules.
-                </div>
 
                 <form id="tipForm">
 
@@ -651,16 +700,12 @@
 
             <div class="panel">
                 <h2>📋 Free Betting Tips</h2>
-                <div id="freeTipsList" class="item-list">
-                    <div class="empty">Inapakia...</div>
-                </div>
+                <div id="freeTipsList" class="item-list"></div>
             </div>
 
             <div class="panel">
                 <h2>👑 Premium Betting Tips</h2>
-                <div id="premiumTipsList" class="item-list">
-                    <div class="empty">Inapakia...</div>
-                </div>
+                <div id="premiumTipsList" class="item-list"></div>
             </div>
 
         </section>
@@ -736,25 +781,17 @@
 
             <div class="panel">
                 <h2>Apps Zilizopo</h2>
-                <div id="appsList" class="item-list">
-                    <div class="empty">Inapakia...</div>
-                </div>
+                <div id="appsList" class="item-list"></div>
             </div>
 
         </section>
 
-        <!-- PREMIUM PRICING -->
+        <!-- PRICING -->
 
         <section id="pricingSection" class="section">
 
             <div class="panel">
                 <h2>💰 Bei za Premium</h2>
-
-                <p class="muted">
-                    Bei hizi huhifadhiwa kwenye Firestore.
-                    Kuzihifadhi hapa hakumaanishi kuwa malipo
-                    yameunganishwa au yamethibitishwa.
-                </p>
 
                 <form id="pricingForm">
 
@@ -765,6 +802,7 @@
                             type="number"
                             min="1"
                             step="1"
+                            value="3000"
                             required
                         >
                     </label>
@@ -776,6 +814,7 @@
                             type="number"
                             min="1"
                             step="1"
+                            value="10000"
                             required
                         >
                     </label>
@@ -787,6 +826,7 @@
                             type="number"
                             min="1"
                             step="1"
+                            value="30000"
                             required
                         >
                     </label>
@@ -805,45 +845,72 @@
         <section id="paymentsSection" class="section">
             <div class="panel">
                 <h2>💳 Rekodi za Malipo</h2>
-
-                <div class="notice">
-                    Paneli hii inasoma rekodi zilizohifadhiwa na backend.
-                    Haitoi uthibitisho wa malipo kutoka kwenye browser.
-                </div>
-
-                <div id="paymentsList" class="item-list">
-                    <div class="empty">Inapakia...</div>
-                </div>
+                <div id="paymentsList" class="item-list"></div>
             </div>
         </section>
 
-        <!-- SECURITY -->
+        <!-- ADMIN MANAGEMENT -->
 
-        <section id="securitySection" class="section">
+        <section id="adminManagementSection" class="section">
+
             <div class="panel">
-                <h2>🔐 Usalama wa Mfumo</h2>
+                <h2>👥 Admin Management</h2>
 
                 <p class="muted">
-                    Akaunti yako lazima iwe na document ya admins
-                    yenye active = true na UID inayolingana na
-                    Firebase Authentication.
+                    Simamia akaunti za Admin wa 6+MODS.
                 </p>
 
-                <p class="muted">
-                    Admin mpya anapaswa kuidhinishwa kupitia
-                    utaratibu salama wa backend au Firebase Console.
-                    Gmail pekee haitoi mamlaka ya Admin.
-                </p>
+                <form id="addAdminForm">
 
-                <p class="muted">
-                    Premium Tips na malipo lazima zilindwe na
-                    Firestore Rules na uthibitishaji wa backend.
-                </p>
+                    <label>
+                        Gmail / Email ya Admin
+                        <input
+                            type="email"
+                            id="newAdminEmail"
+                            placeholder="admin@gmail.com"
+                            autocomplete="off"
+                            required
+                        >
+                    </label>
+
+                    <button
+                        type="submit"
+                        class="gold-button full"
+                        id="addAdminBtn"
+                    >
+                        ➕ ONGEZA ADMIN
+                    </button>
+
+                </form>
+
+                <div
+                    id="adminManagementMessage"
+                    class="message"
+                    role="status"
+                ></div>
             </div>
+
+            <div class="panel">
+                <h2>Orodha ya Admins</h2>
+
+                <button
+                    type="button"
+                    class="secondary-button full"
+                    id="refreshAdminsBtn"
+                >
+                    🔄 PAKIA TENA
+                </button>
+
+                <div
+                    id="adminsList"
+                    class="item-list"
+                    style="margin-top:14px"
+                ></div>
+            </div>
+
         </section>
 
     </div>
-
 </div>
 
 <script type="module" src="./admin.js"></script>
