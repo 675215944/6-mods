@@ -1,7 +1,8 @@
 import {
     onAuthStateChanged,
     signInWithEmailAndPassword,
-    signOut
+    signOut,
+    sendPasswordResetEmail
 } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-auth.js";
 
 import {
@@ -19,10 +20,9 @@ import {
 
 import { auth, db } from "./firebase.js";
 
-
-// ============================================
+// ==================================================
 // 1. ELEMENTS
-// ============================================
+// ==================================================
 
 const loading = document.getElementById("loading");
 const loginBox = document.getElementById("loginBox");
@@ -43,43 +43,58 @@ const paymentsList = document.getElementById("paymentsList");
 const publishTipBtn = document.getElementById("publishTipBtn");
 const cancelTipEdit = document.getElementById("cancelTipEdit");
 
+const adminManagementNav =
+    document.getElementById("adminManagementNav");
+
+const adminsList = document.getElementById("adminsList");
+const addAdminForm = document.getElementById("addAdminForm");
+const newAdminEmail = document.getElementById("newAdminEmail");
+const addAdminBtn = document.getElementById("addAdminBtn");
+const refreshAdminsBtn = document.getElementById("refreshAdminsBtn");
+const adminManagementMessage =
+    document.getElementById("adminManagementMessage");
+
+// ==================================================
+// 2. GLOBAL VARIABLES
+// ==================================================
+
 let currentAdmin = null;
+let currentAdminRole = null;
+
 let editingTipId = null;
 let editingTipCollection = null;
+
 let messageTimer = null;
 let authCheckNumber = 0;
-
-
-// ============================================
-// 2. COLLECTIONS
-// ============================================
 
 const FREE_TIPS = "tips";
 const PREMIUM_TIPS = "premiumTips";
 const VIP_MATCHES = "vipMatches";
 
+const ADMIN_API = "/api/admin-management";
 
-// ============================================
+// ==================================================
 // 3. LOADING
-// ============================================
+// ==================================================
 
 function showLoading() {
-    loading.style.display = "block";
-    loginBox.style.display = "none";
-    dashboard.style.display = "none";
-    logoutBtn.hidden = true;
+    if (loading) loading.style.display = "block";
+    if (loginBox) loginBox.style.display = "none";
+    if (dashboard) dashboard.style.display = "none";
+    if (logoutBtn) logoutBtn.hidden = true;
 }
 
 function hideLoading() {
-    loading.style.display = "none";
+    if (loading) loading.style.display = "none";
 }
 
-
-// ============================================
+// ==================================================
 // 4. UJUMBE
-// ============================================
+// ==================================================
 
 function showMessage(message, type = "success") {
+    if (!messageBox) return;
+
     messageBox.textContent = message;
     messageBox.className = `message ${type}`;
 
@@ -91,128 +106,220 @@ function showMessage(message, type = "success") {
     }, 7000);
 }
 
+function showAdminMessage(message, type = "success") {
+    if (!adminManagementMessage) {
+        showMessage(message, type);
+        return;
+    }
 
-// ============================================
-// 5. KUONYESHA LOGIN NA DASHBOARD
-// ============================================
+    adminManagementMessage.textContent = message;
+    adminManagementMessage.className = `message ${type}`;
+}
+
+// ==================================================
+// 5. LOGIN NA DASHBOARD
+// ==================================================
 
 function showLogin() {
     hideLoading();
 
-    dashboard.style.display = "none";
-    loginBox.style.display = "block";
-    logoutBtn.hidden = true;
+    if (dashboard) dashboard.style.display = "none";
+    if (loginBox) loginBox.style.display = "block";
+    if (logoutBtn) logoutBtn.hidden = true;
+
+    hideAdminManagement();
 }
 
 function showDashboard() {
     hideLoading();
 
-    loginBox.style.display = "none";
-    dashboard.style.display = "block";
-    logoutBtn.hidden = false;
+    if (loginBox) loginBox.style.display = "none";
+    if (dashboard) dashboard.style.display = "block";
+    if (logoutBtn) logoutBtn.hidden = false;
+
+    applyRolePermissions();
 }
 
+// ==================================================
+// 6. PERMISSIONS
+// ==================================================
 
-// ============================================
-// 6. KUKAGUA RUHUSA ZA ADMIN
-// ============================================
+function isSuperAdmin() {
+    return currentAdminRole === "super_admin";
+}
+
+function applyRolePermissions() {
+    const superAdmin = isSuperAdmin();
+
+    // Admin Management ni kwa Super Admin pekee.
+    if (adminManagementNav) {
+        adminManagementNav.hidden = !superAdmin;
+        adminManagementNav.style.display =
+            superAdmin ? "" : "none";
+    }
+
+    // Pricing ni kwa Super Admin pekee.
+    document.querySelectorAll('[data-section="pricingSection"]')
+        .forEach(button => {
+            button.hidden = !superAdmin;
+            button.style.display = superAdmin ? "" : "none";
+        });
+
+    const pricingSection = document.getElementById("pricingSection");
+
+    if (!superAdmin && pricingSection) {
+        pricingSection.classList.remove("active");
+    }
+
+    // Kama Admin wa kawaida alikuwa kwenye sehemu iliyofichwa,
+    // mrudishe kwenye sehemu ya Tips.
+    if (!superAdmin) {
+        const activeButton = document.querySelector(
+            '.nav-button.active[data-section="pricingSection"],' +
+            '.nav-button.active[data-section="adminManagementSection"]'
+        );
+
+        if (activeButton) {
+            activeButton.classList.remove("active");
+            document.querySelectorAll(".section").forEach(section => {
+                section.classList.remove("active");
+            });
+
+            const tipsButton = document.querySelector(
+                '[data-section="tipsSection"]'
+            );
+
+            if (tipsButton) tipsButton.classList.add("active");
+
+            const tipsSection =
+                document.getElementById("tipsSection");
+
+            if (tipsSection) tipsSection.classList.add("active");
+        }
+    }
+}
+
+// ==================================================
+// 7. THIBITISHA ADMIN KUTOKA FIRESTORE
+// ==================================================
 
 async function checkAdmin(user) {
     const adminRef = doc(db, "admins", user.uid);
     const snapshot = await getDoc(adminRef);
 
-    return (
-        snapshot.exists() &&
-        snapshot.data().active === true
-    );
+    if (!snapshot.exists()) {
+        return null;
+    }
+
+    const data = snapshot.data();
+
+    if (
+        data.active !== true ||
+        !["admin", "super_admin"].includes(data.role)
+    ) {
+        return null;
+    }
+
+    return data;
 }
 
+// ==================================================
+// 8. LOGIN
+// ==================================================
 
-// ============================================
-// 7. LOGIN
-// ============================================
+if (loginForm) {
+    loginForm.addEventListener("submit", async event => {
+        event.preventDefault();
 
-loginForm.addEventListener("submit", async event => {
-    event.preventDefault();
+        const email = document
+            .getElementById("loginEmail")
+            .value.trim();
 
-    const email = document
-        .getElementById("loginEmail")
-        .value.trim();
+        const password = document
+            .getElementById("loginPassword")
+            .value;
 
-    const password = document
-        .getElementById("loginPassword")
-        .value;
-
-    const button = loginForm.querySelector(
-        'button[type="submit"]'
-    );
-
-    button.disabled = true;
-    button.textContent = "INAINGIA...";
-
-    try {
-        await signInWithEmailAndPassword(
-            auth,
-            email,
-            password
+        const button = loginForm.querySelector(
+            'button[type="submit"]'
         );
 
-        showMessage(
-            "Umeingia. Inakagua ruhusa za Admin..."
-        );
-
-    } catch (error) {
-        console.error("Login error:", error);
-
-        let message =
-            "Imeshindikana kuingia. Hakikisha email na nenosiri ni sahihi.";
-
-        if (error.code === "auth/network-request-failed") {
-            message = "Tatizo la intaneti. Jaribu tena.";
-        } else if (error.code === "auth/too-many-requests") {
-            message = "Majaribio yamezidi. Subiri kisha ujaribu tena.";
-        } else if (
-            error.code === "auth/invalid-credential" ||
-            error.code === "auth/invalid-login-credentials"
-        ) {
-            message = "Email au nenosiri si sahihi.";
+        if (button) {
+            button.disabled = true;
+            button.textContent = "INAINGIA...";
         }
 
-        showMessage(message, "error");
+        try {
+            await signInWithEmailAndPassword(
+                auth,
+                email,
+                password
+            );
 
-    } finally {
-        button.disabled = false;
-        button.textContent = "INGIA KWENYE ADMIN";
-    }
-});
+        } catch (error) {
+            console.error("Login error:", error);
 
+            let message =
+                "Imeshindikana kuingia. Hakikisha email na nenosiri ni sahihi.";
 
-// ============================================
-// 8. KUTOKA KWENYE AKAUNTI
-// ============================================
+            if (error.code === "auth/network-request-failed") {
+                message = "Tatizo la intaneti. Jaribu tena.";
+            } else if (error.code === "auth/too-many-requests") {
+                message = "Majaribio yamezidi. Subiri kisha ujaribu tena.";
+            } else if (
+                error.code === "auth/invalid-credential" ||
+                error.code === "auth/invalid-login-credentials"
+            ) {
+                message = "Email au nenosiri si sahihi.";
+            }
 
-logoutBtn.addEventListener("click", async () => {
-    try {
-        await signOut(auth);
-        showMessage("Umetoka kwenye akaunti.");
+            showMessage(message, "error");
 
-    } catch (error) {
-        console.error("Logout error:", error);
+        } finally {
+            if (button) {
+                button.disabled = false;
+                button.textContent = "INGIA KWENYE ADMIN";
+            }
+        }
+    });
+}
 
-        showMessage(
-            "Imeshindikana kutoka. Jaribu tena.",
-            "error"
-        );
-    }
-});
+// ==================================================
+// 9. LOGOUT
+// ==================================================
 
+if (logoutBtn) {
+    logoutBtn.addEventListener("click", async () => {
+        try {
+            await signOut(auth);
+            showMessage("Umetoka kwenye akaunti.");
 
-// ============================================
-// 9. NAVIGATION
-// ============================================
+        } catch (error) {
+            console.error("Logout error:", error);
+            showMessage("Imeshindikana kutoka. Jaribu tena.", "error");
+        }
+    });
+}
+
+// ==================================================
+// 10. NAVIGATION
+// ==================================================
 
 document.querySelectorAll("[data-section]").forEach(button => {
     button.addEventListener("click", () => {
+        const targetId = button.dataset.section;
+
+        // Zuia Admin wa kawaida kufungua sehemu za Super Admin.
+        if (
+            !isSuperAdmin() &&
+            (
+                targetId === "pricingSection" ||
+                targetId === "adminManagementSection"
+            )
+        ) {
+            showMessage("Huna ruhusa ya sehemu hii.", "error");
+            return;
+        }
+
         document.querySelectorAll(".nav-button").forEach(item => {
             item.classList.remove("active");
         });
@@ -223,23 +330,336 @@ document.querySelectorAll("[data-section]").forEach(button => {
 
         button.classList.add("active");
 
-        const section = document.getElementById(
-            button.dataset.section
-        );
+        const section = document.getElementById(targetId);
 
         if (section) {
             section.classList.add("active");
         }
+
+        if (targetId === "adminManagementSection") {
+            loadAdmins();
+        }
     });
 });
 
+// ==================================================
+// 11. ADMIN MANAGEMENT API
+// ==================================================
 
-// ============================================
-// 10. TAARIFA ZA VIP ZINAZOONEKANA KWA WOTE
-// ============================================
+async function callAdminManagement(action, extraData = {}) {
+    if (!currentAdmin) {
+        throw new Error("Ingia tena kwenye akaunti yako.");
+    }
 
-// HAPA HATUHIFADHI prediction, odds au description.
-// Taarifa za siri zinabaki kwenye premiumTips.
+    const idToken = await currentAdmin.getIdToken(true);
+
+    const response = await fetch(ADMIN_API, {
+        method: "POST",
+
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${idToken}`
+        },
+
+        body: JSON.stringify({
+            action,
+            ...extraData
+        })
+    });
+
+    let result;
+
+    try {
+        result = await response.json();
+    } catch {
+        throw new Error(
+            "Server imerudisha majibu yasiyo sahihi."
+        );
+    }
+
+    if (!response.ok || result.success !== true) {
+        throw new Error(
+            result.message || "Ombi halikufanikiwa."
+        );
+    }
+
+    return result;
+}
+
+// ==================================================
+// 12. KUONYESHA / KUFICHA ADMIN MANAGEMENT
+// ==================================================
+
+function hideAdminManagement() {
+    const section = document.getElementById(
+        "adminManagementSection"
+    );
+
+    if (section) {
+        section.classList.remove("active");
+    }
+
+    if (adminManagementNav) {
+        adminManagementNav.hidden = true;
+        adminManagementNav.style.display = "none";
+    }
+}
+
+// ==================================================
+// 13. KUPAKIA ORODHA YA ADMINS
+// ==================================================
+
+async function loadAdmins() {
+    if (!isSuperAdmin() || !adminsList) return;
+
+    adminsList.replaceChildren();
+
+    const loadingItem = document.createElement("div");
+    loadingItem.className = "empty";
+    loadingItem.textContent = "Inapakia...";
+    adminsList.appendChild(loadingItem);
+
+    try {
+        const result = await callAdminManagement("list");
+
+        adminsList.replaceChildren();
+
+        const admins = result.admins || [];
+
+        if (admins.length === 0) {
+            const empty = document.createElement("div");
+            empty.className = "empty";
+            empty.textContent = "Hakuna Admin waliopatikana.";
+            adminsList.appendChild(empty);
+            return;
+        }
+
+        admins.forEach(admin => {
+            const item = document.createElement("article");
+            item.className = "item";
+
+            const title = document.createElement("div");
+            title.className = "item-title";
+
+            title.textContent = admin.email || admin.uid;
+
+            const badge = document.createElement("span");
+            badge.className = "badge";
+
+            if (admin.role === "super_admin") {
+                badge.textContent = "SUPER ADMIN";
+                badge.classList.add("green");
+            } else {
+                badge.textContent = admin.active
+                    ? "ADMIN ACTIVE"
+                    : "ADMIN INACTIVE";
+            }
+
+            const meta = document.createElement("div");
+            meta.className = "item-meta";
+
+            meta.textContent =
+                `Role: ${admin.role} | ` +
+                `Hali: ${admin.active ? "Active" : "Inactive"}`;
+
+            item.append(title, badge, meta);
+
+            // Super Admin wawili hawawezi kusimamishwa
+            // au kuondolewa kupitia paneli hii.
+            if (admin.role === "super_admin") {
+                adminsList.appendChild(item);
+                return;
+            }
+
+            const actions = document.createElement("div");
+            actions.className = "item-actions";
+
+            const toggleButton = document.createElement("button");
+
+            toggleButton.className = admin.active
+                ? "secondary-button"
+                : "primary-button";
+
+            toggleButton.textContent = admin.active
+                ? "SIMAMISHA ADMIN"
+                : "WASHA ADMIN";
+
+            toggleButton.addEventListener("click", async () => {
+                const nextState = !admin.active;
+
+                const confirmed = confirm(
+                    nextState
+                        ? `Unataka kumwasha Admin ${admin.email}?`
+                        : `Unataka kumsimamisha Admin ${admin.email}?`
+                );
+
+                if (!confirmed) return;
+
+                toggleButton.disabled = true;
+
+                try {
+                    await callAdminManagement("setActive", {
+                        uid: admin.uid,
+                        active: nextState
+                    });
+
+                    showAdminMessage(
+                        nextState
+                            ? "Admin amewashwa."
+                            : "Admin amesimamishwa."
+                    );
+
+                    await loadAdmins();
+
+                } catch (error) {
+                    console.error("Change admin status:", error);
+                    showAdminMessage(error.message, "error");
+
+                } finally {
+                    toggleButton.disabled = false;
+                }
+            });
+
+            const removeButton = document.createElement("button");
+            removeButton.className = "danger-button";
+            removeButton.textContent = "ONDOA ADMIN";
+
+            removeButton.addEventListener("click", async () => {
+                const confirmed = confirm(
+                    `Una uhakika unataka kumwondoa Admin ${admin.email}? ` +
+                    "Akaunti yake ya Firebase Authentication pia itafutwa."
+                );
+
+                if (!confirmed) return;
+
+                removeButton.disabled = true;
+
+                try {
+                    await callAdminManagement("remove", {
+                        uid: admin.uid
+                    });
+
+                    showAdminMessage("Admin ameondolewa.");
+                    await loadAdmins();
+
+                } catch (error) {
+                    console.error("Remove admin:", error);
+                    showAdminMessage(error.message, "error");
+
+                } finally {
+                    removeButton.disabled = false;
+                }
+            });
+
+            actions.append(toggleButton, removeButton);
+            item.appendChild(actions);
+            adminsList.appendChild(item);
+        });
+
+    } catch (error) {
+        console.error("Load admins error:", error);
+
+        adminsList.replaceChildren();
+
+        const empty = document.createElement("div");
+        empty.className = "empty";
+        empty.textContent =
+            error.message || "Imeshindikana kupakia Admin.";
+
+        adminsList.appendChild(empty);
+    }
+}
+
+// ==================================================
+// 14. KUONGEZA ADMIN KWA EMAIL
+// ==================================================
+
+if (addAdminForm) {
+    addAdminForm.addEventListener("submit", async event => {
+        event.preventDefault();
+
+        if (!isSuperAdmin()) {
+            showAdminMessage(
+                "Super Admin pekee anaweza kuongeza Admin.",
+                "error"
+            );
+            return;
+        }
+
+        const email = (newAdminEmail?.value || "")
+            .trim()
+            .toLowerCase();
+
+        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+            showAdminMessage("Weka email sahihi.", "error");
+            return;
+        }
+
+        if (addAdminBtn) {
+            addAdminBtn.disabled = true;
+            addAdminBtn.textContent = "INAONGEZA...";
+        }
+
+        try {
+            // Backend huunda akaunti na kuiweka role = admin.
+            const result = await callAdminManagement("invite", {
+                email
+            });
+
+            let resetEmailSent = false;
+
+            // Tuma barua ya kuweka nenosiri.
+            // Backend yenyewe haiitumi barua hii.
+            try {
+                await sendPasswordResetEmail(auth, email);
+                resetEmailSent = true;
+
+            } catch (emailError) {
+                console.error(
+                    "Password reset email error:",
+                    emailError
+                );
+            }
+
+            if (newAdminEmail) {
+                newAdminEmail.value = "";
+            }
+
+            if (resetEmailSent) {
+                showAdminMessage(
+                    `${result.email} ameongezwa. Barua ya kuweka nenosiri imetumwa. ` +
+                    "Admin bado hajawashwa; mwashe kwenye orodha baada ya kukamilisha maandalizi."
+                );
+            } else {
+                showAdminMessage(
+                    `${result.email} ameongezwa lakini barua ya kuweka nenosiri haikutumwa. ` +
+                    "Angalia Firebase Authentication na mipangilio ya email.",
+                    "error"
+                );
+            }
+
+            await loadAdmins();
+
+        } catch (error) {
+            console.error("Add admin error:", error);
+            showAdminMessage(error.message, "error");
+
+        } finally {
+            if (addAdminBtn) {
+                addAdminBtn.disabled = false;
+                addAdminBtn.textContent = "ONGEZA ADMIN";
+            }
+        }
+    });
+}
+
+if (refreshAdminsBtn) {
+    refreshAdminsBtn.addEventListener("click", loadAdmins);
+}
+
+// ==================================================
+// 15. VIP PUBLIC DATA
+// ==================================================
 
 function makeVipPublicData(tip) {
     return {
@@ -265,270 +685,215 @@ async function saveVipPublicData(tipId, tipData) {
 }
 
 async function deleteVipPublicData(tipId) {
-    await deleteDoc(
-        doc(db, VIP_MATCHES, tipId)
-    );
+    await deleteDoc(doc(db, VIP_MATCHES, tipId));
 }
 
+// ==================================================
+// 16. KUCHAPISHA NA KUHARIRI TIPS
+// ==================================================
 
-// ============================================
-// 11. KUCHAPISHA NA KUREKEBISHA TIP
-// ============================================
+if (tipForm) {
+    tipForm.addEventListener("submit", async event => {
+        event.preventDefault();
 
-tipForm.addEventListener("submit", async event => {
-    event.preventDefault();
+        if (!currentAdmin) {
+            showMessage("Ingia tena kwenye akaunti yako.", "error");
+            return;
+        }
 
-    if (!currentAdmin) {
-        showMessage(
-            "Huna ruhusa ya Admin. Ingia tena.",
-            "error"
+        const type = document.getElementById("tipType").value;
+
+        const targetCollection =
+            type === "PREMIUM" ? PREMIUM_TIPS : FREE_TIPS;
+
+        const odds = Number(
+            document.getElementById("tipOdds").value
         );
-        return;
-    }
 
-    const type = document.getElementById("tipType").value;
+        if (!Number.isFinite(odds) || odds < 1) {
+            showMessage("Weka odds halali.", "error");
+            return;
+        }
 
-    const targetCollection =
-        type === "PREMIUM"
-            ? PREMIUM_TIPS
-            : FREE_TIPS;
+        const data = {
+            type,
 
-    const odds = Number(
-        document.getElementById("tipOdds").value
-    );
+            league: document.getElementById("tipLeague").value.trim(),
+            homeTeam: document.getElementById("tipHomeTeam").value.trim(),
+            awayTeam: document.getElementById("tipAwayTeam").value.trim(),
 
-    if (!Number.isFinite(odds) || odds < 1) {
-        showMessage("Weka odds halali.", "error");
-        return;
-    }
+            date: document.getElementById("tipDate").value,
+            time: document.getElementById("tipTime").value,
+            market: document.getElementById("tipMarket").value,
 
-    const data = {
-        type,
+            prediction: document
+                .getElementById("tipPrediction").value.trim(),
 
-        league: document
-            .getElementById("tipLeague")
-            .value.trim(),
+            odds,
 
-        homeTeam: document
-            .getElementById("tipHomeTeam")
-            .value.trim(),
+            status: document.getElementById("tipStatus").value,
 
-        awayTeam: document
-            .getElementById("tipAwayTeam")
-            .value.trim(),
+            description: document
+                .getElementById("tipDescription").value.trim(),
 
-        date: document.getElementById("tipDate").value,
+            updatedAt: serverTimestamp(),
+            updatedBy: currentAdmin.uid
+        };
 
-        time: document.getElementById("tipTime").value,
-
-        market: document.getElementById("tipMarket").value,
-
-        prediction: document
-            .getElementById("tipPrediction")
-            .value.trim(),
-
-        odds,
-
-        status: document.getElementById("tipStatus").value,
-
-        description: document
-            .getElementById("tipDescription")
-            .value.trim(),
-
-        updatedAt: serverTimestamp(),
-        updatedBy: currentAdmin.uid
-    };
-
-    if (
-        !data.league ||
-        !data.homeTeam ||
-        !data.awayTeam ||
-        !data.date ||
-        !data.time ||
-        !data.prediction
-    ) {
-        showMessage(
-            "Jaza taarifa zote zinazohitajika.",
-            "error"
-        );
-        return;
-    }
-
-    const wasEditing = Boolean(editingTipId);
-
-    publishTipBtn.disabled = true;
-    publishTipBtn.textContent = "INAHIFADHI...";
-
-    try {
-        // ------------------------------------
-        // KUHARIRI TIP ILIYOPO
-        // ------------------------------------
-
-        if (editingTipId) {
-            const oldCollection = editingTipCollection;
-            const oldId = editingTipId;
-
-            const oldRef = doc(
-                db,
-                oldCollection,
-                oldId
+        if (
+            !data.league ||
+            !data.homeTeam ||
+            !data.awayTeam ||
+            !data.date ||
+            !data.time ||
+            !data.prediction
+        ) {
+            showMessage(
+                "Jaza taarifa zote zinazohitajika.",
+                "error"
             );
+            return;
+        }
 
-            const oldSnapshot = await getDoc(oldRef);
+        const wasEditing = Boolean(editingTipId);
 
-            if (!oldSnapshot.exists()) {
-                throw new Error(
-                    "Tip ya awali haipatikani."
-                );
-            }
+        publishTipBtn.disabled = true;
+        publishTipBtn.textContent = "INAHIFADHI...";
 
-            const oldData = oldSnapshot.data();
+        try {
+            if (editingTipId) {
+                const oldCollection = editingTipCollection;
+                const oldId = editingTipId;
 
-            data.createdAt =
-                oldData.createdAt || serverTimestamp();
+                const oldRef = doc(db, oldCollection, oldId);
+                const oldSnapshot = await getDoc(oldRef);
 
-            data.createdBy =
-                oldData.createdBy || currentAdmin.uid;
+                if (!oldSnapshot.exists()) {
+                    throw new Error("Tip ya awali haipatikani.");
+                }
 
-            // Tip inabaki kwenye collection ileile.
-            if (oldCollection === targetCollection) {
-                if (targetCollection === PREMIUM_TIPS) {
-                    // Hifadhi siri na metadata kwa batch.
+                const oldData = oldSnapshot.data();
+
+                data.createdAt =
+                    oldData.createdAt || serverTimestamp();
+
+                data.createdBy =
+                    oldData.createdBy || currentAdmin.uid;
+
+                if (oldCollection === targetCollection) {
                     const batch = writeBatch(db);
 
                     batch.update(oldRef, data);
 
-                    batch.set(
-                        doc(db, VIP_MATCHES, oldId),
-                        makeVipPublicData(data),
-                        { merge: true }
-                    );
+                    if (targetCollection === PREMIUM_TIPS) {
+                        batch.set(
+                            doc(db, VIP_MATCHES, oldId),
+                            makeVipPublicData(data),
+                            { merge: true }
+                        );
+                    } else {
+                        batch.delete(doc(db, VIP_MATCHES, oldId));
+                    }
 
                     await batch.commit();
 
                 } else {
-                    // Tip ya kawaida haihitaji VIP metadata.
+                    const newRef = doc(collection(db, targetCollection));
                     const batch = writeBatch(db);
 
-                    batch.update(oldRef, data);
+                    batch.set(newRef, data);
+                    batch.delete(oldRef);
 
-                    batch.delete(
-                        doc(db, VIP_MATCHES, oldId)
-                    );
+                    if (oldCollection === PREMIUM_TIPS) {
+                        batch.delete(doc(db, VIP_MATCHES, oldId));
+                    }
+
+                    if (targetCollection === PREMIUM_TIPS) {
+                        batch.set(
+                            doc(db, VIP_MATCHES, newRef.id),
+                            makeVipPublicData(data)
+                        );
+                    }
 
                     await batch.commit();
                 }
 
+                showMessage("Tip imesasishwa.");
+
             } else {
-                // Tip inahamishwa kati ya Free na VIP.
-                const newRef = doc(
-                    collection(db, targetCollection)
-                );
-
-                const batch = writeBatch(db);
-
-                batch.set(newRef, data);
-                batch.delete(oldRef);
-
-                if (oldCollection === PREMIUM_TIPS) {
-                    batch.delete(
-                        doc(db, VIP_MATCHES, oldId)
-                    );
-                }
+                data.createdAt = serverTimestamp();
+                data.createdBy = currentAdmin.uid;
 
                 if (targetCollection === PREMIUM_TIPS) {
+                    const newRef = doc(
+                        collection(db, PREMIUM_TIPS)
+                    );
+
+                    const batch = writeBatch(db);
+
+                    batch.set(newRef, data);
                     batch.set(
                         doc(db, VIP_MATCHES, newRef.id),
                         makeVipPublicData(data)
                     );
+
+                    await batch.commit();
+
+                    showMessage("VIP Tip imehifadhiwa.");
+
+                } else {
+                    await addDoc(collection(db, FREE_TIPS), data);
+                    showMessage("Free Tip imehifadhiwa.");
                 }
-
-                await batch.commit();
             }
 
-            showMessage("Tip imesasishwa kikamilifu.");
+            resetTipForm();
+            await loadAllData();
 
-        } else {
-            // --------------------------------
-            // KUONGEZA TIP MPYA
-            // --------------------------------
+        } catch (error) {
+            console.error("Save tip error:", error);
+            showMessage(
+                "Imeshindikana kuhifadhi Tip. Jaribu tena.",
+                "error"
+            );
 
-            data.createdAt = serverTimestamp();
-            data.createdBy = currentAdmin.uid;
+        } finally {
+            publishTipBtn.disabled = false;
 
-            if (targetCollection === PREMIUM_TIPS) {
-                const newRef = doc(
-                    collection(db, PREMIUM_TIPS)
-                );
-
-                const batch = writeBatch(db);
-
-                batch.set(newRef, data);
-
-                batch.set(
-                    doc(db, VIP_MATCHES, newRef.id),
-                    makeVipPublicData(data)
-                );
-
-                await batch.commit();
-
-                showMessage(
-                    "VIP Game na VIP Tip zimehifadhiwa."
-                );
-
-            } else {
-                await addDoc(
-                    collection(db, FREE_TIPS),
-                    data
-                );
-
-                showMessage("Free Tip imehifadhiwa.");
-            }
+            publishTipBtn.textContent = wasEditing
+                ? "HIFADHI MABADILIKO"
+                : "🚀 CHAPISHA TIP";
         }
+    });
+}
 
-        resetTipForm();
-        await loadAllData();
-
-    } catch (error) {
-        console.error("Save tip error:", error);
-
-        showMessage(
-            `Imeshindikana kuhifadhi Tip: ${error.message}`,
-            "error"
-        );
-
-    } finally {
-        publishTipBtn.disabled = false;
-
-        publishTipBtn.textContent = wasEditing
-            ? "HIFADHI MABADILIKO"
-            : "🚀 CHAPISHA TIP";
-    }
-});
-
-
-// ============================================
-// 12. KUSAFISHA FORM YA TIP
-// ============================================
+// ==================================================
+// 17. RESET TIP FORM
+// ==================================================
 
 function resetTipForm() {
+    if (!tipForm) return;
+
     tipForm.reset();
 
     editingTipId = null;
     editingTipCollection = null;
 
-    cancelTipEdit.hidden = true;
+    if (cancelTipEdit) cancelTipEdit.hidden = true;
 
-    publishTipBtn.disabled = false;
-    publishTipBtn.textContent = "🚀 CHAPISHA TIP";
+    if (publishTipBtn) {
+        publishTipBtn.disabled = false;
+        publishTipBtn.textContent = "🚀 CHAPISHA TIP";
+    }
 }
 
-cancelTipEdit.addEventListener("click", resetTipForm);
+if (cancelTipEdit) {
+    cancelTipEdit.addEventListener("click", resetTipForm);
+}
 
-
-// ============================================
-// 13. MUDA WA FIRESTORE
-// ============================================
+// ==================================================
+// 18. MUDA WA FIRESTORE
+// ==================================================
 
 function getTime(value) {
     if (!value) return 0;
@@ -546,12 +911,13 @@ function getTime(value) {
     return Number.isNaN(parsed) ? 0 : parsed;
 }
 
-
-// ============================================
-// 14. KUPAKIA TIPS
-// ============================================
+// ==================================================
+// 19. KUPAKIA TIPS
+// ==================================================
 
 async function loadTips(collectionName, container, type) {
+    if (!container) return;
+
     container.replaceChildren();
 
     try {
@@ -565,8 +931,7 @@ async function loadTips(collectionName, container, type) {
         }));
 
         tips.sort((a, b) => {
-            return getTime(b.createdAt) -
-                getTime(a.createdAt);
+            return getTime(b.createdAt) - getTime(a.createdAt);
         });
 
         const countElement = document.getElementById(
@@ -579,10 +944,8 @@ async function loadTips(collectionName, container, type) {
 
         if (tips.length === 0) {
             const empty = document.createElement("div");
-
             empty.className = "empty";
             empty.textContent = "Hakuna Tips zilizowekwa bado.";
-
             container.appendChild(empty);
             return;
         }
@@ -594,28 +957,20 @@ async function loadTips(collectionName, container, type) {
         });
 
     } catch (error) {
-        console.error(
-            `Load ${collectionName} error:`,
-            error
-        );
+        console.error(`Load ${collectionName} error:`, error);
 
         const empty = document.createElement("div");
-
         empty.className = "empty";
-
         empty.textContent =
-            error.code === "permission-denied"
-                ? "Huna ruhusa ya kusoma sehemu hii. Kagua Firestore Rules."
-                : "Imeshindikana kupakia Tips. Kagua intaneti.";
+            "Imeshindikana kupakia Tips. Jaribu tena.";
 
         container.appendChild(empty);
     }
 }
 
-
-// ============================================
-// 15. KADI YA TIP NA KUFUTA TIP
-// ============================================
+// ==================================================
+// 20. KADI YA TIP
+// ==================================================
 
 function createTipItem(tip, collectionName) {
     const item = document.createElement("article");
@@ -623,7 +978,6 @@ function createTipItem(tip, collectionName) {
 
     const title = document.createElement("div");
     title.className = "item-title";
-
     title.textContent =
         `${tip.homeTeam || "-"} VS ${tip.awayTeam || "-"}`;
 
@@ -631,13 +985,8 @@ function createTipItem(tip, collectionName) {
     badge.className = "badge";
     badge.textContent = tip.status || "Pending";
 
-    if (tip.status === "Won") {
-        badge.classList.add("green");
-    }
-
-    if (tip.status === "Lost") {
-        badge.classList.add("red");
-    }
+    if (tip.status === "Won") badge.classList.add("green");
+    if (tip.status === "Lost") badge.classList.add("red");
 
     const meta = document.createElement("div");
     meta.className = "item-meta";
@@ -671,7 +1020,7 @@ function createTipItem(tip, collectionName) {
         }
 
         if (!currentAdmin) {
-            showMessage("Ingia tena kama Admin.", "error");
+            showMessage("Ingia tena kwenye akaunti yako.", "error");
             return;
         }
 
@@ -679,28 +1028,20 @@ function createTipItem(tip, collectionName) {
 
         try {
             if (collectionName === PREMIUM_TIPS) {
-                // Futa VIP Tip na metadata yake kwa pamoja.
                 const batch = writeBatch(db);
 
-                batch.delete(
-                    doc(db, PREMIUM_TIPS, tip.id)
-                );
-
-                batch.delete(
-                    doc(db, VIP_MATCHES, tip.id)
-                );
+                batch.delete(doc(db, PREMIUM_TIPS, tip.id));
+                batch.delete(doc(db, VIP_MATCHES, tip.id));
 
                 await batch.commit();
 
             } else {
-                // Futa Free Tip.
-                await deleteDoc(
-                    doc(db, collectionName, tip.id)
-                );
+                const batch = writeBatch(db);
 
-                // Ondoa metadata yoyote ya zamani
-                // inayoweza kuwa imeachwa kwa ID hii.
-                await deleteVipPublicData(tip.id);
+                batch.delete(doc(db, collectionName, tip.id));
+                batch.delete(doc(db, VIP_MATCHES, tip.id));
+
+                await batch.commit();
             }
 
             showMessage("Tip imefutwa.");
@@ -708,11 +1049,7 @@ function createTipItem(tip, collectionName) {
 
         } catch (error) {
             console.error("Delete tip error:", error);
-
-            showMessage(
-                `Imeshindikana kufuta Tip: ${error.message}`,
-                "error"
-            );
+            showMessage("Imeshindikana kufuta Tip.", "error");
 
         } finally {
             deleteButton.disabled = false;
@@ -720,50 +1057,32 @@ function createTipItem(tip, collectionName) {
     });
 
     actions.append(editButton, deleteButton);
-
     item.append(title, badge, meta, actions);
 
     return item;
 }
 
-
-// ============================================
-// 16. KUHARIRI TIP
-// ============================================
+// ==================================================
+// 21. KUHARIRI TIP
+// ==================================================
 
 function editTip(tip, collectionName) {
     editingTipId = tip.id;
     editingTipCollection = collectionName;
 
     document.getElementById("tipType").value =
-        collectionName === PREMIUM_TIPS
-            ? "PREMIUM"
-            : "FREE";
+        collectionName === PREMIUM_TIPS ? "PREMIUM" : "FREE";
 
-    document.getElementById("tipLeague").value =
-        tip.league || "";
-
-    document.getElementById("tipHomeTeam").value =
-        tip.homeTeam || "";
-
-    document.getElementById("tipAwayTeam").value =
-        tip.awayTeam || "";
-
-    document.getElementById("tipDate").value =
-        tip.date || "";
-
-    document.getElementById("tipTime").value =
-        tip.time || "";
-
-    document.getElementById("tipMarket").value =
-        tip.market || "1X2";
-
+    document.getElementById("tipLeague").value = tip.league || "";
+    document.getElementById("tipHomeTeam").value = tip.homeTeam || "";
+    document.getElementById("tipAwayTeam").value = tip.awayTeam || "";
+    document.getElementById("tipDate").value = tip.date || "";
+    document.getElementById("tipTime").value = tip.time || "";
+    document.getElementById("tipMarket").value = tip.market || "1X2";
     document.getElementById("tipPrediction").value =
         tip.prediction || "";
 
-    document.getElementById("tipOdds").value =
-        tip.odds ?? "";
-
+    document.getElementById("tipOdds").value = tip.odds ?? "";
     document.getElementById("tipStatus").value =
         tip.status || "Pending";
 
@@ -771,7 +1090,8 @@ function editTip(tip, collectionName) {
         tip.description || "";
 
     publishTipBtn.textContent = "HIFADHI MABADILIKO";
-    cancelTipEdit.hidden = false;
+
+    if (cancelTipEdit) cancelTipEdit.hidden = false;
 
     tipForm.scrollIntoView({
         behavior: "smooth",
@@ -779,10 +1099,9 @@ function editTip(tip, collectionName) {
     });
 }
 
-
-// ============================================
-// 17. URL SALAMA
-// ============================================
+// ==================================================
+// 22. URL SALAMA
+// ==================================================
 
 function safeURL(value) {
     if (!value) return "";
@@ -804,143 +1123,130 @@ function safeURL(value) {
     }
 }
 
+// ==================================================
+// 23. KUONGEZA APP
+// ==================================================
 
-// ============================================
-// 18. KUONGEZA APP
-// ============================================
+if (appForm) {
+    appForm.addEventListener("submit", async event => {
+        event.preventDefault();
 
-appForm.addEventListener("submit", async event => {
-    event.preventDefault();
+        if (!currentAdmin) {
+            showMessage("Huna ruhusa ya Admin.", "error");
+            return;
+        }
 
-    if (!currentAdmin) {
-        showMessage("Huna ruhusa ya Admin.", "error");
-        return;
-    }
-
-    const downloadURL = safeURL(
-        document.getElementById("appLink").value.trim()
-    );
-
-    const iconValue =
-        document.getElementById("appIcon").value.trim();
-
-    const imageValue =
-        document.getElementById("appImage").value.trim();
-
-    const icon = iconValue ? safeURL(iconValue) : "";
-    const image = imageValue ? safeURL(imageValue) : "";
-
-    if (!downloadURL) {
-        showMessage("Download URL si sahihi.", "error");
-        return;
-    }
-
-    if (
-        (iconValue && !icon) ||
-        (imageValue && !image)
-    ) {
-        showMessage("Icon au picha URL si sahihi.", "error");
-        return;
-    }
-
-    const price = Number(
-        document.getElementById("appPrice").value || 0
-    );
-
-    if (!Number.isFinite(price) || price < 0) {
-        showMessage("Bei ya App si sahihi.", "error");
-        return;
-    }
-
-    const data = {
-        name: document.getElementById("appName").value.trim(),
-
-        category: document
-            .getElementById("appCategory")
-            .value.trim(),
-
-        icon,
-        image,
-
-        description: document
-            .getElementById("appDescription")
-            .value.trim(),
-
-        instructions: document
-            .getElementById("appInstructions")
-            .value.trim(),
-
-        type: document.getElementById("appType").value,
-
-        price,
-        downloadURL,
-
-        createdAt: serverTimestamp(),
-        createdBy: currentAdmin.uid
-    };
-
-    if (!data.name || !data.category || !data.description) {
-        showMessage(
-            "Jaza jina, category na maelezo ya App.",
-            "error"
-        );
-        return;
-    }
-
-    const button = appForm.querySelector(
-        'button[type="submit"]'
-    );
-
-    button.disabled = true;
-    button.textContent = "INAHIFADHI...";
-
-    try {
-        await addDoc(collection(db, "apps"), data);
-
-        appForm.reset();
-
-        document.getElementById("appPrice").value = "0";
-
-        showMessage("App imeongezwa kikamilifu.");
-
-        await loadApps();
-
-    } catch (error) {
-        console.error("Save app error:", error);
-
-        showMessage(
-            `Imeshindikana kuhifadhi App: ${error.message}`,
-            "error"
+        const downloadURL = safeURL(
+            document.getElementById("appLink").value.trim()
         );
 
-    } finally {
-        button.disabled = false;
-        button.textContent = "HIFADHI APP";
-    }
-});
+        const iconValue =
+            document.getElementById("appIcon").value.trim();
 
+        const imageValue =
+            document.getElementById("appImage").value.trim();
 
-// ============================================
-// 19. KUPAKIA APPS
-// ============================================
+        const icon = iconValue ? safeURL(iconValue) : "";
+        const image = imageValue ? safeURL(imageValue) : "";
+
+        if (!downloadURL) {
+            showMessage("Download URL si sahihi.", "error");
+            return;
+        }
+
+        if ((iconValue && !icon) || (imageValue && !image)) {
+            showMessage("Icon au picha URL si sahihi.", "error");
+            return;
+        }
+
+        const price = Number(
+            document.getElementById("appPrice").value || 0
+        );
+
+        if (!Number.isFinite(price) || price < 0) {
+            showMessage("Bei ya App si sahihi.", "error");
+            return;
+        }
+
+        const data = {
+            name: document.getElementById("appName").value.trim(),
+
+            category: document
+                .getElementById("appCategory").value.trim(),
+
+            icon,
+            image,
+
+            description: document
+                .getElementById("appDescription").value.trim(),
+
+            instructions: document
+                .getElementById("appInstructions").value.trim(),
+
+            type: document.getElementById("appType").value,
+
+            price,
+            downloadURL,
+
+            createdAt: serverTimestamp(),
+            createdBy: currentAdmin.uid
+        };
+
+        if (!data.name || !data.category || !data.description) {
+            showMessage(
+                "Jaza jina, category na maelezo ya App.",
+                "error"
+            );
+            return;
+        }
+
+        const button = appForm.querySelector(
+            'button[type="submit"]'
+        );
+
+        button.disabled = true;
+        button.textContent = "INAHIFADHI...";
+
+        try {
+            await addDoc(collection(db, "apps"), data);
+
+            appForm.reset();
+
+            document.getElementById("appPrice").value = "0";
+
+            showMessage("App imeongezwa kikamilifu.");
+            await loadApps();
+
+        } catch (error) {
+            console.error("Save app error:", error);
+            showMessage("Imeshindikana kuhifadhi App.", "error");
+
+        } finally {
+            button.disabled = false;
+            button.textContent = "HIFADHI APP";
+        }
+    });
+}
+
+// ==================================================
+// 24. KUPAKIA APPS
+// ==================================================
 
 async function loadApps() {
+    if (!appsList) return;
+
     appsList.replaceChildren();
 
     try {
-        const snapshot = await getDocs(
-            collection(db, "apps")
-        );
+        const snapshot = await getDocs(collection(db, "apps"));
 
-        document.getElementById("appsCount").textContent =
-            snapshot.size;
+        const count = document.getElementById("appsCount");
+        if (count) count.textContent = snapshot.size;
 
         if (snapshot.empty) {
             const empty = document.createElement("div");
-
             empty.className = "empty";
             empty.textContent = "Hakuna Apps zilizowekwa.";
-
             appsList.appendChild(empty);
             return;
         }
@@ -983,16 +1289,11 @@ async function loadApps() {
                     );
 
                     showMessage("App imefutwa.");
-
                     await loadApps();
 
                 } catch (error) {
                     console.error("Delete app error:", error);
-
-                    showMessage(
-                        `Imeshindikana kufuta App: ${error.message}`,
-                        "error"
-                    );
+                    showMessage("Imeshindikana kufuta App.", "error");
 
                 } finally {
                     remove.disabled = false;
@@ -1000,9 +1301,7 @@ async function loadApps() {
             });
 
             actions.appendChild(remove);
-
             item.append(title, meta, actions);
-
             appsList.appendChild(item);
         });
 
@@ -1011,28 +1310,25 @@ async function loadApps() {
 
         const empty = document.createElement("div");
         empty.className = "empty";
-
-        empty.textContent =
-            "Imeshindikana kusoma Apps. Kagua Firestore Rules na intaneti.";
+        empty.textContent = "Imeshindikana kusoma Apps.";
 
         appsList.appendChild(empty);
     }
 }
 
-
-// ============================================
-// 20. KUPAKIA BEI ZA PREMIUM
-// ============================================
+// ==================================================
+// 25. KUPAKIA BEI ZA PREMIUM
+// ==================================================
 
 async function loadPricing() {
+    if (!isSuperAdmin()) return;
+
     try {
         const snapshot = await getDoc(
             doc(db, "settings", "premium")
         );
 
-        const prices = snapshot.exists()
-            ? snapshot.data()
-            : {};
+        const prices = snapshot.exists() ? snapshot.data() : {};
 
         document.getElementById("dailyPrice").value =
             prices.daily ?? 3000;
@@ -1045,92 +1341,86 @@ async function loadPricing() {
 
     } catch (error) {
         console.error("Load pricing error:", error);
-
-        showMessage(
-            "Imeshindikana kusoma bei. Kagua ruhusa za settings.",
-            "error"
-        );
+        showMessage("Imeshindikana kupakia bei za Premium.", "error");
     }
 }
 
+// ==================================================
+// 26. KUBADILISHA BEI
+// ==================================================
 
-// ============================================
-// 21. KUBADILISHA BEI ZA PREMIUM
-// ============================================
+if (pricingForm) {
+    pricingForm.addEventListener("submit", async event => {
+        event.preventDefault();
 
-pricingForm.addEventListener("submit", async event => {
-    event.preventDefault();
+        if (!isSuperAdmin()) {
+            showMessage(
+                "Super Admin pekee anaweza kubadilisha bei.",
+                "error"
+            );
+            return;
+        }
 
-    if (!currentAdmin) {
-        showMessage("Huna ruhusa ya Admin.", "error");
-        return;
-    }
-
-    const daily = Number(
-        document.getElementById("dailyPrice").value
-    );
-
-    const weekly = Number(
-        document.getElementById("weeklyPrice").value
-    );
-
-    const monthly = Number(
-        document.getElementById("monthlyPrice").value
-    );
-
-    if (
-        !Number.isSafeInteger(daily) || daily < 1 ||
-        !Number.isSafeInteger(weekly) || weekly < 1 ||
-        !Number.isSafeInteger(monthly) || monthly < 1
-    ) {
-        showMessage(
-            "Weka bei sahihi kwa namba nzima.",
-            "error"
-        );
-        return;
-    }
-
-    const button = pricingForm.querySelector(
-        'button[type="submit"]'
-    );
-
-    button.disabled = true;
-    button.textContent = "INAHIFADHI...";
-
-    try {
-        await setDoc(
-            doc(db, "settings", "premium"),
-            {
-                daily,
-                weekly,
-                monthly,
-                updatedAt: serverTimestamp(),
-                updatedBy: currentAdmin.uid
-            }
+        const daily = Number(
+            document.getElementById("dailyPrice").value
         );
 
-        showMessage("Bei za Premium zimehifadhiwa.");
-
-    } catch (error) {
-        console.error("Save pricing error:", error);
-
-        showMessage(
-            `Imeshindikana kuhifadhi bei: ${error.message}`,
-            "error"
+        const weekly = Number(
+            document.getElementById("weeklyPrice").value
         );
 
-    } finally {
-        button.disabled = false;
-        button.textContent = "HIFADHI BEI";
-    }
-});
+        const monthly = Number(
+            document.getElementById("monthlyPrice").value
+        );
 
+        if (
+            !Number.isSafeInteger(daily) || daily < 1 ||
+            !Number.isSafeInteger(weekly) || weekly < 1 ||
+            !Number.isSafeInteger(monthly) || monthly < 1
+        ) {
+            showMessage("Weka bei sahihi kwa namba nzima.", "error");
+            return;
+        }
 
-// ============================================
-// 22. KUPAKIA REKODI ZA MALIPO
-// ============================================
+        const button = pricingForm.querySelector(
+            'button[type="submit"]'
+        );
+
+        button.disabled = true;
+        button.textContent = "INAHIFADHI...";
+
+        try {
+            await setDoc(
+                doc(db, "settings", "premium"),
+                {
+                    daily,
+                    weekly,
+                    monthly,
+                    updatedAt: serverTimestamp(),
+                    updatedBy: currentAdmin.uid
+                }
+            );
+
+            showMessage("Bei za Premium zimehifadhiwa.");
+
+        } catch (error) {
+            console.error("Save pricing error:", error);
+            showMessage("Imeshindikana kuhifadhi bei.", "error");
+
+        } finally {
+            button.disabled = false;
+            button.textContent = "HIFADHI BEI";
+        }
+    });
+}
+
+// ==================================================
+// 27. KUPAKIA MALIPO
+// ==================================================
 
 async function loadPayments() {
+    if (!paymentsList) return;
+
     paymentsList.replaceChildren();
 
     try {
@@ -1138,15 +1428,13 @@ async function loadPayments() {
             collection(db, "payments")
         );
 
-        document.getElementById("paymentsCount").textContent =
-            snapshot.size;
+        const count = document.getElementById("paymentsCount");
+        if (count) count.textContent = snapshot.size;
 
         if (snapshot.empty) {
             const empty = document.createElement("div");
-
             empty.className = "empty";
             empty.textContent = "Hakuna rekodi za malipo.";
-
             paymentsList.appendChild(empty);
             return;
         }
@@ -1159,9 +1447,7 @@ async function loadPayments() {
 
             const title = document.createElement("div");
             title.className = "item-title";
-
-            title.textContent =
-                `Malipo: TSh ${payment.amount ?? "-"}`;
+            title.textContent = `Malipo: TSh ${payment.amount ?? "-"}`;
 
             const meta = document.createElement("div");
             meta.className = "item-meta";
@@ -1173,7 +1459,6 @@ async function loadPayments() {
                 `Reference: ${payment.reference || "-"}`;
 
             item.append(title, meta);
-
             paymentsList.appendChild(item);
         });
 
@@ -1182,18 +1467,15 @@ async function loadPayments() {
 
         const empty = document.createElement("div");
         empty.className = "empty";
-
-        empty.textContent =
-            "Imeshindikana kusoma malipo. Kagua Firestore Rules.";
+        empty.textContent = "Imeshindikana kusoma malipo.";
 
         paymentsList.appendChild(empty);
     }
 }
 
-
-// ============================================
-// 23. KUPAKIA TAARIFA ZOTE
-// ============================================
+// ==================================================
+// 28. KUPAKIA TAARIFA ZOTE
+// ==================================================
 
 async function loadAllData() {
     await Promise.all([
@@ -1204,15 +1486,15 @@ async function loadAllData() {
     ]);
 }
 
-
-// ============================================
-// 24. FIREBASE AUTHENTICATION
-// ============================================
+// ==================================================
+// 29. FIREBASE AUTHENTICATION
+// ==================================================
 
 onAuthStateChanged(auth, async user => {
     const thisCheck = ++authCheckNumber;
 
     currentAdmin = null;
+    currentAdminRole = null;
 
     showLoading();
 
@@ -1222,18 +1504,17 @@ onAuthStateChanged(auth, async user => {
     }
 
     try {
-        const approved = await checkAdmin(user);
+        const adminData = await checkAdmin(user);
 
-        if (thisCheck !== authCheckNumber) {
-            return;
-        }
+        if (thisCheck !== authCheckNumber) return;
 
-        if (!approved) {
+        if (!adminData) {
             await signOut(auth);
 
-            if (thisCheck !== authCheckNumber) {
-                return;
-            }
+            if (thisCheck !== authCheckNumber) return;
+
+            currentAdmin = null;
+            currentAdminRole = null;
 
             showLogin();
 
@@ -1246,32 +1527,30 @@ onAuthStateChanged(auth, async user => {
         }
 
         currentAdmin = user;
+        currentAdminRole = adminData.role;
 
         showDashboard();
 
-        showMessage("Karibu kwenye Admin Panel ya 6+MODS.");
-
         await loadAllData();
 
-        if (thisCheck !== authCheckNumber) {
-            return;
-        }
+        if (thisCheck !== authCheckNumber) return;
 
-        await loadPricing();
+        if (isSuperAdmin()) {
+            await loadPricing();
+        }
 
     } catch (error) {
         console.error("Admin authentication error:", error);
 
-        if (thisCheck !== authCheckNumber) {
-            return;
-        }
+        if (thisCheck !== authCheckNumber) return;
 
         currentAdmin = null;
+        currentAdminRole = null;
 
         showLogin();
 
         showMessage(
-            `Imeshindikana kuthibitisha akaunti: ${error.message}`,
+            "Imeshindikana kuthibitisha akaunti. Jaribu tena.",
             "error"
         );
     }
