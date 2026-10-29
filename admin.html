@@ -4,8 +4,19 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="theme-color" content="#080808">
+    <meta name="description" content="6+MODS Admin Panel — Simamia Apps, Betting Tips, Premium na malipo.">
 
     <title>Admin Panel | 6+MODS</title>
+
+    <!-- PWA -->
+    <link rel="manifest" href="./manifest.json">
+    <link rel="icon" href="./icons/icon-192.png">
+    <link rel="apple-touch-icon" href="./icons/icon-192.png">
+
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="6+MODS">
 
     <style>
         * {
@@ -29,6 +40,7 @@
             background: var(--bg);
             color: var(--text);
             font-family: Arial, sans-serif;
+            -webkit-tap-highlight-color: transparent;
         }
 
         button, input, select, textarea {
@@ -39,17 +51,24 @@
             cursor: pointer;
         }
 
+        button:disabled {
+            opacity: .6;
+            cursor: not-allowed;
+        }
+
         header {
             position: sticky;
             top: 0;
-            z-index: 20;
+            z-index: 100;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            gap: 12px;
-            padding: 16px;
-            background: #101010;
+            gap: 10px;
+            padding: 14px 16px;
+            background: rgba(16, 16, 16, .97);
             border-bottom: 1px solid var(--border);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
         }
 
         .logo {
@@ -59,9 +78,71 @@
         }
 
         .header-small {
-            font-size: 11px;
+            font-size: 10px;
             color: var(--muted);
             margin-top: 4px;
+            letter-spacing: 1px;
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 7px;
+        }
+
+        .install-button {
+            display: none;
+            border: 1px solid #8c7416;
+            border-radius: 10px;
+            padding: 10px 12px;
+            background: linear-gradient(135deg, #fff0a0, #ffd700, #b8860b);
+            color: #171100;
+            font-size: 11px;
+            font-weight: 900;
+            white-space: nowrap;
+        }
+
+        .install-button.visible {
+            display: inline-block;
+        }
+
+        .install-notice {
+            display: none;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            padding: 12px 15px;
+            background: #171408;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .install-notice.show {
+            display: flex;
+        }
+
+        .install-notice-text {
+            font-size: 12px;
+            line-height: 1.6;
+            color: #e8dfbf;
+        }
+
+        .install-notice-text strong {
+            display: block;
+            color: var(--gold);
+            font-size: 13px;
+            margin-bottom: 3px;
+        }
+
+        .close-install {
+            flex: 0 0 auto;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            border: 1px solid #514525;
+            background: #242016;
+            color: white;
+            font-size: 19px;
         }
 
         .container {
@@ -108,12 +189,7 @@
         }
 
         .gold-button {
-            background: linear-gradient(
-                135deg,
-                #fff0a0,
-                #ffd700,
-                #b8860b
-            );
+            background: linear-gradient(135deg, #fff0a0, #ffd700, #b8860b);
             color: #171100;
         }
 
@@ -208,6 +284,7 @@
             overflow-x: auto;
             padding: 3px 0 13px;
             margin-bottom: 10px;
+            scrollbar-width: thin;
         }
 
         .nav-button {
@@ -329,9 +406,10 @@
         }
 
         #loading {
-            padding: 70px 15px;
+            padding: 45px 15px;
             text-align: center;
             color: var(--gold);
+            font-size: 13px;
         }
 
         .loader {
@@ -357,6 +435,13 @@
             font-size: 13px;
         }
 
+        .footer {
+            padding: 22px 12px;
+            text-align: center;
+            color: #777;
+            font-size: 11px;
+        }
+
         @media (min-width: 700px) {
             .stats {
                 grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -367,7 +452,39 @@
             }
         }
 
-        @media (max-width: 420px) {
+        @media (max-width: 480px) {
+            header {
+                padding: 12px;
+            }
+
+            .logo {
+                font-size: 17px;
+            }
+
+            .header-small {
+                font-size: 9px;
+            }
+
+            .install-button {
+                font-size: 10px;
+                padding: 9px 8px;
+            }
+
+            .header-actions {
+                gap: 5px;
+            }
+
+            .secondary-button {
+                padding: 10px;
+                font-size: 12px;
+            }
+
+            .panel {
+                padding: 14px;
+            }
+        }
+
+        @media (max-width: 360px) {
             .form-grid {
                 grid-template-columns: 1fr;
             }
@@ -376,12 +493,12 @@
                 grid-column: span 1;
             }
 
-            header {
-                padding: 13px;
+            .logo {
+                font-size: 15px;
             }
 
-            .logo {
-                font-size: 18px;
+            .header-small {
+                letter-spacing: 0;
             }
         }
 
@@ -401,10 +518,31 @@
         <div class="header-small">ADMIN CONTROL PANEL</div>
     </div>
 
-    <button id="logoutBtn" class="secondary-button" hidden>
-        Toka
-    </button>
+    <div class="header-actions">
+        <button id="installBtn" class="install-button" type="button">
+            📲 INSTALL 6+MODS
+        </button>
+
+        <button id="logoutBtn" class="secondary-button" hidden>
+            Toka
+        </button>
+    </div>
 </header>
+
+<!-- PWA INSTALL NOTICE -->
+<div id="installNotice" class="install-notice">
+    <div class="install-notice-text">
+        <strong>📲 Install 6+MODS</strong>
+        Weka 6+MODS kwenye simu yako ili iwe rahisi kuifungua.
+    </div>
+
+    <button
+        id="closeInstallNotice"
+        class="close-install"
+        type="button"
+        aria-label="Funga ujumbe wa install"
+    >×</button>
+</div>
 
 <div id="loading">
     <div class="loader"></div>
@@ -416,7 +554,6 @@
     <div id="message" class="message"></div>
 
     <!-- LOGIN -->
-
     <section id="loginBox" class="panel">
         <h2>🔐 Admin Login</h2>
 
@@ -452,11 +589,11 @@
     </section>
 
     <!-- DASHBOARD -->
-
     <div id="dashboard">
 
         <section class="panel">
             <h2>Dashboard</h2>
+
             <p class="muted">
                 Karibu kwenye usimamizi wa 6+MODS.
             </p>
@@ -485,29 +622,28 @@
         </section>
 
         <nav class="navigation">
-            <button class="nav-button active" data-section="tipsSection">
+            <button class="nav-button active" data-section="tipsSection" type="button">
                 ⚽ Betting Tips
             </button>
 
-            <button class="nav-button" data-section="appsSection">
+            <button class="nav-button" data-section="appsSection" type="button">
                 📱 Apps
             </button>
 
-            <button class="nav-button" data-section="pricingSection">
+            <button class="nav-button" data-section="pricingSection" type="button">
                 💰 Bei
             </button>
 
-            <button class="nav-button" data-section="paymentsSection">
+            <button class="nav-button" data-section="paymentsSection" type="button">
                 💳 Malipo
             </button>
 
-            <button class="nav-button" data-section="securitySection">
+            <button class="nav-button" data-section="securitySection" type="button">
                 🔐 Usalama
             </button>
         </nav>
 
         <!-- BETTING TIPS -->
-
         <section id="tipsSection" class="section active">
 
             <div class="panel">
@@ -516,11 +652,11 @@
                 <div class="notice">
                     Free Tips zitahifadhiwa kwenye <b>tips</b>.
                     Premium Tips zitahifadhiwa kwenye
-                    <b>premiumTips</b>, ambazo lazima zilindwe kwa Firestore Rules.
+                    <b>premiumTips</b>. Hakikisha Firestore Rules
+                    zinalinda data za Premium.
                 </div>
 
                 <form id="tipForm">
-
                     <div class="form-grid">
 
                         <label>
@@ -533,29 +669,17 @@
 
                         <label>
                             Ligi
-                            <input
-                                id="tipLeague"
-                                placeholder="Mfano: Premier League"
-                                required
-                            >
+                            <input id="tipLeague" placeholder="Mfano: Premier League" required>
                         </label>
 
                         <label>
                             Timu ya Nyumbani
-                            <input
-                                id="tipHomeTeam"
-                                placeholder="Mfano: Arsenal"
-                                required
-                            >
+                            <input id="tipHomeTeam" placeholder="Mfano: Arsenal" required>
                         </label>
 
                         <label>
                             Timu ya Ugenini
-                            <input
-                                id="tipAwayTeam"
-                                placeholder="Mfano: Chelsea"
-                                required
-                            >
+                            <input id="tipAwayTeam" placeholder="Mfano: Chelsea" required>
                         </label>
 
                         <label>
@@ -575,12 +699,8 @@
                                 <option value="Over 1.5">Over 1.5</option>
                                 <option value="Over 2.5">Over 2.5</option>
                                 <option value="Under 2.5">Under 2.5</option>
-                                <option value="Both Teams To Score">
-                                    Both Teams To Score
-                                </option>
-                                <option value="Double Chance">
-                                    Double Chance
-                                </option>
+                                <option value="Both Teams To Score">Both Teams To Score</option>
+                                <option value="Double Chance">Double Chance</option>
                                 <option value="Draw No Bet">Draw No Bet</option>
                                 <option value="Other">Nyingine</option>
                             </select>
@@ -588,11 +708,7 @@
 
                         <label>
                             Prediction
-                            <input
-                                id="tipPrediction"
-                                placeholder="Mfano: Home Win"
-                                required
-                            >
+                            <input id="tipPrediction" placeholder="Mfano: Home Win" required>
                         </label>
 
                         <label>
@@ -619,10 +735,7 @@
 
                         <label class="span-2">
                             Maelezo ya Ziada (si lazima)
-                            <textarea
-                                id="tipDescription"
-                                placeholder="Maelezo kuhusu mechi..."
-                            ></textarea>
+                            <textarea id="tipDescription" placeholder="Maelezo kuhusu mechi..."></textarea>
                         </label>
 
                     </div>
@@ -645,7 +758,6 @@
                     >
                         Ghairi Marekebisho
                     </button>
-
                 </form>
             </div>
 
@@ -666,14 +778,12 @@
         </section>
 
         <!-- APPS -->
-
         <section id="appsSection" class="section">
 
             <div class="panel">
                 <h2>📱 Ongeza App</h2>
 
                 <form id="appForm">
-
                     <label>
                         Jina la App
                         <input id="appName" required>
@@ -714,12 +824,7 @@
 
                     <label>
                         Bei (TSh)
-                        <input
-                            id="appPrice"
-                            type="number"
-                            min="0"
-                            value="0"
-                        >
+                        <input id="appPrice" type="number" min="0" value="0">
                     </label>
 
                     <label>
@@ -730,7 +835,6 @@
                     <button class="gold-button full" type="submit">
                         HIFADHI APP
                     </button>
-
                 </form>
             </div>
 
@@ -744,7 +848,6 @@
         </section>
 
         <!-- PREMIUM PRICING -->
-
         <section id="pricingSection" class="section">
 
             <div class="panel">
@@ -757,52 +860,32 @@
                 </p>
 
                 <form id="pricingForm">
-
                     <label>
                         Daily Premium — TSh
-                        <input
-                            id="dailyPrice"
-                            type="number"
-                            min="1"
-                            step="1"
-                            required
-                        >
+                        <input id="dailyPrice" type="number" min="1" step="1" required>
                     </label>
 
                     <label>
                         Weekly Premium — TSh
-                        <input
-                            id="weeklyPrice"
-                            type="number"
-                            min="1"
-                            step="1"
-                            required
-                        >
+                        <input id="weeklyPrice" type="number" min="1" step="1" required>
                     </label>
 
                     <label>
                         Monthly Premium — TSh
-                        <input
-                            id="monthlyPrice"
-                            type="number"
-                            min="1"
-                            step="1"
-                            required
-                        >
+                        <input id="monthlyPrice" type="number" min="1" step="1" required>
                     </label>
 
                     <button class="gold-button full" type="submit">
                         HIFADHI BEI
                     </button>
-
                 </form>
             </div>
 
         </section>
 
         <!-- PAYMENTS -->
-
         <section id="paymentsSection" class="section">
+
             <div class="panel">
                 <h2>💳 Rekodi za Malipo</h2>
 
@@ -815,38 +898,136 @@
                     <div class="empty">Inapakia...</div>
                 </div>
             </div>
+
         </section>
 
         <!-- SECURITY -->
-
         <section id="securitySection" class="section">
+
             <div class="panel">
                 <h2>🔐 Usalama wa Mfumo</h2>
 
                 <p class="muted">
-                    Akaunti yako lazima iwe na document ya admins
-                    yenye active = true na UID inayolingana na
-                    Firebase Authentication.
+                    Akaunti yako lazima iwe na document kwenye
+                    <b>admins</b>, yenye <b>active: true</b> na
+                    UID inayolingana na Firebase Authentication.
                 </p>
 
                 <p class="muted">
-                    Admin mpya anapaswa kuidhinishwa kupitia
-                    utaratibu salama wa backend au Firebase Console.
-                    Gmail pekee haitoi mamlaka ya Admin.
+                    Mmiliki wa Firebase project atasimamia orodha
+                    ya admin kupitia Firebase Console.
                 </p>
 
                 <p class="muted">
-                    Premium Tips na malipo lazima zilindwe na
-                    Firestore Rules na uthibitishaji wa backend.
+                    Usalama wa kweli unategemea Firestore Security
+                    Rules na uthibitishaji wa backend. Kuficha
+                    sehemu kwenye HTML pekee hakulindi data.
                 </p>
             </div>
+
         </section>
 
     </div>
 
+    <footer class="footer">
+        © 6+MODS — Admin Control Panel
+    </footer>
+
 </div>
 
+<!-- ADMIN APPLICATION -->
 <script type="module" src="./admin.js"></script>
+
+<!-- PWA INSTALL + SERVICE WORKER -->
+<script>
+    let deferredInstallPrompt = null;
+
+    const installBtn = document.getElementById("installBtn");
+    const installNotice = document.getElementById("installNotice");
+    const closeInstallNotice = document.getElementById("closeInstallNotice");
+
+    function isAppInstalled() {
+        return window.matchMedia("(display-mode: standalone)").matches ||
+            window.navigator.standalone === true;
+    }
+
+    function hideInstallUI() {
+        installBtn.classList.remove("visible");
+        installNotice.classList.remove("show");
+    }
+
+    if (isAppInstalled()) {
+        hideInstallUI();
+    }
+
+    window.addEventListener("beforeinstallprompt", function(event) {
+        event.preventDefault();
+
+        deferredInstallPrompt = event;
+
+        if (!isAppInstalled()) {
+            installBtn.classList.add("visible");
+            installNotice.classList.add("show");
+        }
+    });
+
+    installBtn.addEventListener("click", async function() {
+        if (isAppInstalled()) {
+            hideInstallUI();
+            return;
+        }
+
+        if (deferredInstallPrompt) {
+            deferredInstallPrompt.prompt();
+
+            await deferredInstallPrompt.userChoice;
+
+            deferredInstallPrompt = null;
+            hideInstallUI();
+            return;
+        }
+
+        // Mwongozo wa install kwa browser ambazo hazitoi prompt.
+        const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
+
+        if (isIOS) {
+            alert(
+                "Kusakinisha 6+MODS kwenye iPhone:\n\n" +
+                "1. Fungua ukurasa huu kwenye Safari.\n" +
+                "2. Bonyeza Share.\n" +
+                "3. Chagua Add to Home Screen.\n" +
+                "4. Bonyeza Add."
+            );
+        } else {
+            alert(
+                "Kitufe cha install cha browser hakijapatikana bado.\n\n" +
+                "Hakikisha manifest.json na sw.js zipo na zimewekwa sawa. " +
+                "Kisha fungua tovuti kupitia localhost au hosting inayotumia HTTPS."
+            );
+        }
+    });
+
+    closeInstallNotice.addEventListener("click", function() {
+        installNotice.classList.remove("show");
+    });
+
+    window.addEventListener("appinstalled", function() {
+        deferredInstallPrompt = null;
+        hideInstallUI();
+    });
+
+    // Register service worker for PWA support.
+    if ("serviceWorker" in navigator) {
+        window.addEventListener("load", async function() {
+            try {
+                await navigator.serviceWorker.register("./sw.js");
+                console.log("6+MODS Service Worker registered.");
+            } catch (error) {
+                console.error("Service Worker registration failed:", error);
+            }
+        });
+    }
+</script>
 
 </body>
 </html>
