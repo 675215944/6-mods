@@ -16,7 +16,10 @@ import {
     getAuth
 } from "firebase-admin/auth";
 
+// ======================================
 // FIREBASE ADMIN
+// ======================================
+
 function getDatabase() {
     const raw = process.env.FIREBASE_SERVICE_ACCOUNT_JSON;
 
@@ -33,7 +36,10 @@ function getDatabase() {
     return getFirestore();
 }
 
+// ======================================
 // JSON RESPONSE
+// ======================================
+
 function response(data, status = 200) {
     return new Response(JSON.stringify(data), {
         status,
@@ -43,18 +49,23 @@ function response(data, status = 200) {
     });
 }
 
+// ======================================
 // PREMIUM PLANS
+// ======================================
+
 const PLANS = {
     DAILY: {
         name: "Daily",
         amount: 3000,
         days: 1
     },
+
     WEEKLY: {
         name: "Weekly",
         amount: 10000,
         days: 7
     },
+
     MONTHLY: {
         name: "Monthly",
         amount: 30000,
@@ -62,7 +73,35 @@ const PLANS = {
     }
 };
 
+// ======================================
+// TANZANIA PHONE NORMALIZATION
+// ======================================
+
+function normalizePhone(input) {
+    const phone = String(input || "").replace(/\D/g, "");
+
+    // 0712345678 or 0612345678
+    if (/^0[67][0-9]{8}$/.test(phone)) {
+        return "255" + phone.substring(1);
+    }
+
+    // 255712345678 or 255612345678
+    if (/^255[67][0-9]{8}$/.test(phone)) {
+        return phone;
+    }
+
+    // 712345678 or 612345678
+    if (/^[67][0-9]{8}$/.test(phone)) {
+        return "255" + phone;
+    }
+
+    return null;
+}
+
+// ======================================
 // CREATE PAYMENT
+// ======================================
+
 export default async function handler(request) {
 
     if (request.method !== "POST") {
@@ -75,6 +114,7 @@ export default async function handler(request) {
     let paymentRef = null;
 
     try {
+
         const apiKey = process.env.ABLINER_API_KEY;
         const webhookSecret =
             process.env.ABLINER_WEBHOOK_SECRET;
@@ -117,8 +157,6 @@ export default async function handler(request) {
         }
 
         const planKey = body.plan;
-        const phone = String(body.phone || "").trim();
-
         const plan = PLANS[planKey];
 
         if (!plan) {
@@ -128,18 +166,16 @@ export default async function handler(request) {
             }, 400);
         }
 
-        // ACCEPT ONLY 07XXXXXXXX
-        if (!/^07[0-9]{8}$/.test(phone)) {
+        // NORMALIZE PHONE
+        const internationalPhone = normalizePhone(body.phone);
+
+        if (!internationalPhone) {
             return response({
                 success: false,
                 message:
-                    "Weka namba sahihi inayoanzia 07. Mfano 0712345678."
+                    "Weka namba sahihi ya Tanzania. Mfano 0712345678 au 0612345678."
             }, 400);
         }
-
-        // CONVERT 07 TO 255
-        const internationalPhone =
-            "255" + phone.substring(1);
 
         // CREATE UNIQUE PAYMENT
         const paymentId = crypto.randomUUID();
@@ -191,6 +227,7 @@ export default async function handler(request) {
             "https://abliner.net/api/v1/deposits",
             {
                 method: "POST",
+
                 headers: {
                     "Authorization": "Bearer " + apiKey,
                     "Content-Type": "application/json",
@@ -198,6 +235,7 @@ export default async function handler(request) {
                     "x-abliner-timestamp": timestamp,
                     "x-abliner-signature": signature
                 },
+
                 body: rawBody
             }
         );
@@ -212,11 +250,13 @@ export default async function handler(request) {
             );
         }
 
+        // PROVIDER REJECTED REQUEST
         if (!ablinerResponse.ok) {
 
-            // Do not overwrite a payment already completed
             await db.runTransaction(async (transaction) => {
-                const snapshot = await transaction.get(paymentRef);
+
+                const snapshot =
+                    await transaction.get(paymentRef);
 
                 if (
                     snapshot.exists &&
@@ -231,6 +271,12 @@ export default async function handler(request) {
                 }
             });
 
+            console.error(
+                "ABLINER REJECTED:",
+                result.code || "unknown_code",
+                result.message || "No message"
+            );
+
             return response({
                 success: false,
                 message:
@@ -239,11 +285,13 @@ export default async function handler(request) {
             }, 502);
         }
 
+        // VERIFY PROVIDER RESPONSE
         const providerTransaction =
             result && result.data;
 
         if (
             !providerTransaction ||
+            typeof providerTransaction.id !== "string" ||
             !providerTransaction.id
         ) {
             throw new Error(
@@ -251,12 +299,13 @@ export default async function handler(request) {
             );
         }
 
-        // UPDATE ONLY IF WEBHOOK HAS NOT ALREADY CHANGED STATUS
+        // SAVE TRANSACTION ID WITHOUT OVERWRITING WEBHOOK STATUS
         let finalStatus = "pending";
 
         await db.runTransaction(async (transaction) => {
 
-            const snapshot = await transaction.get(paymentRef);
+            const snapshot =
+                await transaction.get(paymentRef);
 
             if (!snapshot.exists) {
                 throw new Error("Payment record haipo.");
@@ -264,30 +313,34 @@ export default async function handler(request) {
 
             const currentPayment = snapshot.data();
 
-            // If webhook already completed or failed, preserve it.
+            // CHECK TRANSACTION ID
+            if (
+                currentPayment.ablinerTransactionId &&
+                currentPayment.ablinerTransactionId !==
+                    providerTransaction.id
+            ) {
+                throw new Error("Transaction ID hazifanani.");
+            }
+
+            // WEBHOOK MAY HAVE ARRIVED FIRST
             if (
                 currentPayment.status === "completed" ||
                 currentPayment.status === "failed"
             ) {
+
                 finalStatus = currentPayment.status;
 
-                if (
-                    currentPayment.ablinerTransactionId &&
-                    currentPayment.ablinerTransactionId !==
-                        providerTransaction.id
-                ) {
-                    throw new Error(
-                        "Transaction ID hazifanani."
-                    );
-                }
+                // Save missing transaction ID while preserving status
+                transaction.update(paymentRef, {
+                    ablinerTransactionId: providerTransaction.id,
+                    updatedAt: FieldValue.serverTimestamp()
+                });
 
                 return;
             }
 
             if (currentPayment.status !== "initiating") {
-                throw new Error(
-                    "Payment status si sahihi."
-                );
+                throw new Error("Payment status si sahihi.");
             }
 
             transaction.update(paymentRef, {
@@ -305,13 +358,13 @@ export default async function handler(request) {
             paymentId,
             plan: plan.name,
             amount: plan.amount,
-            phone,
+            phone: internationalPhone,
             message:
                 finalStatus === "completed"
                     ? "Malipo yamethibitishwa."
                     : finalStatus === "failed"
                         ? "Malipo hayakukamilika."
-                        : "Ombi la malipo limetumwa. Angalia simu yako na uthibitishe malipo."
+                        : "Ombi la malipo limetumwa. Angalia simu yako."
         });
 
     } catch (error) {
@@ -321,7 +374,6 @@ export default async function handler(request) {
             error.message
         );
 
-        // Preserve completed payments if an error occurs.
         if (paymentRef) {
             try {
                 await paymentRef.update({
