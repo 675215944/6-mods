@@ -1,5 +1,4 @@
 
-
 import crypto from "node:crypto";
 
 import {
@@ -12,6 +11,10 @@ import {
     getFirestore,
     FieldValue
 } from "firebase-admin/firestore";
+
+import {
+    getAuth
+} from "firebase-admin/auth";
 
 // FIREBASE ADMIN
 function getDatabase() {
@@ -61,12 +64,15 @@ const PLANS = {
 
 // CREATE PAYMENT
 export default async function handler(request) {
+
     if (request.method !== "POST") {
         return response({
             success: false,
             message: "Method not allowed."
         }, 405);
     }
+
+    let paymentRef = null;
 
     try {
         const apiKey = process.env.ABLINER_API_KEY;
@@ -94,16 +100,21 @@ export default async function handler(request) {
 
         const db = getDatabase();
 
-        const { getAuth } = await import(
-            "firebase-admin/auth"
-        );
-
         const decoded = await getAuth().verifyIdToken(idToken);
 
         const uid = decoded.uid;
 
         // READ REQUEST
-        const body = await request.json();
+        let body;
+
+        try {
+            body = await request.json();
+        } catch {
+            return response({
+                success: false,
+                message: "Taarifa ulizotuma si sahihi."
+            }, 400);
+        }
 
         const planKey = body.plan;
         const phone = String(body.phone || "").trim();
@@ -136,11 +147,11 @@ export default async function handler(request) {
         const customerReference =
             "6MODS" + crypto.randomBytes(8).toString("hex");
 
-        const paymentRef = db
+        paymentRef = db
             .collection("payments")
             .doc(paymentId);
 
-        // SAVE PENDING PAYMENT FIRST
+        // SAVE PAYMENT BEFORE REQUEST
         await paymentRef.set({
             uid,
             email: decoded.email || "",
@@ -191,13 +202,33 @@ export default async function handler(request) {
             }
         );
 
-        const result = await ablinerResponse.json();
+        let result;
+
+        try {
+            result = await ablinerResponse.json();
+        } catch {
+            throw new Error(
+                "Abliner imerudisha jibu lisilotambulika."
+            );
+        }
 
         if (!ablinerResponse.ok) {
-            await paymentRef.update({
-                status: "failed",
-                providerError: result.code || "payment_error",
-                updatedAt: FieldValue.serverTimestamp()
+
+            // Do not overwrite a payment already completed
+            await db.runTransaction(async (transaction) => {
+                const snapshot = await transaction.get(paymentRef);
+
+                if (
+                    snapshot.exists &&
+                    snapshot.data().status === "initiating"
+                ) {
+                    transaction.update(paymentRef, {
+                        status: "failed",
+                        providerError:
+                            result.code || "payment_error",
+                        updatedAt: FieldValue.serverTimestamp()
+                    });
+                }
             });
 
             return response({
@@ -208,43 +239,102 @@ export default async function handler(request) {
             }, 502);
         }
 
-        const transaction = result.data;
+        const providerTransaction =
+            result && result.data;
 
-        if (!transaction || !transaction.id) {
-            await paymentRef.update({
-                status: "failed",
+        if (
+            !providerTransaction ||
+            !providerTransaction.id
+        ) {
+            throw new Error(
+                "Jibu la transaction halina ID inayotambulika."
+            );
+        }
+
+        // UPDATE ONLY IF WEBHOOK HAS NOT ALREADY CHANGED STATUS
+        let finalStatus = "pending";
+
+        await db.runTransaction(async (transaction) => {
+
+            const snapshot = await transaction.get(paymentRef);
+
+            if (!snapshot.exists) {
+                throw new Error("Payment record haipo.");
+            }
+
+            const currentPayment = snapshot.data();
+
+            // If webhook already completed or failed, preserve it.
+            if (
+                currentPayment.status === "completed" ||
+                currentPayment.status === "failed"
+            ) {
+                finalStatus = currentPayment.status;
+
+                if (
+                    currentPayment.ablinerTransactionId &&
+                    currentPayment.ablinerTransactionId !==
+                        providerTransaction.id
+                ) {
+                    throw new Error(
+                        "Transaction ID hazifanani."
+                    );
+                }
+
+                return;
+            }
+
+            if (currentPayment.status !== "initiating") {
+                throw new Error(
+                    "Payment status si sahihi."
+                );
+            }
+
+            transaction.update(paymentRef, {
+                status: "pending",
+                ablinerTransactionId: providerTransaction.id,
                 updatedAt: FieldValue.serverTimestamp()
             });
 
-            return response({
-                success: false,
-                message: "Jibu la malipo halijatambulika."
-            }, 502);
-        }
-
-        // UPDATE PAYMENT RECORD
-        await paymentRef.update({
-            status: "pending",
-            ablinerTransactionId: transaction.id,
-            updatedAt: FieldValue.serverTimestamp()
+            finalStatus = "pending";
         });
 
         return response({
             success: true,
-            status: "pending",
+            status: finalStatus,
             paymentId,
             plan: plan.name,
             amount: plan.amount,
             phone,
             message:
-                "Ombi la malipo limetumwa. Angalia simu yako na uthibitishe malipo."
+                finalStatus === "completed"
+                    ? "Malipo yamethibitishwa."
+                    : finalStatus === "failed"
+                        ? "Malipo hayakukamilika."
+                        : "Ombi la malipo limetumwa. Angalia simu yako na uthibitishe malipo."
         });
 
     } catch (error) {
+
         console.error(
             "CREATE PAYMENT ERROR:",
             error.message
         );
+
+        // Preserve completed payments if an error occurs.
+        if (paymentRef) {
+            try {
+                await paymentRef.update({
+                    lastError: "payment_initialization_error",
+                    updatedAt: FieldValue.serverTimestamp()
+                });
+            } catch (updateError) {
+                console.error(
+                    "PAYMENT RECORD UPDATE ERROR:",
+                    updateError.message
+                );
+            }
+        }
 
         return response({
             success: false,
