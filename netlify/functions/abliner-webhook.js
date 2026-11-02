@@ -1,5 +1,4 @@
 
-
 import crypto from "node:crypto";
 
 import {
@@ -31,7 +30,7 @@ function getDatabase() {
     return getFirestore();
 }
 
-// RESPONSE
+// JSON RESPONSE
 function response(data, status = 200) {
     return new Response(JSON.stringify(data), {
         status,
@@ -41,9 +40,37 @@ function response(data, status = 200) {
     });
 }
 
+// VERIFY WEBHOOK SIGNATURE
+function verifySignature(rawBody, timestamp, signature, secret) {
+    if (!timestamp || !signature || !secret) {
+        return false;
+    }
+
+    const timestampNumber = Number(timestamp);
+
+    if (
+        !Number.isFinite(timestampNumber) ||
+        Math.abs(Date.now() / 1000 - timestampNumber) > 300
+    ) {
+        return false;
+    }
+
+    const expected = crypto
+        .createHmac("sha256", secret)
+        .update(timestamp + "." + rawBody)
+        .digest("hex");
+
+    const expectedBuffer = Buffer.from(expected, "utf8");
+    const receivedBuffer = Buffer.from(signature, "utf8");
+
+    return (
+        expectedBuffer.length === receivedBuffer.length &&
+        crypto.timingSafeEqual(expectedBuffer, receivedBuffer)
+    );
+}
+
 // WEBHOOK HANDLER
 export default async function handler(request) {
-
     if (request.method !== "POST") {
         return response({
             success: false,
@@ -67,58 +94,25 @@ export default async function handler(request) {
         const signature =
             request.headers.get("x-webhook-signature");
 
-        // CHECK REQUIRED HEADERS
-        if (!timestamp || !signature) {
+        // VERIFY SIGNATURE
+        if (!verifySignature(rawBody, timestamp, signature, secret)) {
             return response({
                 success: false,
-                message: "Webhook signature haipo."
-            }, 401);
-        }
-
-        // REJECT OLD WEBHOOKS (5 MINUTES)
-        const timestampNumber = Number(timestamp);
-
-        if (
-            !Number.isFinite(timestampNumber) ||
-            Math.abs(Date.now() / 1000 - timestampNumber) > 300
-        ) {
-            return response({
-                success: false,
-                message: "Webhook timestamp imepitwa na muda."
-            }, 401);
-        }
-
-        // VERIFY HMAC SIGNATURE
-        const expectedSignature = crypto
-            .createHmac("sha256", secret)
-            .update(timestamp + "." + rawBody)
-            .digest("hex");
-
-        const expectedBuffer = Buffer.from(
-            expectedSignature,
-            "utf8"
-        );
-
-        const receivedBuffer = Buffer.from(
-            signature,
-            "utf8"
-        );
-
-        if (
-            expectedBuffer.length !== receivedBuffer.length ||
-            !crypto.timingSafeEqual(
-                expectedBuffer,
-                receivedBuffer
-            )
-        ) {
-            return response({
-                success: false,
-                message: "Webhook signature si sahihi."
+                message: "Webhook signature si sahihi au imepitwa na muda."
             }, 401);
         }
 
         // PARSE EVENT
-        const webhook = JSON.parse(rawBody);
+        let webhook;
+
+        try {
+            webhook = JSON.parse(rawBody);
+        } catch {
+            return response({
+                success: false,
+                message: "Webhook JSON si sahihi."
+            }, 400);
+        }
 
         const eventId =
             webhook.id ||
@@ -127,14 +121,20 @@ export default async function handler(request) {
         const eventType = webhook.event;
         const data = webhook.data || {};
 
-        if (!eventId || !eventType || !data.id) {
+        if (
+            typeof eventId !== "string" ||
+            !eventId ||
+            eventId.length > 200 ||
+            !eventType ||
+            !data.id
+        ) {
             return response({
                 success: false,
                 message: "Webhook data haijakamilika."
             }, 400);
         }
 
-        // ACCEPT ONLY DEPOSIT EVENTS
+        // IGNORE EVENTS WE DO NOT USE
         if (
             eventType !== "transaction.completed" &&
             eventType !== "transaction.failed"
@@ -145,35 +145,35 @@ export default async function handler(request) {
             });
         }
 
+        // VERIFY TRANSACTION DETAILS
+        const expectedStatus =
+            eventType === "transaction.completed"
+                ? "completed"
+                : "failed";
+
         if (
             data.type !== "deposit" ||
-            data.currency !== "TZS"
+            data.method !== "mobile" ||
+            data.currency !== "TZS" ||
+            data.status !== expectedStatus ||
+            !data.customer_reference ||
+            !Number.isFinite(Number(data.amount))
         ) {
             return response({
                 success: false,
-                message: "Transaction type au currency si sahihi."
-            }, 400);
-        }
-
-        const customerReference =
-            data.customer_reference;
-
-        if (!customerReference) {
-            return response({
-                success: false,
-                message: "Customer reference haipo."
+                message: "Taarifa za transaction si sahihi."
             }, 400);
         }
 
         const db = getDatabase();
 
-        // FIND ORIGINAL PAYMENT
+        // FIND PAYMENT USING CUSTOMER REFERENCE
         const paymentQuery = await db
             .collection("payments")
             .where(
                 "customerReference",
                 "==",
-                customerReference
+                data.customer_reference
             )
             .limit(1)
             .get();
@@ -187,10 +187,9 @@ export default async function handler(request) {
 
         const paymentDocument = paymentQuery.docs[0];
         const paymentRef = paymentDocument.ref;
-
         const payment = paymentDocument.data();
 
-        // VERIFY AMOUNT AND TRANSACTION
+        // VERIFY PAYMENT AMOUNT
         if (
             Number(data.amount) !== Number(payment.amount) ||
             payment.currency !== "TZS" ||
@@ -198,21 +197,11 @@ export default async function handler(request) {
         ) {
             return response({
                 success: false,
-                message: "Taarifa za malipo hazilingani."
+                message: "Kiasi au taarifa za malipo hazilingani."
             }, 400);
         }
 
-        if (
-            payment.ablinerTransactionId &&
-            payment.ablinerTransactionId !== data.id
-        ) {
-            return response({
-                success: false,
-                message: "Transaction ID haifanani."
-            }, 400);
-        }
-
-        // VERIFY PLAN FROM SERVER RECORD
+        // VERIFY PLAN
         const planDays = {
             DAILY: 1,
             WEEKLY: 7,
@@ -228,6 +217,7 @@ export default async function handler(request) {
             }, 400);
         }
 
+        // FIRESTORE REFERENCES
         const eventRef = db
             .collection("ablinerWebhookEvents")
             .doc(eventId);
@@ -236,9 +226,10 @@ export default async function handler(request) {
             .collection("users")
             .doc(payment.uid);
 
-        // PROCESS ONCE USING FIRESTORE TRANSACTION
+        // PROCESS EVENT SAFELY
         await db.runTransaction(async (transaction) => {
 
+            // READ ALL DOCUMENTS BEFORE WRITING
             const eventSnapshot =
                 await transaction.get(eventRef);
 
@@ -246,31 +237,44 @@ export default async function handler(request) {
                 return;
             }
 
-            const currentPayment =
+            const currentPaymentSnapshot =
                 await transaction.get(paymentRef);
 
-            const currentUser =
+            const currentUserSnapshot =
                 await transaction.get(userRef);
 
-            if (!currentPayment.exists) {
+            if (!currentPaymentSnapshot.exists) {
                 throw new Error("Payment record haipo.");
             }
 
-            const currentData = currentPayment.data();
+            const currentPayment =
+                currentPaymentSnapshot.data();
 
-            // CHECK PAYMENT DETAILS AGAIN
+            // VERIFY PAYMENT AGAIN
             if (
-                currentData.customerReference !== customerReference ||
-                Number(currentData.amount) !== Number(data.amount) ||
-                currentData.uid !== payment.uid
+                currentPayment.customerReference !==
+                    data.customer_reference ||
+                Number(currentPayment.amount) !==
+                    Number(data.amount) ||
+                currentPayment.uid !== payment.uid ||
+                currentPayment.currency !== "TZS"
             ) {
                 throw new Error("Payment verification failed.");
             }
 
-            // FAILED PAYMENT
+            // TRANSACTION ID MUST MATCH
+            if (
+                currentPayment.ablinerTransactionId &&
+                currentPayment.ablinerTransactionId !== data.id
+            ) {
+                throw new Error("Transaction ID haifanani.");
+            }
+
+            // FAILED EVENT
             if (eventType === "transaction.failed") {
 
-                if (currentData.status !== "completed") {
+                // NEVER DOWNGRADE A COMPLETED PAYMENT
+                if (currentPayment.status !== "completed") {
                     transaction.update(paymentRef, {
                         status: "failed",
                         ablinerTransactionId: data.id,
@@ -288,11 +292,10 @@ export default async function handler(request) {
                 return;
             }
 
-            // DO NOT DOWNGRADE OR EXTEND TWICE
-            if (
-                currentData.status === "completed" ||
-                currentData.status === "failed"
-            ) {
+            // COMPLETED EVENT
+            // Do not extend membership twice.
+            if (currentPayment.status === "completed") {
+
                 transaction.set(eventRef, {
                     eventType,
                     paymentId: paymentRef.id,
@@ -303,9 +306,11 @@ export default async function handler(request) {
                 return;
             }
 
+            // Accept initiating, pending or previously failed.
             if (
-                currentData.status !== "pending" &&
-                currentData.status !== "initiating"
+                currentPayment.status !== "initiating" &&
+                currentPayment.status !== "pending" &&
+                currentPayment.status !== "failed"
             ) {
                 throw new Error("Payment status si sahihi.");
             }
@@ -314,8 +319,8 @@ export default async function handler(request) {
             const now = Date.now();
 
             const existingExpiry =
-                currentUser.exists
-                    ? currentUser.data().premiumExpiresAt
+                currentUserSnapshot.exists
+                    ? currentUserSnapshot.data().premiumExpiresAt
                     : null;
 
             const existingExpiryMs =
@@ -333,11 +338,11 @@ export default async function handler(request) {
                 startFrom + days * 24 * 60 * 60 * 1000
             );
 
-            // CREATE OR UPDATE USER PREMIUM
+            // ACTIVATE PREMIUM
             transaction.set(userRef, {
-                email: currentData.email || "",
+                email: currentPayment.email || "",
                 premium: true,
-                premiumPlan: currentData.plan,
+                premiumPlan: currentPayment.plan,
                 premiumExpiresAt: expiresAt,
                 premiumUpdatedAt: FieldValue.serverTimestamp()
             }, {
@@ -352,7 +357,7 @@ export default async function handler(request) {
                 updatedAt: FieldValue.serverTimestamp()
             });
 
-            // SAVE EVENT TO PREVENT DUPLICATES
+            // SAVE EVENT
             transaction.set(eventRef, {
                 eventType,
                 paymentId: paymentRef.id,
@@ -367,7 +372,6 @@ export default async function handler(request) {
         });
 
     } catch (error) {
-
         console.error(
             "ABLINER WEBHOOK ERROR:",
             error.message
