@@ -1,21 +1,23 @@
+
 import {
     onAuthStateChanged
 } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-auth.js";
 
 import { auth } from "./firebase.js";
 
-// HTML elements
+// HTML ELEMENTS
 const loading = document.getElementById("loading");
 const content = document.getElementById("content");
 const errorBox = document.getElementById("error");
 const backBtn = document.getElementById("backBtn");
+const phoneInput = document.getElementById("paymentPhone");
+const paymentMessage = document.getElementById("paymentMessage");
 
-// Hakikisha ukurasa una vitu vinavyohitajika
-if (!loading || !content || !errorBox || !backBtn) {
-    console.error("Baadhi ya HTML elements hazijapatikana.");
-}
+// CURRENT USER
+let currentUser = null;
+let authReady = false;
 
-// Vifurushi vinavyopatikana
+// PREMIUM PLANS
 const plans = {
     DAILY: {
         name: "Daily",
@@ -36,78 +38,232 @@ const plans = {
     }
 };
 
-// Thibitisha kama mtumiaji ameingia
-onAuthStateChanged(auth, (user) => {
-    loading.style.display = "none";
+// SHOW PAYMENT MESSAGE
+function showMessage(message, type = "info") {
+    if (!paymentMessage) return;
 
-    if (!user) {
-        window.location.replace("auth.html");
+    paymentMessage.textContent = message;
+    paymentMessage.className = type;
+    paymentMessage.style.display = "block";
+}
+
+// FORMAT PRICE
+function formatPrice(price) {
+    return price.toLocaleString("en-TZ");
+}
+
+// CHECK REQUIRED HTML ELEMENTS
+if (
+    !loading ||
+    !content ||
+    !errorBox ||
+    !backBtn ||
+    !phoneInput ||
+    !paymentMessage
+) {
+    console.error("Baadhi ya HTML elements hazijapatikana.");
+}
+
+// PHONE INPUT VALIDATION
+phoneInput.addEventListener("input", () => {
+    phoneInput.value = phoneInput.value
+        .replace(/\D/g, "")
+        .slice(0, 10);
+});
+
+// AUTHENTICATION
+onAuthStateChanged(
+    auth,
+
+    (user) => {
+        loading.style.display = "none";
+
+        if (!user) {
+            window.location.replace("auth.html");
+            return;
+        }
+
+        currentUser = user;
+        authReady = true;
+
+        content.style.display = "block";
+    },
+
+    (error) => {
+        loading.style.display = "none";
+        content.style.display = "none";
+        errorBox.style.display = "block";
+
+        console.error("AUTH ERROR:", error);
+
+        errorBox.textContent =
+            "Imeshindikana kuthibitisha akaunti yako. Tafadhali jaribu tena.";
+    }
+);
+
+// CREATE PAYMENT
+async function createPayment(button) {
+
+    if (!authReady || !currentUser) {
+        showMessage(
+            "Akaunti yako bado inathibitishwa. Subiri kidogo.",
+            "error"
+        );
         return;
     }
 
-    content.style.display = "block";
+    const planKey = button.dataset.plan;
+    const selectedPlan = plans[planKey];
 
-}, (error) => {
-    loading.style.display = "none";
-    content.style.display = "none";
-    errorBox.style.display = "block";
+    if (!selectedPlan) {
+        showMessage(
+            "Kifurushi hiki hakitambuliki.",
+            "error"
+        );
+        return;
+    }
 
-    errorBox.textContent =
-        "Imeshindikana kuthibitisha akaunti yako. Tafadhali jaribu tena. " +
-        error.message;
-});
+    // GET PHONE NUMBER
+    const phone = phoneInput.value.trim();
 
-// Vitufe vya kuchagua vifurushi
+    if (!/^07[0-9]{8}$/.test(phone)) {
+        showMessage(
+            "Tafadhali weka namba sahihi inayoanzia 07. Mfano 0712345678.",
+            "error"
+        );
+
+        phoneInput.focus();
+        return;
+    }
+
+    // CONFIRM PAYMENT
+    const confirmed = window.confirm(
+        "6+MODS PREMIUM\n\n" +
+        "Kifurushi: " + selectedPlan.name + "\n" +
+        "Bei: TSh " + formatPrice(selectedPlan.price) + "\n" +
+        "Muda: Siku " + selectedPlan.days + "\n" +
+        "Namba: " + phone + "\n\n" +
+        "Je, unataka kutuma ombi la malipo?"
+    );
+
+    if (!confirmed) return;
+
+    button.disabled = true;
+    button.textContent = "INATUMA OMBI...";
+
+    showMessage(
+        "Tafadhali subiri. Tunatuma ombi lako la malipo.",
+        "info"
+    );
+
+    try {
+
+        // GET FIREBASE ID TOKEN
+        const idToken = await currentUser.getIdToken();
+
+        // SEND REQUEST TO NETLIFY BACKEND
+        const paymentResponse = await fetch(
+            "/api/create-payment",
+            {
+                method: "POST",
+
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": "Bearer " + idToken
+                },
+
+                body: JSON.stringify({
+                    plan: planKey,
+                    phone: phone
+                })
+            }
+        );
+
+        let result;
+
+        try {
+            result = await paymentResponse.json();
+        } catch {
+            throw new Error(
+                "Server imerudisha jibu lisilotambulika."
+            );
+        }
+
+        if (!paymentResponse.ok || !result.success) {
+            throw new Error(
+                result.message ||
+                "Imeshindikana kuanzisha malipo."
+            );
+        }
+
+        // PAYMENT COMPLETED
+        if (result.status === "completed") {
+
+            showMessage(
+                "Malipo yamethibitishwa. " +
+                "Uanachama wako wa Premium umewashwa. " +
+                "Tafadhali refresh dashboard yako.",
+                "success"
+            );
+
+            button.textContent = "MALIPO YAMETHIBITISHWA";
+            return;
+        }
+
+        // PAYMENT FAILED
+        if (result.status === "failed") {
+
+            showMessage(
+                "Malipo hayakukamilika. " +
+                "Tafadhali hakikisha taarifa zako na ujaribu tena.",
+                "error"
+            );
+
+            button.disabled = false;
+            button.textContent = "JARIBU TENA";
+            return;
+        }
+
+        // PAYMENT PENDING
+        showMessage(
+            "OMBI LA MALIPO LIMETUMWA!\n\n" +
+            "Kifurushi: " + selectedPlan.name + "\n" +
+            "Kiasi: TSh " + formatPrice(selectedPlan.price) + "\n" +
+            "Namba: " + phone + "\n\n" +
+            "Angalia simu yako. Ikiwa utapokea ombi la malipo, " +
+            "fuata maelekezo ya mtandao wako na uthibitishe kwa PIN yako.\n\n" +
+            "Premium itawashwa baada ya malipo kuthibitishwa.",
+            "info"
+        );
+
+        button.textContent = "OMBI LIMETUMWA";
+
+    } catch (error) {
+
+        console.error("PAYMENT ERROR:", error);
+
+        showMessage(
+            error.message ||
+            "Imeshindikana kuanzisha malipo. Tafadhali jaribu tena.",
+            "error"
+        );
+
+        button.disabled = false;
+        button.textContent = "JARIBU TENA";
+
+    }
+}
+
+// SUBSCRIBE BUTTONS
 document.querySelectorAll(".subscribe-btn").forEach((button) => {
 
-    button.addEventListener("click", () => {
-
-        const planKey = button.dataset.plan;
-        const selectedPlan = plans[planKey];
-
-        // Hakikisha kifurushi kinatambulika
-        if (!selectedPlan) {
-            alert(
-                "Kifurushi hiki hakijatambulika. " +
-                "Tafadhali refresh ukurasa ujaribu tena."
-            );
-            return;
-        }
-
-        const formattedPrice =
-            selectedPlan.price.toLocaleString("en-TZ");
-
-        const confirmed = window.confirm(
-            "6+MODS PREMIUM\n\n" +
-            "Kifurushi: " + selectedPlan.name + "\n" +
-            "Bei: TSh " + formattedPrice + "\n" +
-            "Muda: Siku " + selectedPlan.days + "\n\n" +
-            "Je, unataka kuendelea na kifurushi hiki?"
-        );
-
-        if (!confirmed) {
-            return;
-        }
-
-        alert(
-            "UMECHAGUA KIFURUSHI CHA " +
-            selectedPlan.name.toUpperCase() + "\n\n" +
-
-            "Bei: TSh " + formattedPrice + "\n" +
-            "Muda: Siku " + selectedPlan.days + "\n\n" +
-
-            "Mfumo wa malipo bado haujaunganishwa.\n" +
-            "Hujatozwa fedha, na uanachama wako wa Premium " +
-            "bado haujawashwa.\n\n" +
-
-            "Tutaunganisha mfumo wa malipo katika hatua inayofuata."
-        );
-
+    button.addEventListener("click", async () => {
+        await createPayment(button);
     });
 
 });
 
-// Kitufe cha kurudi kwenye dashboard
+// BACK TO DASHBOARD
 backBtn.addEventListener("click", () => {
     window.location.href = "user.html";
 });
