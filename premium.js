@@ -13,7 +13,6 @@ const backBtn = document.getElementById("backBtn");
 const phoneInput = document.getElementById("paymentPhone");
 const paymentMessage = document.getElementById("paymentMessage");
 
-// CURRENT USER
 let currentUser = null;
 let authReady = false;
 
@@ -24,13 +23,11 @@ const plans = {
         price: 3000,
         days: 1
     },
-
     WEEKLY: {
         name: "Weekly",
         price: 10000,
         days: 7
     },
-
     MONTHLY: {
         name: "Monthly",
         price: 30000,
@@ -38,7 +35,7 @@ const plans = {
     }
 };
 
-// SHOW PAYMENT MESSAGE
+// SHOW MESSAGE
 function showMessage(message, type = "info") {
     if (!paymentMessage) return;
 
@@ -52,7 +49,7 @@ function formatPrice(price) {
     return price.toLocaleString("en-TZ");
 }
 
-// CHECK REQUIRED HTML ELEMENTS
+// CHECK HTML
 if (
     !loading ||
     !content ||
@@ -64,12 +61,31 @@ if (
     console.error("Baadhi ya HTML elements hazijapatikana.");
 }
 
-// PHONE INPUT VALIDATION
+// PHONE INPUT
 phoneInput.addEventListener("input", () => {
     phoneInput.value = phoneInput.value
         .replace(/\D/g, "")
         .slice(0, 10);
 });
+
+// CONVERT PHONE TO INTERNATIONAL FORMAT
+function formatPhone(phone) {
+    const clean = phone.replace(/\D/g, "");
+
+    if (/^0[67][0-9]{8}$/.test(clean)) {
+        return "255" + clean.substring(1);
+    }
+
+    if (/^255[67][0-9]{8}$/.test(clean)) {
+        return clean;
+    }
+
+    if (/^[67][0-9]{8}$/.test(clean)) {
+        return "255" + clean;
+    }
+
+    return null;
+}
 
 // AUTHENTICATION
 onAuthStateChanged(
@@ -116,19 +132,17 @@ async function createPayment(button) {
     const selectedPlan = plans[planKey];
 
     if (!selectedPlan) {
-        showMessage(
-            "Kifurushi hiki hakitambuliki.",
-            "error"
-        );
+        showMessage("Kifurushi hiki hakitambuliki.", "error");
         return;
     }
 
-    // GET PHONE NUMBER
+    // VALIDATE PHONE
     const phone = phoneInput.value.trim();
+    const internationalPhone = formatPhone(phone);
 
-    if (!/^07[0-9]{8}$/.test(phone)) {
+    if (!internationalPhone) {
         showMessage(
-            "Tafadhali weka namba sahihi inayoanzia 07. Mfano 0712345678.",
+            "Weka namba sahihi ya Tanzania. Mfano 0712345678 au 0612345678.",
             "error"
         );
 
@@ -142,7 +156,7 @@ async function createPayment(button) {
         "Kifurushi: " + selectedPlan.name + "\n" +
         "Bei: TSh " + formatPrice(selectedPlan.price) + "\n" +
         "Muda: Siku " + selectedPlan.days + "\n" +
-        "Namba: " + phone + "\n\n" +
+        "Namba: " + internationalPhone + "\n\n" +
         "Je, unataka kutuma ombi la malipo?"
     );
 
@@ -158,23 +172,19 @@ async function createPayment(button) {
 
     try {
 
-        // GET FIREBASE ID TOKEN
         const idToken = await currentUser.getIdToken();
 
-        // SEND REQUEST TO NETLIFY BACKEND
         const paymentResponse = await fetch(
             "/api/create-payment",
             {
                 method: "POST",
-
                 headers: {
                     "Content-Type": "application/json",
                     "Authorization": "Bearer " + idToken
                 },
-
                 body: JSON.stringify({
                     plan: planKey,
-                    phone: phone
+                    phone: internationalPhone
                 })
             }
         );
@@ -196,13 +206,11 @@ async function createPayment(button) {
             );
         }
 
-        // PAYMENT COMPLETED
+        // COMPLETED
         if (result.status === "completed") {
 
             showMessage(
-                "Malipo yamethibitishwa. " +
-                "Uanachama wako wa Premium umewashwa. " +
-                "Tafadhali refresh dashboard yako.",
+                "Malipo yamethibitishwa. Premium yako imewashwa. Tafadhali refresh dashboard.",
                 "success"
             );
 
@@ -210,12 +218,11 @@ async function createPayment(button) {
             return;
         }
 
-        // PAYMENT FAILED
+        // FAILED
         if (result.status === "failed") {
 
             showMessage(
-                "Malipo hayakukamilika. " +
-                "Tafadhali hakikisha taarifa zako na ujaribu tena.",
+                "Malipo hayakukamilika. Tafadhali jaribu tena.",
                 "error"
             );
 
@@ -224,14 +231,13 @@ async function createPayment(button) {
             return;
         }
 
-        // PAYMENT PENDING
+        // PENDING
         showMessage(
             "OMBI LA MALIPO LIMETUMWA!\n\n" +
             "Kifurushi: " + selectedPlan.name + "\n" +
             "Kiasi: TSh " + formatPrice(selectedPlan.price) + "\n" +
-            "Namba: " + phone + "\n\n" +
-            "Angalia simu yako. Ikiwa utapokea ombi la malipo, " +
-            "fuata maelekezo ya mtandao wako na uthibitishe kwa PIN yako.\n\n" +
+            "Namba: " + internationalPhone + "\n\n" +
+            "Angalia simu yako. Ikiwa utapokea ombi la malipo, fuata maelekezo ya mtandao wako na uthibitishe kwa PIN yako.\n\n" +
             "Premium itawashwa baada ya malipo kuthibitishwa.",
             "info"
         );
@@ -244,13 +250,12 @@ async function createPayment(button) {
 
         showMessage(
             error.message ||
-            "Imeshindikana kuanzisha malipo. Tafadhali jaribu tena.",
+            "Imeshindikana kuanzisha malipo.",
             "error"
         );
 
         button.disabled = false;
         button.textContent = "JARIBU TENA";
-
     }
 }
 
@@ -263,7 +268,7 @@ document.querySelectorAll(".subscribe-btn").forEach((button) => {
 
 });
 
-// BACK TO DASHBOARD
+// BACK BUTTON
 backBtn.addEventListener("click", () => {
     window.location.href = "user.html";
 });
